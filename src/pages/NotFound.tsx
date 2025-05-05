@@ -16,10 +16,14 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-eon-light-gray">
       <div className="text-center max-w-md px-4">
-        <div className="bg-eon-blue rounded-md w-16 h-16 flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-2xl">EON</span>
+        <div className="bg-white p-3 rounded-md inline-block mb-4">
+          <img 
+            src="/lovable-uploads/9655d53b-822a-4613-b271-a9864a3986d5.png" 
+            alt="EON Logo" 
+            className="h-10 w-auto"
+          />
         </div>
-        <h1 className="text-4xl font-bold mb-4 text-gray-800">404</h1>
+        <h1 className="text-4xl font-bold mb-4 text-eon-blue">404</h1>
         <p className="text-xl text-gray-600 mb-6">Oops! Page not found</p>
         <Link 
           to="/dashboard" 

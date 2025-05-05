@@ -51,10 +51,12 @@ const Index = () => {
       {/* Left side - Brand area */}
       <div className="hidden md:flex md:w-1/2 bg-eon-blue items-center justify-center">
         <div className="text-center p-8">
-          <div className="inline-block bg-white rounded-xl p-4 mb-6">
-            <div className="bg-eon-blue rounded-md w-16 h-16 flex items-center justify-center">
-              <span className="text-white font-bold text-3xl">EON</span>
-            </div>
+          <div className="inline-block bg-white rounded-xl p-6 mb-6">
+            <img 
+              src="/lovable-uploads/9655d53b-822a-4613-b271-a9864a3986d5.png" 
+              alt="EON Logo" 
+              className="h-16 w-auto"
+            />
           </div>
           <h1 className="text-white text-3xl font-bold mb-2">Agent Management Portal</h1>
           <p className="text-blue-100 max-w-md mx-auto">
@@ -67,16 +69,18 @@ const Index = () => {
       <div className="flex flex-col flex-1 items-center justify-center p-6 bg-white">
         {/* Mobile logo */}
         <div className="md:hidden mb-8 text-center">
-          <div className="inline-block">
-            <div className="bg-eon-blue rounded-md w-12 h-12 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">EON</span>
-            </div>
+          <div className="inline-block bg-white p-3 rounded-xl shadow-md">
+            <img 
+              src="/lovable-uploads/9655d53b-822a-4613-b271-a9864a3986d5.png" 
+              alt="EON Logo" 
+              className="h-12 w-auto"
+            />
           </div>
         </div>
         
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
+            <h2 className="text-2xl font-bold text-eon-blue">Welcome Back</h2>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
           

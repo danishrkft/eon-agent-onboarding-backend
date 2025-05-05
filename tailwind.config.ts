@@ -64,9 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				eon: {
-					blue: '#0EA5E9',
+					blue: '#00205C',
 					'light-blue': '#D3E4FD',
-					'dark-blue': '#0284C7',
+					'dark-blue': '#001845',
+					red: '#E5241B',
+					'light-red': '#FFE5E3',
 					gray: '#8A898C',
 					'light-gray': '#F6F7F9',
 					success: '#10B981',

@@ -15,7 +15,7 @@ const AgentManagement = () => {
   return (
     <Layout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Agent Management</h1>
+        <h1 className="text-2xl font-bold text-eon-blue">Agent Management</h1>
         <p className="text-gray-600">Manage, monitor and onboard agents</p>
       </div>
 

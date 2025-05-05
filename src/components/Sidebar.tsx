@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <div 
-      className={`fixed lg:static inset-0 z-40 flex-shrink-0 bg-white border-r border-gray-200 transition-all duration-300 ${
+      className={`fixed lg:static inset-0 z-40 flex-shrink-0 bg-eon-blue border-r border-eon-dark-blue transition-all duration-300 ${
         isOpen ? 'w-64' : 'w-0 lg:w-20'
       }`}
     >
@@ -38,14 +38,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         {/* Logo Section */}
         <div className={`flex items-center justify-between p-4 ${!isOpen && 'lg:justify-center'}`}>
           <Link to="/dashboard" className="flex items-center space-x-2">
-            <div className="bg-eon-blue rounded-md w-10 h-10 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">EON</span>
+            <div className="bg-white p-1 rounded-md">
+              <img 
+                src="/lovable-uploads/9655d53b-822a-4613-b271-a9864a3986d5.png" 
+                alt="EON Logo" 
+                className="h-8 w-auto"
+              />
             </div>
-            {isOpen && <span className="font-bold text-xl text-eon-dark-blue">Admin</span>}
+            {isOpen && <span className="font-bold text-xl text-white">Admin</span>}
           </Link>
           <button 
             onClick={() => setIsOpen(false)}
-            className="text-gray-500 lg:hidden"
+            className="text-white lg:hidden"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -58,8 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <li key={item.name}>
                 <Link
                   to={item.path}
-                  className={`flex items-center px-4 py-3 text-gray-700 hover:bg-eon-light-blue hover:text-eon-blue transition-colors ${
-                    location.pathname === item.path ? 'bg-eon-light-blue text-eon-blue font-medium' : ''
+                  className={`flex items-center px-4 py-3 text-gray-100 hover:bg-sidebar-accent transition-colors ${
+                    location.pathname === item.path ? 'bg-sidebar-accent font-medium' : ''
                   } ${!isOpen && 'lg:justify-center'}`}
                 >
                   <span>{item.icon}</span>
@@ -71,15 +75,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         </nav>
 
         {/* Profile */}
-        <div className={`border-t border-gray-200 p-4 ${!isOpen && 'lg:flex lg:justify-center'}`}>
+        <div className={`border-t border-eon-dark-blue p-4 ${!isOpen && 'lg:flex lg:justify-center'}`}>
           <div className="flex items-center space-x-3">
-            <div className="bg-eon-light-blue rounded-full w-10 h-10 flex items-center justify-center">
-              <span className="font-medium text-eon-blue">AD</span>
+            <div className="bg-eon-red text-white rounded-full w-10 h-10 flex items-center justify-center">
+              <span className="font-medium">AD</span>
             </div>
             {isOpen && (
               <div className="flex flex-col">
-                <span className="text-sm font-medium">Admin User</span>
-                <span className="text-xs text-gray-500">admin@eon.com</span>
+                <span className="text-sm font-medium text-white">Admin User</span>
+                <span className="text-xs text-gray-300">admin@eon.com</span>
               </div>
             )}
           </div>
