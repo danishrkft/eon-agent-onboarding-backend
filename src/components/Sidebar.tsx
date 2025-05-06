@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }];
   
   return (
-    <div className={`fixed lg:static inset-0 z-40 flex-shrink-0 bg-eon-blue border-r border-eon-dark-blue transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 lg:w-20'}`}>
+    <div className={`fixed lg:static inset-0 z-40 flex-shrink-0 bg-eon-blue border-r border-eon-dark-blue transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 lg:w-20'} h-full`}>
       <div className="flex flex-col h-full overflow-hidden">
         {/* Logo Section */}
         <div className={`flex items-center justify-between p-4 ${!isOpen && 'lg:justify-center'}`}>
@@ -81,13 +81,13 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li key={item.name}>
                 <Link 
                   to={item.path} 
-                  className={`flex items-center px-4 py-3 text-gray-100 hover:bg-sidebar-accent transition-colors ${location.pathname === item.path ? 'bg-sidebar-accent font-medium' : ''} ${!isOpen && 'lg:justify-center'}`}
+                  className={`flex items-center px-4 py-3 text-white hover:bg-sidebar-accent transition-colors ${location.pathname === item.path ? 'bg-sidebar-accent font-medium' : ''} ${!isOpen && 'lg:justify-center'}`}
                 >
                   <span>{item.icon}</span>
                   {isOpen && (
                     <div className="ml-3">
                       <div className="text-sm">{item.name}</div>
-                      <div className="text-xs text-gray-400">{item.module}</div>
+                      <div className="text-xs text-gray-300">{item.module}</div>
                     </div>
                   )}
                 </Link>

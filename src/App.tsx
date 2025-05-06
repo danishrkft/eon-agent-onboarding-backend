@@ -11,15 +11,17 @@ import './App.css';
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/agents" element={<AgentManagement />} />
-          <Route path="/commission" element={<CommissionPayout />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+      <div className="w-full h-full min-h-screen">
+        <Router>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/agents" element={<AgentManagement />} />
+            <Route path="/commission" element={<CommissionPayout />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </div>
     </ThemeProvider>
   );
 };

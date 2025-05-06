@@ -38,19 +38,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 217 100% 18%;
-
     --sidebar-foreground: 0 0% 100%;
-
     --sidebar-primary: 3 84% 50%;
-
     --sidebar-primary-foreground: 0 0% 100%;
-
     --sidebar-accent: 217 50% 25%;
-
     --sidebar-accent-foreground: 0 0% 100%;
-
     --sidebar-border: 217 50% 25%;
-
     --sidebar-ring: 217 100% 18%;
   }
 
@@ -82,6 +75,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    
     --sidebar-background: 217 100% 18%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 3 84% 50%;
@@ -100,5 +94,31 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 }
+
+/* Fix text visibility in dark mode */
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  @apply text-gray-300;
+}
+
+/* Ensure dark mode table has visible text */
+.dark table tbody tr td {
+  @apply text-gray-200;
+}
+
+.dark table thead tr th {
+  @apply text-gray-300;
+}
+

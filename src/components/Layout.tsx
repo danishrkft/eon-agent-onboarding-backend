@@ -13,7 +13,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { darkMode, toggleDarkMode } = useTheme();
 
   return (
-    <div className="min-h-screen bg-eon-light-gray dark:bg-gray-900 flex">
+    <div className="min-h-screen w-full bg-eon-light-gray dark:bg-gray-900 flex">
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       <div className="flex flex-col flex-1 overflow-hidden">
