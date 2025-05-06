@@ -25,9 +25,172 @@ export type Agent = {
   trainingModules: { name: string; completed: boolean; date: string }[];
   performance: { month: string; sales: number; target: number }[];
   documents: { name: string; type: string; url: string }[];
+  gender?: 'M' | 'F';
 };
 
-export const mockAgents: Agent[] = [
+// Helper function to generate a random date between two dates
+const randomDate = (start: Date, end: Date): string => {
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return date.toISOString().split('T')[0];
+};
+
+// Helper function to generate a random NRIC
+const generateNRIC = (): string => {
+  const year = Math.floor(Math.random() * 30 + 70).toString().padStart(2, '0');
+  const month = Math.floor(Math.random() * 12 + 1).toString().padStart(2, '0');
+  const day = Math.floor(Math.random() * 28 + 1).toString().padStart(2, '0');
+  const randomNums = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `${year}${month}${day}${randomNums}`;
+};
+
+// Helper function to generate a random Malaysian mobile number
+const generateMobile = (): string => {
+  const prefixes = ['6011', '6012', '6013', '6014', '6016', '6017', '6018', '6019'];
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const numbers = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+  return `${prefix}${numbers}`;
+};
+
+// Helper function to generate random training modules
+const generateTrainingModules = (): { name: string; completed: boolean; date: string }[] => {
+  const modules = ['Product Knowledge', 'Sales Techniques', 'Compliance Training', 'Digital Marketing', 'Customer Service', 'System Training'];
+  const count = Math.floor(Math.random() * 4) + 1; // 1 to 4 completed modules
+  const result = [];
+  
+  for (let i = 0; i < modules.length; i++) {
+    const completed = i < count;
+    result.push({
+      name: modules[i],
+      completed,
+      date: completed ? randomDate(new Date(2024, 0, 1), new Date()) : ''
+    });
+  }
+  
+  return result;
+};
+
+// Helper function to generate random performance data
+const generatePerformance = (): { month: string; sales: number; target: number }[] => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const currentMonth = new Date().getMonth();
+  const result = [];
+  
+  for (let i = Math.max(0, currentMonth - 5); i <= currentMonth; i++) {
+    const target = Math.floor(Math.random() * 20000) + 10000;
+    const performance = Math.random();
+    const sales = Math.floor(target * (performance * 0.7 + 0.6)); // Sales between 60% and 130% of target
+    
+    result.push({
+      month: months[i],
+      sales,
+      target
+    });
+  }
+  
+  return result;
+};
+
+// Helper function to generate list of agents
+const generateAgents = (count: number): Agent[] => {
+  const firstNames = ['Ahmad', 'Siti', 'Michael', 'David', 'Nurul', 'Lee', 'Raj', 'Kavita', 'Tan', 'Wong', 'Lily', 'Hassan', 'Fatimah', 'Chong', 'Kumar', 'Mei Ling', 'Jason', 'Wei Chen', 'Aisha', 'Surinder'];
+  const lastNames = ['Bin Abdullah', 'Binti Mohammed', 'Tan', 'Kumar', 'Lee', 'Wong', 'Singh', 'bin Ibrahim', 'Lim', 'Patel', 'Chen', 'bin Musa', 'Kaur', 'Binti Ahmad', 'Rai', 'Chong', 'Jun Wei', 'Binti Hassan', 'bin Ishak', 'Samy'];
+  const regions = ['Kuala Lumpur', 'Penang', 'Johor', 'Selangor', 'Sabah', 'Sarawak', 'Melaka', 'Pahang', 'Perak', 'Kedah', 'Kelantan', 'Terengganu', 'Negeri Sembilan'];
+  const banks = ['Maybank', 'CIMB', 'Public Bank', 'RHB', 'Hong Leong', 'AmBank', 'Bank Islam', 'OCBC', 'HSBC', 'Bank Rakyat'];
+  const sponsors = ['Sarah Lee', 'Michael Tan', 'Ahmad Ibrahim', 'Lisa Wong', 'Raj Kumar', 'Tan Wei Ling', 'Nurul Ahmad', 'David Chen', 'Kavita Singh', 'Wong Jun Wei'];
+  const commissionTiers = ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 1', 'Tier 2', 'Tier 1'];
+  const statuses = ['active', 'pending', 'rejected', 'active', 'active', 'active', 'pending', 'pending', 'active', 'active'];
+  const genders = ['M', 'F'];
+  
+  const agents = [];
+  
+  for (let i = 0; i < count; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const fullName = `${firstName} ${lastName}`;
+    const email = `${firstName.toLowerCase()}${Math.floor(Math.random() * 1000)}@example.com`;
+    const region = regions[Math.floor(Math.random() * regions.length)];
+    const bank = banks[Math.floor(Math.random() * banks.length)];
+    const sponsor = sponsors[Math.floor(Math.random() * sponsors.length)];
+    const tier = commissionTiers[Math.floor(Math.random() * commissionTiers.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const dob = randomDate(new Date(1970, 0, 1), new Date(2000, 0, 1));
+    const joinDate = randomDate(new Date(2023, 0, 1), new Date());
+    const ytdSales = Math.floor(Math.random() * 200000) + 20000;
+    const commissionRate = tier === 'Tier 1' ? 0.1 : tier === 'Tier 2' ? 0.08 : 0.06;
+    const ytdCommission = Math.floor(ytdSales * commissionRate);
+    const lastPayout = Math.floor(Math.random() * 5000) + 1000;
+    const lastPayoutDate = status === 'active' ? '2025-04-15' : '';
+    const nric = generateNRIC();
+    const mobile = generateMobile();
+    const gender = genders[Math.floor(Math.random() * genders.length)];
+    
+    agents.push({
+      id: (i + 6).toString(), // Start after the existing 5 agents
+      name: fullName,
+      mobile,
+      email,
+      status: status as 'active' | 'pending' | 'rejected',
+      joinDate,
+      region,
+      nric,
+      dob,
+      address: `${Math.floor(Math.random() * 100) + 1} Jalan ${Math.floor(Math.random() * 100) + 1}, ${region}`,
+      bankName: bank,
+      accountNumber: Math.floor(Math.random() * 10000000000).toString(),
+      kwspNumber: `KWSP${Math.floor(Math.random() * 1000000).toString()}`,
+      taxId: `TAX${Math.floor(Math.random() * 1000000).toString()}`,
+      agentId: `EON${(i + 6).toString().padStart(3, '0')}`,
+      sponsor,
+      commissionTier: tier,
+      ytdSales,
+      ytdCommission,
+      lastPayout,
+      lastPayoutDate,
+      nextPaymentDate: status === 'active' ? '2025-05-15' : '',
+      trainingModules: generateTrainingModules(),
+      performance: generatePerformance(),
+      documents: [
+        { name: 'NRIC', type: 'pdf', url: '#' },
+        { name: 'NDA', type: 'pdf', url: '#' },
+        { name: status === 'active' ? 'Agreement' : 'Application', type: 'pdf', url: '#' }
+      ],
+      gender
+    });
+  }
+  
+  return agents;
+};
+
+// Helper function to generate commission payout data
+const generateCommissionPayouts = (count: number) => {
+  const tiers = ['Tier 1', 'Tier 2', 'Tier 3'];
+  const statuses = ['paid', 'pending', 'failed', 'paid', 'paid', 'paid', 'pending'];
+  const payouts = [];
+  
+  for (let i = 0; i < count; i++) {
+    const id = i + 8; // Start after existing entries
+    const tier = tiers[Math.floor(Math.random() * tiers.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const ytdTotal = Math.floor(Math.random() * 20000) + 3000;
+    const lastAmount = Math.floor(Math.random() * 4000) + 1000;
+    
+    payouts.push({
+      agentId: `EON${id.toString().padStart(3, '0')}`,
+      name: `Agent ${id}`,
+      tier,
+      lastAmount,
+      lastDate: status === 'paid' ? '2025-04-15' : '',
+      nextDate: status !== 'failed' ? '2025-05-15' : '',
+      ytdTotal,
+      status
+    });
+  }
+  
+  return payouts;
+};
+
+// Base data - agents that already exist
+export const baseAgents: Agent[] = [
   {
     id: '1',
     name: 'Ahmad Bin Abdullah',
@@ -66,7 +229,8 @@ export const mockAgents: Agent[] = [
       { name: 'NRIC', type: 'pdf', url: '#' },
       { name: 'NDA', type: 'pdf', url: '#' },
       { name: 'Agreement', type: 'pdf', url: '#' }
-    ]
+    ],
+    gender: 'M'
   },
   {
     id: '2',
@@ -102,7 +266,8 @@ export const mockAgents: Agent[] = [
     documents: [
       { name: 'NRIC', type: 'pdf', url: '#' },
       { name: 'NDA', type: 'pdf', url: '#' }
-    ]
+    ],
+    gender: 'F'
   },
   {
     id: '3',
@@ -141,7 +306,8 @@ export const mockAgents: Agent[] = [
       { name: 'NRIC', type: 'pdf', url: '#' },
       { name: 'NDA', type: 'pdf', url: '#' },
       { name: 'Agreement', type: 'pdf', url: '#' }
-    ]
+    ],
+    gender: 'M'
   },
   {
     id: '4',
@@ -174,7 +340,8 @@ export const mockAgents: Agent[] = [
     performance: [],
     documents: [
       { name: 'NRIC', type: 'pdf', url: '#' }
-    ]
+    ],
+    gender: 'M'
   },
   {
     id: '5',
@@ -215,11 +382,19 @@ export const mockAgents: Agent[] = [
       { name: 'NRIC', type: 'pdf', url: '#' },
       { name: 'NDA', type: 'pdf', url: '#' },
       { name: 'Agreement', type: 'pdf', url: '#' }
-    ]
+    ],
+    gender: 'F'
   }
 ];
 
-export const dashboardData = {
+// Generate 73 additional agents
+const additionalAgents = generateAgents(73);
+
+// Combine base agents with generated agents
+export const mockAgents: Agent[] = [...baseAgents, ...additionalAgents];
+
+// Base dashboard data
+export const baseDashboardData = {
   totalAgents: 126,
   activeAgents: 98,
   pendingApprovals: 15,
@@ -245,14 +420,31 @@ export const dashboardData = {
   ],
   
   recentlyApproved: [
-    { id: 'EON023', name: 'Tan Mei Lin', joinDate: '2025-05-01' },
-    { id: 'EON022', name: 'Hassan bin Musa', joinDate: '2025-04-29' },
-    { id: 'EON021', name: 'Kavita Rai', joinDate: '2025-04-28' },
-    { id: 'EON020', name: 'Wong Jun Wei', joinDate: '2025-04-26' },
+    { id: 'EON023', name: 'Tan Mei Lin', joinDate: '2025-05-01', email: 'tan.meilin@example.com', status: 'active', region: 'Penang' },
+    { id: 'EON022', name: 'Hassan bin Musa', joinDate: '2025-04-29', email: 'hassan@example.com', status: 'active', region: 'Kuala Lumpur' },
+    { id: 'EON021', name: 'Kavita Rai', joinDate: '2025-04-28', email: 'kavita@example.com', status: 'active', region: 'Selangor' },
+    { id: 'EON020', name: 'Wong Jun Wei', joinDate: '2025-04-26', email: 'wong.jw@example.com', status: 'active', region: 'Johor' },
+    { id: 'EON019', name: 'Aisha Binti Ahmad', joinDate: '2025-04-25', email: 'aisha@example.com', status: 'active', region: 'Kelantan' },
+    { id: 'EON018', name: 'David Chen', joinDate: '2025-04-24', email: 'david.c@example.com', status: 'active', region: 'Penang' },
+    { id: 'EON017', name: 'Surinder Singh', joinDate: '2025-04-23', email: 'surinder@example.com', status: 'active', region: 'Selangor' },
+    { id: 'EON016', name: 'Lily Tan', joinDate: '2025-04-22', email: 'lily@example.com', status: 'active', region: 'Kuala Lumpur' },
+    { id: 'EON015', name: 'Chong Wei Ming', joinDate: '2025-04-21', email: 'chong.wm@example.com', status: 'active', region: 'Sarawak' },
+    { id: 'EON014', name: 'Fatimah Zahra', joinDate: '2025-04-20', email: 'fatimah@example.com', status: 'active', region: 'Kelantan' },
+    { id: 'EON013', name: 'Jason Lee', joinDate: '2025-04-19', email: 'jason@example.com', status: 'active', region: 'Kuala Lumpur' },
+    { id: 'EON012', name: 'Kumar Patel', joinDate: '2025-04-18', email: 'kumar@example.com', status: 'active', region: 'Penang' }
   ]
 };
 
-export const commissionData = {
+// Update the dashboard data with more agents
+export const dashboardData = {
+  ...baseDashboardData,
+  totalAgents: mockAgents.length,
+  activeAgents: mockAgents.filter(agent => agent.status === 'active').length,
+  pendingApprovals: mockAgents.filter(agent => agent.status === 'pending').length
+};
+
+// Base commission data
+export const baseCommissionData = {
   totalPaidThisMonth: 42500,
   totalPending: 18500,
   payouts: [
@@ -327,4 +519,13 @@ export const commissionData = {
       status: 'failed'
     }
   ]
+};
+
+// Generate 71 additional commission payout entries
+const additionalCommissionPayouts = generateCommissionPayouts(71);
+
+// Combine base payouts with generated payouts
+export const commissionData = {
+  ...baseCommissionData,
+  payouts: [...baseCommissionData.payouts, ...additionalCommissionPayouts]
 };
