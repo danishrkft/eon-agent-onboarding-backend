@@ -1,12 +1,10 @@
 
 import React, { useState } from 'react';
-import { Search, Menu, Bell, Sun, Moon, User, Settings, LogOut } from 'lucide-react';
+import { Search, Menu, Bell, User, Settings, LogOut } from 'lucide-react';
 import NotificationModal from './NotificationModal';
 
 type HeaderProps = {
   toggleSidebar: () => void;
-  darkMode: boolean;
-  toggleDarkMode: () => void;
 };
 
 const sampleNotifications = [
@@ -47,41 +45,34 @@ const sampleNotifications = [
   }
 ];
 
-const Header: React.FC<HeaderProps> = ({ toggleSidebar, darkMode, toggleDarkMode }) => {
+const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm w-full">
+    <header className="bg-white border-b border-gray-200 shadow-sm w-full">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
           <button 
             onClick={toggleSidebar}
-            className="mr-4 text-eon-blue dark:text-white focus:outline-none lg:hidden"
+            className="mr-4 text-eon-blue focus:outline-none lg:hidden"
           >
             <Menu className="h-6 w-6" />
           </button>
           
-          <div className="hidden md:flex items-center bg-eon-light-gray dark:bg-gray-800 rounded-md px-3 py-2 w-64">
-            <Search className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          <div className="hidden md:flex items-center bg-eon-light-gray rounded-md px-3 py-2 w-64">
+            <Search className="h-4 w-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search..."
-              className="bg-transparent border-0 outline-none text-sm ml-2 w-full dark:text-white"
+              className="bg-transparent border-0 outline-none text-sm ml-2 w-full"
             />
           </div>
         </div>
         
         <div className="flex items-center space-x-4">
           <button 
-            onClick={toggleDarkMode}
-            className="text-gray-600 hover:text-eon-blue dark:text-gray-300 dark:hover:text-white"
-          >
-            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-          
-          <button 
-            className="text-eon-blue dark:text-white hover:text-eon-red dark:hover:text-eon-red relative"
+            className="text-eon-blue hover:text-eon-red relative"
             onClick={() => setNotificationsOpen(true)}
           >
             <Bell className="h-6 w-6" />
@@ -101,28 +92,28 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, darkMode, toggleDarkMode
             </button>
             
             {profileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-md shadow-lg py-1 z-50 border dark:border-gray-700">
-                <div className="px-4 py-3 border-b dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Admin User</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">admin@eon.com</p>
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
+                <div className="px-4 py-3 border-b">
+                  <p className="text-sm font-medium text-gray-900">Admin User</p>
+                  <p className="text-xs text-gray-500">admin@eon.com</p>
                 </div>
                 <a 
                   href="#" 
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <User className="h-4 w-4 mr-3" />
                   Profile
                 </a>
                 <a 
                   href="#" 
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <Settings className="h-4 w-4 mr-3" />
                   Settings
                 </a>
                 <a 
                   href="#" 
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <LogOut className="h-4 w-4 mr-3" />
                   Sign out
