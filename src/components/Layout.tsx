@@ -11,8 +11,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
 
   return (
-    <div className="min-h-screen w-full bg-eon-light-gray flex">
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+    <div className="min-h-screen w-full bg-eon-light-gray flex overflow-hidden">
+      <div className="flex-shrink-0">
+        <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      </div>
 
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header 

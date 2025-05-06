@@ -46,8 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   }];
   
   return (
-    <div className={`fixed lg:static inset-y-0 left-0 z-40 flex-shrink-0 bg-eon-blue border-r border-eon-dark-blue transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 lg:w-20'} h-screen`}>
-      <div className="flex flex-col h-full overflow-hidden">
+    <div className={`h-screen fixed lg:sticky top-0 left-0 z-40 flex flex-shrink-0 bg-[#00205C] border-r border-[#00205C]/70 transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 lg:w-20'} overflow-hidden`}>
+      <div className="flex flex-col h-full w-full overflow-hidden">
         {/* Logo Section */}
         <div className={`flex items-center justify-between p-4 ${!isOpen && 'lg:justify-center'}`}>
           <Link to="/dashboard" className="flex items-center space-x-2">
@@ -75,13 +75,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 py-4">
+        <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-1">
             {menuItems.map(item => (
               <li key={item.name}>
                 <Link 
                   to={item.path} 
-                  className={`flex items-center px-4 py-3 text-white hover:bg-sidebar-accent transition-colors ${location.pathname === item.path ? 'bg-sidebar-accent font-medium' : ''} ${!isOpen && 'lg:justify-center'}`}
+                  className={`flex items-center px-4 py-3 text-white hover:bg-[#00205C]/70 transition-colors ${location.pathname === item.path ? 'bg-[#00205C]/70 font-medium' : ''} ${!isOpen && 'lg:justify-center'}`}
                 >
                   <span>{item.icon}</span>
                   {isOpen && (
@@ -97,9 +97,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Profile */}
-        <div className={`border-t border-eon-dark-blue p-4 ${!isOpen && 'lg:flex lg:justify-center'}`}>
+        <div className={`border-t border-[#00205C]/70 p-4 ${!isOpen && 'lg:flex lg:justify-center'}`}>
           <div className="flex items-center space-x-3">
-            <div className="bg-eon-red text-white rounded-full w-10 h-10 flex items-center justify-center">
+            <div className="bg-[#E5241B] text-white rounded-full w-10 h-10 flex items-center justify-center">
               <span className="font-medium">AD</span>
             </div>
             {isOpen && (

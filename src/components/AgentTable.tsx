@@ -18,6 +18,9 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
   const [addAgentModalOpen, setAddAgentModalOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [genderFilter, setGenderFilter] = useState('all');
+  const [regionFilter, setRegionFilter] = useState('all');
 
   const filteredAgents = agents.filter((agent) => {
     // Apply search filter
@@ -31,19 +34,25 @@ const AgentTable: React.FC<AgentTableProps> = ({
     // Apply status filter
     const matchesStatus = statusFilter === 'all' || agent.status === statusFilter;
     
-    return matchesSearch && matchesStatus;
+    // Apply gender filter
+    const matchesGender = genderFilter === 'all' || agent.gender === genderFilter;
+    
+    // Apply region filter
+    const matchesRegion = regionFilter === 'all' || (agent.region && agent.region.includes(regionFilter));
+    
+    return matchesSearch && matchesStatus && matchesGender && matchesRegion;
   });
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-eon-success dark:bg-green-900/30 dark:text-green-400';
+        return 'bg-green-100 text-green-800';
       case 'pending':
-        return 'bg-yellow-100 text-eon-pending dark:bg-yellow-900/30 dark:text-yellow-400';
+        return 'bg-yellow-100 text-yellow-800';
       case 'rejected':
-        return 'bg-red-100 text-eon-error dark:bg-red-900/30 dark:text-red-400';
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -53,25 +62,35 @@ const AgentTable: React.FC<AgentTableProps> = ({
     // For now, we just log the data
   };
 
+  // Get unique regions for filter dropdown
+  const regions = ['all', ...new Set(agents.map(agent => agent.region?.split(',')[1]?.trim()).filter(Boolean))];
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-card overflow-hidden">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="bg-white rounded-lg shadow-card overflow-hidden">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search agents..."
-              className="pl-9 pr-4 py-2 w-full rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-eon-blue dark:bg-gray-700 dark:text-white text-sm"
+              className="pl-9 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           
           <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors"
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+
             <select
-              className="text-sm rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white py-2 px-3 focus:outline-none focus:ring-1 focus:ring-eon-blue"
+              className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -84,40 +103,71 @@ const AgentTable: React.FC<AgentTableProps> = ({
 
           <button
             onClick={() => setAddAgentModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-eon-blue text-white rounded-md hover:bg-eon-blue/90 text-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-[#00205C] text-white rounded-md hover:bg-[#00205C]/90 text-sm"
           >
             <Plus className="h-4 w-4" />
             <span>Add Agent</span>
           </button>
         </div>
+
+        {showFilters && (
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+              <select
+                className="w-full text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
+                value={genderFilter}
+                onChange={(e) => setGenderFilter(e.target.value)}
+              >
+                <option value="all">All Genders</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+              <select
+                className="w-full text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
+                value={regionFilter}
+                onChange={(e) => setRegionFilter(e.target.value)}
+              >
+                <option value="all">All States</option>
+                {regions.filter(r => r !== 'all').map(region => (
+                  <option key={region} value={region}>{region}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">#</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Agent ID</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Full Name</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Email Address</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">NRIC</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Mobile</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">DOB</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Bank Account #</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Issuing Bank</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">District, State</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Gender</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-700">Status</th>
+            <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 bg-gray-50">#</th>
+              <th className="px-6 py-3 bg-gray-50">Agent ID</th>
+              <th className="px-6 py-3 bg-gray-50">Full Name</th>
+              <th className="px-6 py-3 bg-gray-50">Email Address</th>
+              <th className="px-6 py-3 bg-gray-50">NRIC</th>
+              <th className="px-6 py-3 bg-gray-50">Mobile</th>
+              <th className="px-6 py-3 bg-gray-50">DOB</th>
+              <th className="px-6 py-3 bg-gray-50">Bank Account #</th>
+              <th className="px-6 py-3 bg-gray-50">Issuing Bank</th>
+              <th className="px-6 py-3 bg-gray-50">District, State</th>
+              <th className="px-6 py-3 bg-gray-50">Gender</th>
+              <th className="px-6 py-3 bg-gray-50">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-gray-200">
             {filteredAgents.length > 0 ? (
               filteredAgents.map((agent, index) => (
                 <tr 
                   key={agent.id}
                   onClick={() => onSelectAgent(agent)}
-                  className={`cursor-pointer hover:bg-eon-light-gray dark:hover:bg-gray-700 ${
-                    selectedAgentId === agent.id ? 'bg-eon-light-blue dark:bg-eon-blue/10' : ''
+                  className={`cursor-pointer hover:bg-gray-50 ${
+                    selectedAgentId === agent.id ? 'bg-[#00205C]/5' : ''
                   }`}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{index + 1}</td>
@@ -140,7 +190,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
               ))
             ) : (
               <tr>
-                <td colSpan={12} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                <td colSpan={12} className="px-6 py-4 text-center text-sm text-gray-500">
                   No agents found
                 </td>
               </tr>
