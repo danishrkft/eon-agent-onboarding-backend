@@ -1,6 +1,4 @@
-
 import React from 'react';
-
 type DashboardCardProps = {
   title: string;
   value: string | number;
@@ -11,43 +9,33 @@ type DashboardCardProps = {
   };
   className?: string;
 };
-
 const DashboardCard: React.FC<DashboardCardProps> = ({
   title,
   value,
   icon,
   trend,
-  className,
+  className
 }) => {
-  return (
-    <div className={`bg-white rounded-lg shadow-card p-5 hover:shadow-card-hover transition-shadow ${className}`}>
+  return <div className={`bg-white rounded-lg shadow-card p-5 hover:shadow-card-hover transition-shadow ${className}`}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-gray-500 text-sm font-medium mb-1">{title}</p>
           <h3 className="text-2xl font-bold">{value}</h3>
           
-          {trend && (
-            <div className="flex items-center mt-2">
-              <span 
-                className={`text-xs font-medium ${
-                  trend.isPositive ? 'text-green-600' : 'text-secondary'
-                }`}
-              >
+          {trend && <div className="flex items-center mt-2">
+              <span className={`text-xs font-medium ${trend.isPositive ? 'text-green-600' : 'text-secondary'}`}>
                 {trend.isPositive ? '+' : '-'}{Math.abs(trend.value)}%
               </span>
               <span className="text-xs text-gray-500 ml-2">vs last month</span>
-            </div>
-          )}
+            </div>}
         </div>
         
-        <div className="bg-primary bg-opacity-10 rounded-lg p-3">
+        <div className="bg-opacity-10 rounded-lg p-3 bg-blue-100">
           <div className="text-primary">
             {icon}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default DashboardCard;
