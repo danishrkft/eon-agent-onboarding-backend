@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen w-full bg-eon-light-gray flex overflow-hidden">
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 sticky top-0 h-screen">
         <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
       </div>
 

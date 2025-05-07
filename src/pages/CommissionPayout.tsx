@@ -3,10 +3,20 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { commissionData } from '../utils/mockData';
 import { Calendar, Filter, Download, CreditCard, Search } from 'lucide-react';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
 
 const CommissionPayout = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-MY', {
@@ -41,10 +51,16 @@ const CommissionPayout = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPayouts = filteredPayouts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredPayouts.length / itemsPerPage);
+
   return (
     <Layout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Commission Payout</h1>
+        <h1 className="text-2xl font-bold text-[#00205C]">Commission Payout</h1>
         <p className="text-gray-600">Manage agent commission payments</p>
       </div>
 
@@ -105,7 +121,7 @@ const CommissionPayout = () => {
           </div>
           
           <div className="flex items-center space-x-2">
-            <button className="bg-eon-blue text-white px-3 py-2 rounded-md text-sm flex items-center">
+            <button className="bg-[#00205C] text-white px-3 py-2 rounded-md text-sm flex items-center">
               <CreditCard className="w-4 h-4 mr-2" />
               Trigger Payout
             </button>
@@ -134,7 +150,7 @@ const CommissionPayout = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredPayouts.map((payout) => (
+              {currentPayouts.map((payout) => (
                 <tr key={payout.agentId}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{payout.agentId}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.name}</td>
@@ -153,6 +169,56 @@ const CommissionPayout = () => {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination */}
+        {filteredPayouts.length > 0 && (
+          <div className="py-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                  // Show pagination numbers based on current page
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                    if (i === 4) pageNumber = totalPages;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <PaginationItem key={i}>
+                      <PaginationLink 
+                        isActive={pageNumber === currentPage}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className="cursor-pointer"
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </Layout>
   );

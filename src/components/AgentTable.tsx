@@ -3,6 +3,14 @@ import React, { useState } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 import { Agent } from '../utils/mockData';
 import AddAgentModal from './AddAgentModal';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
 
 type AgentTableProps = {
   agents: Agent[];
@@ -21,6 +29,8 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const [showFilters, setShowFilters] = useState(false);
   const [genderFilter, setGenderFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const filteredAgents = agents.filter((agent) => {
     // Apply search filter
@@ -42,6 +52,12 @@ const AgentTable: React.FC<AgentTableProps> = ({
     
     return matchesSearch && matchesStatus && matchesGender && matchesRegion;
   });
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAgents = filteredAgents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -161,8 +177,8 @@ const AgentTable: React.FC<AgentTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filteredAgents.length > 0 ? (
-              filteredAgents.map((agent, index) => (
+            {currentAgents.length > 0 ? (
+              currentAgents.map((agent, index) => (
                 <tr 
                   key={agent.id}
                   onClick={() => onSelectAgent(agent)}
@@ -170,7 +186,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
                     selectedAgentId === agent.id ? 'bg-[#00205C]/5' : ''
                   }`}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{indexOfFirstItem + index + 1}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.agentId}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
@@ -198,6 +214,56 @@ const AgentTable: React.FC<AgentTableProps> = ({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {filteredAgents.length > 0 && (
+        <div className="py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                // Show pagination numbers based on current page
+                let pageNumber;
+                if (totalPages <= 5) {
+                  pageNumber = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNumber = i + 1;
+                  if (i === 4) pageNumber = totalPages;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNumber = totalPages - 4 + i;
+                } else {
+                  pageNumber = currentPage - 2 + i;
+                }
+                
+                return (
+                  <PaginationItem key={i}>
+                    <PaginationLink 
+                      isActive={pageNumber === currentPage}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className="cursor-pointer"
+                    >
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       <AddAgentModal 
         isOpen={addAgentModalOpen}
