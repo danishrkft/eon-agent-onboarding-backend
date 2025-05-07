@@ -30,7 +30,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
             <div className="flex items-center mt-2">
               <span 
                 className={`text-xs font-medium ${
-                  trend.isPositive ? 'text-green-600' : 'text-[#E5241B]'
+                  trend.isPositive ? 'text-green-600' : 'text-secondary'
                 }`}
               >
                 {trend.isPositive ? '+' : '-'}{Math.abs(trend.value)}%
@@ -40,8 +40,10 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
           )}
         </div>
         
-        <div className="bg-blue-50 rounded-lg p-3">
-          {icon}
+        <div className="bg-primary bg-opacity-10 rounded-lg p-3">
+          <div className="text-primary">
+            {icon}
+          </div>
         </div>
       </div>
     </div>
