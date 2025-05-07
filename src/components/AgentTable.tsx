@@ -1,27 +1,17 @@
-
 import React, { useState } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 import { Agent } from '../utils/mockData';
 import AddAgentModal from './AddAgentModal';
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
-} from '@/components/ui/pagination';
-
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 type AgentTableProps = {
   agents: Agent[];
   onSelectAgent: (agent: Agent) => void;
   selectedAgentId: string | null;
 };
-
 const AgentTable: React.FC<AgentTableProps> = ({
   agents,
   onSelectAgent,
-  selectedAgentId,
+  selectedAgentId
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
@@ -31,25 +21,18 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const [regionFilter, setRegionFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  const filteredAgents = agents.filter((agent) => {
+  const filteredAgents = agents.filter(agent => {
     // Apply search filter
-    const matchesSearch =
-      agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agent.agentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agent.mobile.includes(searchTerm) ||
-      agent.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agent.nric.includes(searchTerm);
-    
+    const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || agent.agentId.toLowerCase().includes(searchTerm.toLowerCase()) || agent.mobile.includes(searchTerm) || agent.email.toLowerCase().includes(searchTerm.toLowerCase()) || agent.nric.includes(searchTerm);
+
     // Apply status filter
     const matchesStatus = statusFilter === 'all' || agent.status === statusFilter;
-    
+
     // Apply gender filter
     const matchesGender = genderFilter === 'all' || agent.gender === genderFilter;
-    
+
     // Apply region filter
-    const matchesRegion = regionFilter === 'all' || (agent.region && agent.region.includes(regionFilter));
-    
+    const matchesRegion = regionFilter === 'all' || agent.region && agent.region.includes(regionFilter);
     return matchesSearch && matchesStatus && matchesGender && matchesRegion;
   });
 
@@ -58,7 +41,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentAgents = filteredAgents.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
-
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
@@ -71,7 +53,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
-
   const handleAddAgent = (data: any) => {
     console.log('New agent data:', data);
     // This would typically make an API call to add the agent
@@ -80,36 +61,21 @@ const AgentTable: React.FC<AgentTableProps> = ({
 
   // Get unique regions for filter dropdown
   const regions = ['all', ...new Set(agents.map(agent => agent.region?.split(',')[1]?.trim()).filter(Boolean))];
-
-  return (
-    <div className="bg-white rounded-lg shadow-card overflow-hidden">
+  return <div className="bg-white rounded-lg shadow-card overflow-hidden">
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search agents..."
-              className="pl-9 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] text-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <input type="text" placeholder="Search agents..." className="pl-9 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
           
           <div className="flex items-center space-x-2">
-            <button 
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors"
-            >
+            <button onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors">
               <Filter className="h-4 w-4" />
               <span>Filters</span>
             </button>
 
-            <select
-              className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
+            <select className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="pending">Pending</option>
@@ -117,24 +83,16 @@ const AgentTable: React.FC<AgentTableProps> = ({
             </select>
           </div>
 
-          <button
-            onClick={() => setAddAgentModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#00205C] text-white rounded-md hover:bg-[#00205C]/90 text-sm"
-          >
+          <button onClick={() => setAddAgentModalOpen(true)} className="flex items-center gap-2 px-4 py-2 text-white rounded-md text-sm bg-blue-600 hover:bg-blue-500">
             <Plus className="h-4 w-4" />
             <span>Add Agent</span>
           </button>
         </div>
 
-        {showFilters && (
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {showFilters && <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-              <select
-                className="w-full text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
-                value={genderFilter}
-                onChange={(e) => setGenderFilter(e.target.value)}
-              >
+              <select className="w-full text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]" value={genderFilter} onChange={e => setGenderFilter(e.target.value)}>
                 <option value="all">All Genders</option>
                 <option value="M">Male</option>
                 <option value="F">Female</option>
@@ -143,19 +101,12 @@ const AgentTable: React.FC<AgentTableProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-              <select
-                className="w-full text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
-                value={regionFilter}
-                onChange={(e) => setRegionFilter(e.target.value)}
-              >
+              <select className="w-full text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C]" value={regionFilter} onChange={e => setRegionFilter(e.target.value)}>
                 <option value="all">All States</option>
-                {regions.filter(r => r !== 'all').map(region => (
-                  <option key={region} value={region}>{region}</option>
-                ))}
+                {regions.filter(r => r !== 'all').map(region => <option key={region} value={region}>{region}</option>)}
               </select>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
       
       <div className="overflow-x-auto">
@@ -177,15 +128,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {currentAgents.length > 0 ? (
-              currentAgents.map((agent, index) => (
-                <tr 
-                  key={agent.id}
-                  onClick={() => onSelectAgent(agent)}
-                  className={`cursor-pointer hover:bg-gray-50 ${
-                    selectedAgentId === agent.id ? 'bg-[#00205C]/5' : ''
-                  }`}
-                >
+            {currentAgents.length > 0 ? currentAgents.map((agent, index) => <tr key={agent.id} onClick={() => onSelectAgent(agent)} className={`cursor-pointer hover:bg-gray-50 ${selectedAgentId === agent.id ? 'bg-[#00205C]/5' : ''}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{indexOfFirstItem + index + 1}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.agentId}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
@@ -202,76 +145,53 @@ const AgentTable: React.FC<AgentTableProps> = ({
                       {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
                     </span>
                   </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
+                </tr>) : <tr>
                 <td colSpan={12} className="px-6 py-4 text-center text-sm text-gray-500">
                   No agents found
                 </td>
-              </tr>
-            )}
+              </tr>}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
-      {filteredAgents.length > 0 && (
-        <div className="py-4">
+      {filteredAgents.length > 0 && <div className="py-4">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious 
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
+                <PaginationPrevious onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} />
               </PaginationItem>
               
-              {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                // Show pagination numbers based on current page
-                let pageNumber;
-                if (totalPages <= 5) {
-                  pageNumber = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNumber = i + 1;
-                  if (i === 4) pageNumber = totalPages;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNumber = totalPages - 4 + i;
-                } else {
-                  pageNumber = currentPage - 2 + i;
-                }
-                
-                return (
-                  <PaginationItem key={i}>
-                    <PaginationLink 
-                      isActive={pageNumber === currentPage}
-                      onClick={() => setCurrentPage(pageNumber)}
-                      className="cursor-pointer"
-                    >
+              {Array.from({
+            length: Math.min(totalPages, 5)
+          }).map((_, i) => {
+            // Show pagination numbers based on current page
+            let pageNumber;
+            if (totalPages <= 5) {
+              pageNumber = i + 1;
+            } else if (currentPage <= 3) {
+              pageNumber = i + 1;
+              if (i === 4) pageNumber = totalPages;
+            } else if (currentPage >= totalPages - 2) {
+              pageNumber = totalPages - 4 + i;
+            } else {
+              pageNumber = currentPage - 2 + i;
+            }
+            return <PaginationItem key={i}>
+                    <PaginationLink isActive={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)} className="cursor-pointer">
                       {pageNumber}
                     </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
+                  </PaginationItem>;
+          })}
               
               <PaginationItem>
-                <PaginationNext 
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
+                <PaginationNext onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div>
-      )}
+        </div>}
 
-      <AddAgentModal 
-        isOpen={addAgentModalOpen}
-        onClose={() => setAddAgentModalOpen(false)}
-        onSubmit={handleAddAgent}
-      />
-    </div>
-  );
+      <AddAgentModal isOpen={addAgentModalOpen} onClose={() => setAddAgentModalOpen(false)} onSubmit={handleAddAgent} />
+    </div>;
 };
-
 export default AgentTable;
