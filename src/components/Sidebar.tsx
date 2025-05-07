@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }];
   
   return (
-    <div className={`h-screen fixed lg:sticky top-0 left-0 z-40 flex flex-shrink-0 bg-[#00205C] border-r border-[#00205C]/70 transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 lg:w-20'} overflow-hidden`}>
+    <div className={`h-screen sticky top-0 left-0 z-40 flex flex-shrink-0 bg-[#00205C] border-r border-[#00205C]/70 transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 lg:w-20'} overflow-hidden`}>
       <div className="flex flex-col h-full w-full overflow-hidden">
         {/* Logo Section */}
         <div className={`flex items-center justify-between p-4 ${!isOpen && 'lg:justify-center'}`}>

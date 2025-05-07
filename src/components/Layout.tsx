@@ -1,24 +1,29 @@
+
 import React from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
+
 type LayoutProps = {
   children: React.ReactNode;
 };
+
 const Layout: React.FC<LayoutProps> = ({
   children
 }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
-  return <div className="min-h-screen w-full bg-eon-light-gray flex overflow-hidden">
-      <div className="flex-shrink-0 sticky top-0 h-screen">
-        <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      </div>
-
+  
+  return (
+    <div className="min-h-screen w-full bg-gray-50 flex">
+      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Layout;

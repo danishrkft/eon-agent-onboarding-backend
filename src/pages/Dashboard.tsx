@@ -1,16 +1,58 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, UserCheck, Clock, Calendar, DollarSign, Timer, TrendingUp, Target, Shield } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from 'recharts';
 import { Cell, Pie, PieChart } from 'recharts';
 import Layout from '../components/Layout';
 import DashboardCard from '../components/DashboardCard';
 import { dashboardData } from '../utils/mockData';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationEllipsis, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "../components/ui/pagination";
 
 const Dashboard = () => {
   const COLORS = ['#00205C', '#315195', '#6281C9', '#94A3FF', '#D3E4FD', '#E5241B'];
   const [yearFilter, setYearFilter] = useState('2024');
   const [monthFilter, setMonthFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Extended historical data for Agent Registrations (2 years back)
+  const historicalRegistrationData = [
+    // 2024 data
+    { month: 'Jan 2024', count: 65 },
+    { month: 'Feb 2024', count: 78 },
+    { month: 'Mar 2024', count: 92 },
+    { month: 'Apr 2024', count: 88 },
+    { month: 'May 2024', count: 102 },
+    { month: 'Jun 2024', count: 110 },
+    // 2023 data
+    { month: 'Jul 2023', count: 88 },
+    { month: 'Aug 2023', count: 92 },
+    { month: 'Sep 2023', count: 76 },
+    { month: 'Oct 2023', count: 85 },
+    { month: 'Nov 2023', count: 78 },
+    { month: 'Dec 2023', count: 70 },
+    { month: 'Jan 2023', count: 52 },
+    { month: 'Feb 2023', count: 58 },
+    { month: 'Mar 2023', count: 63 },
+    { month: 'Apr 2023', count: 71 },
+    { month: 'May 2023', count: 80 },
+    { month: 'Jun 2023', count: 75 },
+    // 2022 data
+    { month: 'Jul 2022', count: 64 },
+    { month: 'Aug 2022', count: 70 },
+    { month: 'Sep 2022', count: 62 },
+    { month: 'Oct 2022', count: 58 },
+    { month: 'Nov 2022', count: 55 },
+    { month: 'Dec 2022', count: 48 },
+  ];
 
   // Additional mock data for new charts
   const conversionRateData = [
@@ -31,18 +73,31 @@ const Dashboard = () => {
     { month: 'Jun', newAgents: 42, activatedAgents: 35, convertedLeads: 65 },
   ];
 
-  // Filter monthly registrations based on selected year and month
-  const filteredMonthlyRegistrations = dashboardData.monthlyRegistrations.filter(item => {
-    const [monthName, yearStr] = item.month.split(' ');
-    const itemYear = yearStr;
-    const matchesYear = yearFilter === 'all' || itemYear === yearFilter;
-    const matchesMonth = monthFilter === 'all' || monthName === monthFilter;
-    return matchesYear && matchesMonth;
-  });
+  // Filter registration data based on selected year and month
+  const filteredRegistrationData = React.useMemo(() => {
+    return historicalRegistrationData.filter(item => {
+      const [monthName, yearStr] = item.month.split(' ');
+      const itemYear = yearStr;
+      const matchesYear = yearFilter === 'all' || itemYear === yearFilter;
+      const matchesMonth = monthFilter === 'all' || monthName === monthFilter;
+      return matchesYear && matchesMonth;
+    });
+  }, [yearFilter, monthFilter, historicalRegistrationData]);
 
   // Available years and months for filtering
-  const availableYears = ['all', ...new Set(dashboardData.monthlyRegistrations.map(item => item.month.split(' ')[1]))];
+  const availableYears = ['all', '2024', '2023', '2022'];
   const availableMonths = ['all', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  // Pagination for Recently Approved Agents
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAgents = dashboardData.recentlyApproved.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(dashboardData.recentlyApproved.length / itemsPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <Layout>
@@ -96,7 +151,7 @@ const Dashboard = () => {
         {/* Monthly Registrations Chart with Filters */}
         <div className="bg-white rounded-lg shadow-card p-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Agent Registrations (Last 6 Months)</h2>
+            <h2 className="text-lg font-semibold text-gray-800">Agent Registrations (Historical)</h2>
             <div className="flex items-center gap-2 mt-2 sm:mt-0">
               <select
                 className="text-sm rounded-md border border-gray-300 py-1 px-2 focus:outline-none focus:ring-1 focus:ring-[#00205C]"
@@ -104,7 +159,7 @@ const Dashboard = () => {
                 onChange={(e) => setYearFilter(e.target.value)}
               >
                 {availableYears.map(year => (
-                  <option key={year} value={year}>{year}</option>
+                  <option key={year} value={year}>{year === 'all' ? 'All Years' : year}</option>
                 ))}
               </select>
               <select
@@ -113,14 +168,14 @@ const Dashboard = () => {
                 onChange={(e) => setMonthFilter(e.target.value)}
               >
                 {availableMonths.map(month => (
-                  <option key={month} value={month}>{month}</option>
+                  <option key={month} value={month}>{month === 'all' ? 'All Months' : month}</option>
                 ))}
               </select>
             </div>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={filteredMonthlyRegistrations.length > 0 ? filteredMonthlyRegistrations : [{ month: 'No Data', count: 0 }]}>
+              <BarChart data={filteredRegistrationData.length > 0 ? filteredRegistrationData : [{ month: 'No Data', count: 0 }]}>
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
@@ -156,7 +211,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* New Chart 1: Conversion Rate Trend */}
+        {/* Conversion Rate Trend */}
         <div className="bg-white rounded-lg shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Lead Conversion Rate</h2>
@@ -183,7 +238,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* New Chart 2: Agent Performance Metrics */}
+        {/* Agent Performance Metrics */}
         <div className="bg-white rounded-lg shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Agent Performance Metrics</h2>
@@ -228,9 +283,9 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {dashboardData.recentlyApproved.slice(0, 10).map((agent, index) => (
+              {currentAgents.map((agent, index) => (
                 <tr key={agent.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{indexOfFirstItem + index + 1}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
@@ -245,6 +300,83 @@ const Dashboard = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        
+        {/* Pagination component */}
+        <div className="mt-5">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {/* Show first page */}
+              {currentPage > 3 && (
+                <PaginationItem>
+                  <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
+                </PaginationItem>
+              )}
+              
+              {/* Show ellipsis if needed */}
+              {currentPage > 3 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+              
+              {/* Show pages around current page */}
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                let pageNum;
+                if (currentPage <= 2) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 1) {
+                  pageNum = totalPages - 2 + i;
+                } else {
+                  pageNum = currentPage - 1 + i;
+                }
+                
+                if (pageNum > 0 && pageNum <= totalPages) {
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink 
+                        isActive={pageNum === currentPage}
+                        onClick={() => handlePageChange(pageNum)}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              {/* Show ellipsis if needed */}
+              {currentPage < totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+              
+              {/* Show last page */}
+              {currentPage < totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationLink onClick={() => handlePageChange(totalPages)}>
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              )}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </Layout>
