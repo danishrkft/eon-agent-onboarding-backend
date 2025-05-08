@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
-import { Calendar, Download, Filter, Search } from 'lucide-react';
+import { Calendar, Download, Filter, Search, ChevronDown } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ResponsiveContainer } from 'recharts';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 // Sample report data
 const reportData = [
@@ -23,10 +25,79 @@ const reportData = [
   { id: 12, name: 'Customer Acquisition Cost', category: 'Finance', date: '2025-04-17', downloads: 78, status: 'Available' },
 ];
 
+// Sample chart data
+const yearlyRevenueData = {
+  2023: [
+    { month: 'Jan', revenue: 45000, target: 42000 },
+    { month: 'Feb', revenue: 52000, target: 45000 },
+    { month: 'Mar', revenue: 48000, target: 47000 },
+    { month: 'Apr', revenue: 61000, target: 50000 },
+    { month: 'May', revenue: 55000, target: 53000 },
+    { month: 'Jun', revenue: 67000, target: 55000 },
+    { month: 'Jul', revenue: 72000, target: 58000 },
+    { month: 'Aug', revenue: 69000, target: 60000 },
+    { month: 'Sep', revenue: 74000, target: 63000 },
+    { month: 'Oct', revenue: 78000, target: 65000 },
+    { month: 'Nov', revenue: 84000, target: 68000 },
+    { month: 'Dec', revenue: 92000, target: 70000 },
+  ],
+  2024: [
+    { month: 'Jan', revenue: 75000, target: 72000 },
+    { month: 'Feb', revenue: 82000, target: 75000 },
+    { month: 'Mar', revenue: 78000, target: 77000 },
+    { month: 'Apr', revenue: 91000, target: 80000 },
+    { month: 'May', revenue: 85000, target: 83000 },
+    { month: 'Jun', revenue: 97000, target: 85000 },
+    { month: 'Jul', revenue: 102000, target: 88000 },
+    { month: 'Aug', revenue: 99000, target: 90000 },
+    { month: 'Sep', revenue: 104000, target: 93000 },
+    { month: 'Oct', revenue: 108000, target: 95000 },
+    { month: 'Nov', revenue: 114000, target: 98000 },
+    { month: 'Dec', revenue: 122000, target: 100000 },
+  ],
+  2025: [
+    { month: 'Jan', revenue: 105000, target: 102000 },
+    { month: 'Feb', revenue: 112000, target: 105000 },
+    { month: 'Mar', revenue: 108000, target: 107000 },
+    { month: 'Apr', revenue: 121000, target: 110000 },
+    { month: 'May', revenue: 0, target: 113000 },
+    { month: 'Jun', revenue: 0, target: 115000 },
+    { month: 'Jul', revenue: 0, target: 118000 },
+    { month: 'Aug', revenue: 0, target: 120000 },
+    { month: 'Sep', revenue: 0, target: 123000 },
+    { month: 'Oct', revenue: 0, target: 125000 },
+    { month: 'Nov', revenue: 0, target: 128000 },
+    { month: 'Dec', revenue: 0, target: 130000 },
+  ]
+};
+
+const yearlyAgentProductivityData = {
+  2023: [
+    { name: 'Q1', policies: 245, revenue: 367500 },
+    { name: 'Q2', policies: 312, revenue: 468000 },
+    { name: 'Q3', policies: 287, revenue: 430500 },
+    { name: 'Q4', policies: 356, revenue: 534000 },
+  ],
+  2024: [
+    { name: 'Q1', policies: 325, revenue: 487500 },
+    { name: 'Q2', policies: 392, revenue: 588000 },
+    { name: 'Q3', policies: 367, revenue: 550500 },
+    { name: 'Q4', policies: 426, revenue: 639000 },
+  ],
+  2025: [
+    { name: 'Q1', policies: 405, revenue: 607500 },
+    { name: 'Q2', policies: 0, revenue: 0 },
+    { name: 'Q3', policies: 0, revenue: 0 },
+    { name: 'Q4', policies: 0, revenue: 0 },
+  ]
+};
+
 const Reports = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
+  const [revenueYear, setRevenueYear] = useState<keyof typeof yearlyRevenueData>("2025");
+  const [productivityYear, setProductivityYear] = useState<keyof typeof yearlyAgentProductivityData>("2025");
   
   const itemsPerPage = 10;
   
@@ -49,6 +120,15 @@ const Reports = () => {
   // Extract unique categories
   const categories = ['All', ...Array.from(new Set(reportData.map(report => report.category)))];
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
   return (
     <Layout>
       <div className="w-full space-y-6">
@@ -58,6 +138,105 @@ const Reports = () => {
             <Calendar className="mr-2 h-4 w-4" />
             Schedule Report
           </Button>
+        </div>
+
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Revenue Trends Chart */}
+          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-[#00205C]">Revenue Trends</h2>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 border-gray-300">
+                    {revenueYear} <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-0">
+                  <div className="flex flex-col">
+                    {Object.keys(yearlyRevenueData).map((year) => (
+                      <Button 
+                        key={year} 
+                        variant="ghost" 
+                        className="justify-start rounded-none h-9"
+                        onClick={() => setRevenueYear(year as keyof typeof yearlyRevenueData)}
+                      >
+                        {year}
+                      </Button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={yearlyRevenueData[revenueYear]}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(value) => `$${value/1000}k`} />
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Legend />
+                  <Line type="monotone" dataKey="revenue" stroke="#00205C" strokeWidth={2} name="Actual Revenue" />
+                  <Line type="monotone" dataKey="target" stroke="#E5241B" strokeDasharray="5 5" name="Target Revenue" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Agent Productivity Chart */}
+          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-[#00205C]">Quarterly Agent Productivity</h2>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 border-gray-300">
+                    {productivityYear} <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-0">
+                  <div className="flex flex-col">
+                    {Object.keys(yearlyAgentProductivityData).map((year) => (
+                      <Button 
+                        key={year} 
+                        variant="ghost" 
+                        className="justify-start rounded-none h-9"
+                        onClick={() => setProductivityYear(year as keyof typeof yearlyAgentProductivityData)}
+                      >
+                        {year}
+                      </Button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={yearlyAgentProductivityData[productivityYear]}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis yAxisId="left" orientation="left" stroke="#00205C" />
+                  <YAxis yAxisId="right" orientation="right" stroke="#E5241B" tickFormatter={(value) => `$${value/1000}k`} />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      if (name === "revenue") {
+                        return [formatCurrency(Number(value)), "Revenue"];
+                      }
+                      return [value, "Policies Sold"];
+                    }} 
+                  />
+                  <Legend />
+                  <Bar yAxisId="left" dataKey="policies" fill="#00205C" name="Policies Sold" />
+                  <Bar yAxisId="right" dataKey="revenue" fill="#E5241B" name="Revenue" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

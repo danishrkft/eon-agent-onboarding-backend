@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
 
 // Sample application data
 const applicationData = [
@@ -31,6 +32,8 @@ const Applications = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterType, setFilterType] = useState('All');
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   
   const itemsPerPage = 10;
   
@@ -59,6 +62,11 @@ const Applications = () => {
   const pendingCount = applicationData.filter(app => app.status === 'Pending').length;
   const approvedCount = applicationData.filter(app => app.status === 'Approved').length;
   const rejectedCount = applicationData.filter(app => app.status === 'Rejected').length;
+
+  const handleViewApplication = (application: any) => {
+    setSelectedApplication(application);
+    setDetailsModalOpen(true);
+  };
 
   return (
     <Layout>
@@ -165,7 +173,14 @@ const Applications = () => {
               {paginatedData.length > 0 ? (
                 paginatedData.map((application) => (
                   <TableRow key={application.id}>
-                    <TableCell className="font-medium">{application.id}</TableCell>
+                    <TableCell className="font-medium">
+                      <button 
+                        onClick={() => handleViewApplication(application)}
+                        className="text-[#00205C] hover:underline focus:outline-none"
+                      >
+                        {application.id}
+                      </button>
+                    </TableCell>
                     <TableCell>{application.agent}</TableCell>
                     <TableCell>{application.type}</TableCell>
                     <TableCell>{new Date(application.submissionDate).toLocaleDateString()}</TableCell>
@@ -193,6 +208,7 @@ const Applications = () => {
                         size="sm" 
                         variant="outline"
                         className="border-[#00205C] text-[#00205C] hover:bg-[#00205C] hover:text-white"
+                        onClick={() => handleViewApplication(application)}
                       >
                         View
                       </Button>
@@ -284,6 +300,13 @@ const Applications = () => {
           )}
         </div>
       </div>
+
+      {/* Application Details Modal */}
+      <ApplicationDetailsModal
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+        application={selectedApplication}
+      />
     </Layout>
   );
 };

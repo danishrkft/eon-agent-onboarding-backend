@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, Key, Lock, Mail, Save, Shield, User, Globe, Database, Building } from 'lucide-react';
+import { Bell, Key, Lock, Mail, Save, Shield, User, Globe, Database, Building, FileText, History } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,32 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+
+// Sample API logs data
+const apiLogsData = [
+  { id: 1, endpoint: '/api/agents', method: 'GET', status: 200, timestamp: '2025-05-08T10:15:23', ip: '192.168.1.105', user: 'admin@eon.com' },
+  { id: 2, endpoint: '/api/agents/create', method: 'POST', status: 201, timestamp: '2025-05-08T09:42:11', ip: '192.168.1.105', user: 'admin@eon.com' },
+  { id: 3, endpoint: '/api/commission/calculate', method: 'POST', status: 200, timestamp: '2025-05-08T08:37:45', ip: '192.168.1.105', user: 'admin@eon.com' },
+  { id: 4, endpoint: '/api/reports/monthly', method: 'GET', status: 200, timestamp: '2025-05-07T16:22:18', ip: '192.168.1.105', user: 'admin@eon.com' },
+  { id: 5, endpoint: '/api/agents/54321', method: 'GET', status: 404, timestamp: '2025-05-07T15:11:05', ip: '192.168.1.105', user: 'admin@eon.com' },
+  { id: 6, endpoint: '/api/agents/12345', method: 'PUT', status: 200, timestamp: '2025-05-07T14:05:33', ip: '192.168.1.105', user: 'admin@eon.com' },
+  { id: 7, endpoint: '/api/auth/validate', method: 'POST', status: 401, timestamp: '2025-05-07T11:47:22', ip: '192.168.1.232', user: 'unknown' },
+  { id: 8, endpoint: '/api/settings', method: 'GET', status: 200, timestamp: '2025-05-07T09:28:17', ip: '192.168.1.105', user: 'admin@eon.com' },
+];
+
+// Sample edit logs data
+const editLogsData = [
+  { id: 1, action: 'Update Agent Profile', user: 'Admin User', resource: 'Agent ID: EON-2023-0001', timestamp: '2025-05-08T14:27:33', details: 'Updated contact information' },
+  { id: 2, action: 'Commission Structure Change', user: 'Admin User', resource: 'Tier 1 Commission', timestamp: '2025-05-08T11:15:42', details: 'Increased rate from 10% to 12%' },
+  { id: 3, action: 'Agent Status Change', user: 'Sarah Johnson', resource: 'Agent ID: EON-2023-0012', timestamp: '2025-05-07T16:33:21', details: 'Changed status from pending to active' },
+  { id: 4, action: 'New Product Added', user: 'Admin User', resource: 'Product Catalog', timestamp: '2025-05-07T14:22:56', details: 'Added Term Life Insurance Plus' },
+  { id: 5, action: 'System Configuration', user: 'Admin User', resource: 'Email Templates', timestamp: '2025-05-07T10:45:19', details: 'Updated welcome email template' },
+  { id: 6, action: 'User Permissions', user: 'Admin User', resource: 'Role: Manager', timestamp: '2025-05-06T15:12:37', details: 'Added report export capability' },
+  { id: 7, action: 'Application Approval', user: 'Michael Rodriguez', resource: 'Application ID: APP-2025-0089', timestamp: '2025-05-06T11:38:25', details: 'Approved new agent application' },
+  { id: 8, action: 'Training Module', user: 'Admin User', resource: 'Training: Compliance', timestamp: '2025-05-06T09:17:42', details: 'Published new regulatory training module' },
+];
 
 const Settings = () => {
   // Profile settings
@@ -51,6 +77,11 @@ const Settings = () => {
     taxId: '12-3456789',
     industry: 'Insurance'
   });
+
+  // Logs pagination
+  const [apiLogsPage, setApiLogsPage] = useState(1);
+  const [editLogsPage, setEditLogsPage] = useState(1);
+  const logsPerPage = 5;
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -133,6 +164,31 @@ const Settings = () => {
       newPassword: '',
       confirmPassword: ''
     }));
+  };
+
+  // Slice logs data for pagination
+  const paginatedApiLogs = apiLogsData.slice(
+    (apiLogsPage - 1) * logsPerPage,
+    apiLogsPage * logsPerPage
+  );
+  
+  const paginatedEditLogs = editLogsData.slice(
+    (editLogsPage - 1) * logsPerPage,
+    editLogsPage * logsPerPage
+  );
+
+  const apiLogsTotalPages = Math.ceil(apiLogsData.length / logsPerPage);
+  const editLogsTotalPages = Math.ceil(editLogsData.length / logsPerPage);
+
+  const getStatusBadgeClass = (status: number) => {
+    if (status >= 200 && status < 300) {
+      return 'bg-green-100 text-green-800 hover:bg-green-100';
+    } else if (status >= 400 && status < 500) {
+      return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100';
+    } else if (status >= 500) {
+      return 'bg-red-100 text-red-800 hover:bg-red-100';
+    }
+    return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
   };
 
   return (
@@ -462,6 +518,161 @@ const Settings = () => {
               </div>
             </div>
             
+            {/* API Logs Section - New */}
+            <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-medium flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-[#00205C]" />
+                  API Request Logs
+                </h2>
+                <p className="text-sm text-gray-500">View recent API requests and responses</p>
+              </div>
+              <div className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Endpoint</TableHead>
+                      <TableHead>Method</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Time</TableHead>
+                      <TableHead>IP Address</TableHead>
+                      <TableHead>User</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedApiLogs.map((log) => (
+                      <TableRow key={log.id}>
+                        <TableCell className="font-mono text-sm">{log.endpoint}</TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline" 
+                            className={
+                              log.method === 'GET' 
+                                ? 'border-blue-500 text-blue-500' 
+                                : log.method === 'POST'
+                                  ? 'border-green-500 text-green-500'
+                                  : log.method === 'PUT'
+                                    ? 'border-orange-500 text-orange-500'
+                                    : 'border-red-500 text-red-500'
+                            }
+                          >
+                            {log.method}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getStatusBadgeClass(log.status)}>
+                            {log.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {new Date(log.timestamp).toLocaleTimeString()}
+                          <div className="text-xs text-gray-500">
+                            {new Date(log.timestamp).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">{log.ip}</TableCell>
+                        <TableCell>{log.user}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                
+                {/* Pagination */}
+                {apiLogsTotalPages > 1 && (
+                  <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3">
+                    <div className="text-sm text-gray-500">
+                      Page {apiLogsPage} of {apiLogsTotalPages}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setApiLogsPage(prev => Math.max(prev - 1, 1))}
+                        disabled={apiLogsPage === 1}
+                      >
+                        Previous
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setApiLogsPage(prev => Math.min(prev + 1, apiLogsTotalPages))}
+                        disabled={apiLogsPage === apiLogsTotalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Edit Logs Section - New */}
+            <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-medium flex items-center">
+                  <History className="h-5 w-5 mr-2 text-[#00205C]" />
+                  System Edit Logs
+                </h2>
+                <p className="text-sm text-gray-500">View recent changes to the system</p>
+              </div>
+              <div className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Action</TableHead>
+                      <TableHead>User</TableHead>
+                      <TableHead>Resource</TableHead>
+                      <TableHead>Time</TableHead>
+                      <TableHead>Details</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedEditLogs.map((log) => (
+                      <TableRow key={log.id}>
+                        <TableCell className="font-medium">{log.action}</TableCell>
+                        <TableCell>{log.user}</TableCell>
+                        <TableCell className="text-sm">{log.resource}</TableCell>
+                        <TableCell className="text-sm">
+                          {new Date(log.timestamp).toLocaleTimeString()}
+                          <div className="text-xs text-gray-500">
+                            {new Date(log.timestamp).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm">{log.details}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                
+                {/* Pagination */}
+                {editLogsTotalPages > 1 && (
+                  <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3">
+                    <div className="text-sm text-gray-500">
+                      Page {editLogsPage} of {editLogsTotalPages}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setEditLogsPage(prev => Math.max(prev - 1, 1))}
+                        disabled={editLogsPage === 1}
+                      >
+                        Previous
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setEditLogsPage(prev => Math.min(prev + 1, editLogsTotalPages))}
+                        disabled={editLogsPage === editLogsTotalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
                 <h2 className="text-lg font-medium">API Documentation</h2>

@@ -1,18 +1,34 @@
+
 import React, { useState } from 'react';
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Filter, Plus, Eye, Trash2 } from 'lucide-react';
 import { Agent } from '../utils/mockData';
 import AddAgentModal from './AddAgentModal';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { useNavigate } from 'react-router-dom';
+import { toast } from "@/hooks/use-toast";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
+
 type AgentTableProps = {
   agents: Agent[];
   onSelectAgent: (agent: Agent) => void;
   selectedAgentId: string | null;
 };
+
 const AgentTable: React.FC<AgentTableProps> = ({
   agents,
   onSelectAgent,
   selectedAgentId
 }) => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
   const [addAgentModalOpen, setAddAgentModalOpen] = useState(false);
@@ -20,7 +36,10 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const [genderFilter, setGenderFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const itemsPerPage = 10;
+
   const filteredAgents = agents.filter(agent => {
     // Apply search filter
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || agent.agentId.toLowerCase().includes(searchTerm.toLowerCase()) || agent.mobile.includes(searchTerm) || agent.email.toLowerCase().includes(searchTerm.toLowerCase()) || agent.nric.includes(searchTerm);
@@ -41,6 +60,34 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentAgents = filteredAgents.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
+
+  // Handle view agent detail
+  const handleViewAgent = (agent: Agent, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelectAgent(agent);
+    navigate(`/agents/${agent.id}`);
+  };
+
+  // Handle delete agent
+  const handleDeleteClick = (agent: Agent, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAgentToDelete(agent);
+    setDeleteDialogOpen(true);
+  };
+  
+  const confirmDelete = () => {
+    if (agentToDelete) {
+      toast({
+        title: "Agent Deleted",
+        description: `${agentToDelete.name} has been deleted successfully.`,
+      });
+      // In a real app, you would make an API call to delete the agent
+      // and update the agents list after successful deletion
+    }
+    setDeleteDialogOpen(false);
+    setAgentToDelete(null);
+  };
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
@@ -53,6 +100,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
+  
   const handleAddAgent = (data: any) => {
     console.log('New agent data:', data);
     // This would typically make an API call to add the agent
@@ -61,7 +109,9 @@ const AgentTable: React.FC<AgentTableProps> = ({
 
   // Get unique regions for filter dropdown
   const regions = ['all', ...new Set(agents.map(agent => agent.region?.split(',')[1]?.trim()).filter(Boolean))];
-  return <div className="bg-white rounded-lg shadow-card overflow-hidden">
+  
+  return (
+    <div className="bg-white rounded-lg shadow-card overflow-hidden">
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative flex-1">
@@ -125,37 +175,68 @@ const AgentTable: React.FC<AgentTableProps> = ({
               <th className="px-6 py-3 bg-gray-50">District, State</th>
               <th className="px-6 py-3 bg-gray-50">Gender</th>
               <th className="px-6 py-3 bg-gray-50">Status</th>
+              <th className="px-6 py-3 bg-gray-50">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {currentAgents.length > 0 ? currentAgents.map((agent, index) => <tr key={agent.id} onClick={() => onSelectAgent(agent)} className={`cursor-pointer hover:bg-gray-50 ${selectedAgentId === agent.id ? 'bg-[#00205C]/5' : ''}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{indexOfFirstItem + index + 1}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.agentId}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.nric}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.mobile}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(agent.dob).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.accountNumber}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.bankName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.region}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.gender || 'N/A'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(agent.status)}`}>
-                      {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
-                    </span>
-                  </td>
-                </tr>) : <tr>
-                <td colSpan={12} className="px-6 py-4 text-center text-sm text-gray-500">
+            {currentAgents.length > 0 ? currentAgents.map((agent, index) => (
+              <tr key={agent.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{indexOfFirstItem + index + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button 
+                    onClick={(e) => handleViewAgent(agent, e)}
+                    className="text-[#00205C] hover:underline focus:outline-none"
+                  >
+                    {agent.agentId}
+                  </button>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.nric}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.mobile}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(agent.dob).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.accountNumber}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.bankName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.region}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.gender || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(agent.status)}`}>
+                    {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={(e) => handleViewAgent(agent, e)} 
+                      className="p-1 text-gray-500 hover:text-[#00205C] rounded-full hover:bg-gray-100"
+                      title="View Agent Details"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => handleDeleteClick(agent, e)} 
+                      className="p-1 text-gray-500 hover:text-[#E5241B] rounded-full hover:bg-gray-100"
+                      title="Delete Agent"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )) : (
+              <tr>
+                <td colSpan={13} className="px-6 py-4 text-center text-sm text-gray-500">
                   No agents found
                 </td>
-              </tr>}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
-      {filteredAgents.length > 0 && <div className="py-4">
+      {filteredAgents.length > 0 && (
+        <div className="py-4">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -177,11 +258,13 @@ const AgentTable: React.FC<AgentTableProps> = ({
             } else {
               pageNumber = currentPage - 2 + i;
             }
-            return <PaginationItem key={i}>
-                    <PaginationLink isActive={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)} className="cursor-pointer">
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>;
+            return (
+              <PaginationItem key={i}>
+                <PaginationLink isActive={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)} className="cursor-pointer">
+                  {pageNumber}
+                </PaginationLink>
+              </PaginationItem>
+            );
           })}
               
               <PaginationItem>
@@ -189,9 +272,30 @@ const AgentTable: React.FC<AgentTableProps> = ({
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div>}
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Agent</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {agentToDelete?.name}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-[#E5241B] hover:bg-red-700">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AddAgentModal isOpen={addAgentModalOpen} onClose={() => setAddAgentModalOpen(false)} onSubmit={handleAddAgent} />
-    </div>;
+    </div>
+  );
 };
+
 export default AgentTable;

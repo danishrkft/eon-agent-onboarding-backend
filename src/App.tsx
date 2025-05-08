@@ -20,6 +20,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/agents" element={<AgentManagement />} />
+          <Route path="/agents/:agentId" element={<AgentManagement />} />
           <Route path="/commission" element={<CommissionPayout />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/applications" element={<Applications />} />
