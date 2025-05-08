@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Filter, Plus, Eye, Trash2 } from 'lucide-react';
 import { Agent } from '../utils/mockData';
@@ -6,23 +5,12 @@ import AddAgentModal from './AddAgentModal';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
-} from "@/components/ui/alert-dialog";
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 type AgentTableProps = {
   agents: Agent[];
   onSelectAgent: (agent: Agent) => void;
   selectedAgentId: string | null;
 };
-
 const AgentTable: React.FC<AgentTableProps> = ({
   agents,
   onSelectAgent,
@@ -39,7 +27,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const itemsPerPage = 10;
-
   const filteredAgents = agents.filter(agent => {
     // Apply search filter
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || agent.agentId.toLowerCase().includes(searchTerm.toLowerCase()) || agent.mobile.includes(searchTerm) || agent.email.toLowerCase().includes(searchTerm.toLowerCase()) || agent.nric.includes(searchTerm);
@@ -74,12 +61,11 @@ const AgentTable: React.FC<AgentTableProps> = ({
     setAgentToDelete(agent);
     setDeleteDialogOpen(true);
   };
-  
   const confirmDelete = () => {
     if (agentToDelete) {
       toast({
         title: "Agent Deleted",
-        description: `${agentToDelete.name} has been deleted successfully.`,
+        description: `${agentToDelete.name} has been deleted successfully.`
       });
       // In a real app, you would make an API call to delete the agent
       // and update the agents list after successful deletion
@@ -87,7 +73,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
     setDeleteDialogOpen(false);
     setAgentToDelete(null);
   };
-
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
@@ -100,7 +85,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
-  
   const handleAddAgent = (data: any) => {
     console.log('New agent data:', data);
     // This would typically make an API call to add the agent
@@ -109,9 +93,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
 
   // Get unique regions for filter dropdown
   const regions = ['all', ...new Set(agents.map(agent => agent.region?.split(',')[1]?.trim()).filter(Boolean))];
-  
-  return (
-    <div className="bg-white rounded-lg shadow-card overflow-hidden">
+  return <div className="bg-white rounded-lg shadow-card overflow-hidden">
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative flex-1">
@@ -179,14 +161,10 @@ const AgentTable: React.FC<AgentTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {currentAgents.length > 0 ? currentAgents.map((agent, index) => (
-              <tr key={agent.id} className="hover:bg-gray-50">
+            {currentAgents.length > 0 ? currentAgents.map((agent, index) => <tr key={agent.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{indexOfFirstItem + index + 1}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button 
-                    onClick={(e) => handleViewAgent(agent, e)}
-                    className="text-[#00205C] hover:underline focus:outline-none"
-                  >
+                  <button onClick={e => handleViewAgent(agent, e)} className=" focus:outline-none text-blue-500">
                     {agent.agentId}
                   </button>
                 </td>
@@ -206,37 +184,25 @@ const AgentTable: React.FC<AgentTableProps> = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <div className="flex space-x-2">
-                    <button 
-                      onClick={(e) => handleViewAgent(agent, e)} 
-                      className="p-1 text-gray-500 hover:text-[#00205C] rounded-full hover:bg-gray-100"
-                      title="View Agent Details"
-                    >
+                    <button onClick={e => handleViewAgent(agent, e)} className="p-1 text-gray-500 hover:text-[#00205C] rounded-full hover:bg-gray-100" title="View Agent Details">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button 
-                      onClick={(e) => handleDeleteClick(agent, e)} 
-                      className="p-1 text-gray-500 hover:text-[#E5241B] rounded-full hover:bg-gray-100"
-                      title="Delete Agent"
-                    >
+                    <button onClick={e => handleDeleteClick(agent, e)} className="p-1 text-gray-500 hover:text-[#E5241B] rounded-full hover:bg-gray-100" title="Delete Agent">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
-              </tr>
-            )) : (
-              <tr>
+              </tr>) : <tr>
                 <td colSpan={13} className="px-6 py-4 text-center text-sm text-gray-500">
                   No agents found
                 </td>
-              </tr>
-            )}
+              </tr>}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
-      {filteredAgents.length > 0 && (
-        <div className="py-4">
+      {filteredAgents.length > 0 && <div className="py-4">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -258,13 +224,11 @@ const AgentTable: React.FC<AgentTableProps> = ({
             } else {
               pageNumber = currentPage - 2 + i;
             }
-            return (
-              <PaginationItem key={i}>
+            return <PaginationItem key={i}>
                 <PaginationLink isActive={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)} className="cursor-pointer">
                   {pageNumber}
                 </PaginationLink>
-              </PaginationItem>
-            );
+              </PaginationItem>;
           })}
               
               <PaginationItem>
@@ -272,8 +236,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div>
-      )}
+        </div>}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -294,8 +257,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
       </AlertDialog>
 
       <AddAgentModal isOpen={addAgentModalOpen} onClose={() => setAddAgentModalOpen(false)} onSubmit={handleAddAgent} />
-    </div>
-  );
+    </div>;
 };
-
 export default AgentTable;
