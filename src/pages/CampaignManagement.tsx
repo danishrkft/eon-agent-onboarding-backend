@@ -73,7 +73,7 @@ const CampaignManagement: React.FC = () => {
   return <Layout>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="font-bold text-[00205c] text-[#00205c]">Registration Campaign Management</h1>
+          <h1 className="font-bold text-[#00205c] text-2xl">Registration Campaign Management</h1>
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
               <Button className="bg-blue-600 hover:bg-blue-500">Create New Campaign</Button>
