@@ -123,7 +123,7 @@ const CampaignManagement: React.FC = () => {
             <FilterDropdowns showDateFilter={false} />
             <Dialog open={showDialog} onOpenChange={setShowDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-[#00205C] hover:bg-[#001A45]">
+                <Button className="bg-blue-600 hover:bg-blue-500">
                   <Plus className="h-4 w-4 mr-2" />
                   Create New Campaign
                 </Button>
