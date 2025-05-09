@@ -452,7 +452,7 @@ const Settings: React.FC = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="bg-[#00205C] hover:bg-[#001A45]">Edit Role Permissions</Button>
+                <Button className="bg-blue-600 hover:bg-blue-500">Edit Role Permissions</Button>
               </CardFooter>
             </Card>
           </TabsContent>
