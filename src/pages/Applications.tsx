@@ -262,7 +262,7 @@ const Applications = () => {
             <TableBody>
               {paginatedData.length > 0 ? paginatedData.map(application => <TableRow key={application.id}>
                     <TableCell className="font-medium">
-                      <button onClick={() => handleViewApplication(application)} className="text-[#00205C] hover:underline focus:outline-none">
+                      <button onClick={() => handleViewApplication(application)} className=" focus:outline-none text-blue-600">
                         {application.id}
                       </button>
                     </TableCell>
