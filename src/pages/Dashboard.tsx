@@ -1,15 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
-import { Users, UserCheck, Clock, Calendar, DollarSign, Timer, TrendingUp, Target } from 'lucide-react';
+import { Users, UserCheck, Clock, Calendar, DollarSign, Timer, TrendingUp, Target, Shield } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from 'recharts';
 import { Cell, Pie, PieChart } from 'recharts';
 import Layout from '../components/Layout';
 import DashboardCard from '../components/DashboardCard';
-import { 
-  dashboardData, 
-  dashboardDataByCompany, 
-  dashboardDataByBranch 
-} from '../utils/mockData';
+import { dashboardData } from '../utils/mockData';
 import FilterDropdowns, { DateRange } from '../components/FilterDropdowns';
 import { 
   Pagination, 
@@ -35,35 +30,6 @@ const Dashboard = () => {
   });
   const [company, setCompany] = useState("EPD");
   const [branch, setBranch] = useState("Edaran Otomobil Nasional Bhd (Glenmarie)");
-  const [filteredData, setFilteredData] = useState<any>(dashboardData);
-
-  // Update data when filters change
-  useEffect(() => {
-    if (company && branch) {
-      // First filter by company
-      const companyData = dashboardDataByCompany[company];
-      
-      // Then filter by branch if available
-      const branchData = dashboardDataByBranch[branch];
-      
-      if (branchData) {
-        setFilteredData(branchData);
-      } else if (companyData) {
-        setFilteredData(companyData);
-      } else {
-        setFilteredData(dashboardData);
-      }
-    } else if (company) {
-      const companyData = dashboardDataByCompany[company];
-      if (companyData) {
-        setFilteredData(companyData);
-      } else {
-        setFilteredData(dashboardData);
-      }
-    } else {
-      setFilteredData(dashboardData);
-    }
-  }, [company, branch]);
 
   // Extended historical data for Agent Registrations (2 years back)
   const historicalRegistrationData = [
@@ -133,22 +99,12 @@ const Dashboard = () => {
   // Pagination for Recently Approved Agents
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentAgents = filteredData?.recentlyApproved?.slice(indexOfFirstItem, indexOfLastItem) || [];
-  const totalPages = Math.ceil((filteredData?.recentlyApproved?.length || 0) / itemsPerPage);
+  const currentAgents = dashboardData.recentlyApproved.slice(indexOfFirstItem, indexOfFirstItem);
+  const totalPages = Math.ceil(dashboardData.recentlyApproved.length / itemsPerPage);
 
   // Handle page change
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-  };
-
-  const handleCompanyChange = (newCompany: string) => {
-    setCompany(newCompany);
-    setCurrentPage(1); // Reset pagination when filters change
-  };
-
-  const handleBranchChange = (newBranch: string) => {
-    setBranch(newBranch);
-    setCurrentPage(1); // Reset pagination when filters change
   };
 
   return (
@@ -160,8 +116,8 @@ const Dashboard = () => {
         </div>
         <FilterDropdowns 
           onDateChange={setDateRange}
-          onCompanyChange={handleCompanyChange}
-          onBranchChange={handleBranchChange}
+          onCompanyChange={setCompany}
+          onBranchChange={setBranch}
         />
       </div>
 
@@ -169,37 +125,37 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <DashboardCard 
           title="Total Registered Agents"
-          value={filteredData?.totalAgents || 0}
+          value={dashboardData.totalAgents}
           icon={<Users className="h-6 w-6 text-[#00205C]" />}
           trend={{ value: 5.2, isPositive: true }}
         />
         <DashboardCard 
           title="Active Agents"
-          value={filteredData?.activeAgents || 0}
+          value={dashboardData.activeAgents}
           icon={<UserCheck className="h-6 w-6 text-[#00205C]" />}
           trend={{ value: 3.1, isPositive: true }}
         />
         <DashboardCard 
           title="Pending Approvals"
-          value={filteredData?.pendingApprovals || 0}
+          value={dashboardData.pendingApprovals}
           icon={<Clock className="h-6 w-6 text-[#00205C]" />}
           trend={{ value: 2.5, isPositive: false }}
         />
         <DashboardCard 
           title="Approved This Month"
-          value={filteredData?.approvedThisMonth || 0}
+          value={dashboardData.approvedThisMonth}
           icon={<Calendar className="h-6 w-6 text-[#00205C]" />}
           trend={{ value: 12.4, isPositive: true }}
         />
         <DashboardCard 
           title="YTD Commission Paid"
-          value={`RM ${(filteredData?.ytdCommissionPaid || 0).toLocaleString()}`}
+          value={`RM ${dashboardData.ytdCommissionPaid.toLocaleString()}`}
           icon={<DollarSign className="h-6 w-6 text-[#00205C]" />}
           trend={{ value: 7.8, isPositive: true }}
         />
         <DashboardCard 
           title="Avg. Approval Time"
-          value={filteredData?.avgApprovalTime || '0 days'}
+          value={dashboardData.avgApprovalTime}
           icon={<Timer className="h-6 w-6 text-[#00205C]" />}
           trend={{ value: 8.5, isPositive: true }}
         />
@@ -251,7 +207,7 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={filteredData?.regionDistribution || []}
+                  data={dashboardData.regionDistribution}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -260,7 +216,7 @@ const Dashboard = () => {
                   dataKey="count"
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 >
-                  {(filteredData?.regionDistribution || []).map((entry: any, index: number) => (
+                  {dashboardData.regionDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -328,127 +284,115 @@ const Dashboard = () => {
       {/* Recently Approved Agents Table with Pagination */}
       <div className="bg-white rounded-lg shadow-card p-5">
         <h2 className="text-lg font-semibold mb-4 text-gray-800">Recently Approved Agents</h2>
-        {currentAgents.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <th className="px-6 py-3 bg-gray-50">#</th>
-                  <th className="px-6 py-3 bg-gray-50">Agent ID</th>
-                  <th className="px-6 py-3 bg-gray-50">Name</th>
-                  <th className="px-6 py-3 bg-gray-50">Email</th>
-                  <th className="px-6 py-3 bg-gray-50">Region</th>
-                  <th className="px-6 py-3 bg-gray-50">Company</th>
-                  <th className="px-6 py-3 bg-gray-50">Branch</th>
-                  <th className="px-6 py-3 bg-gray-50">Join Date</th>
-                  <th className="px-6 py-3 bg-gray-50">Status</th>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 bg-gray-50">#</th>
+                <th className="px-6 py-3 bg-gray-50">Agent ID</th>
+                <th className="px-6 py-3 bg-gray-50">Name</th>
+                <th className="px-6 py-3 bg-gray-50">Email</th>
+                <th className="px-6 py-3 bg-gray-50">Region</th>
+                <th className="px-6 py-3 bg-gray-50">Join Date</th>
+                <th className="px-6 py-3 bg-gray-50">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {currentAgents.map((agent, index) => (
+                <tr key={agent.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{indexOfFirstItem + index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.region}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(agent.joinDate).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                    </span>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {currentAgents.map((agent, index) => (
-                  <tr key={agent.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{indexOfFirstItem + index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.region}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.company}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm truncate max-w-[150px]" title={agent.branch}>{agent.branch}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(agent.joinDate).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center py-4 text-gray-500">
-            No approved agents found for the selected filters.
-          </div>
-        )}
+              ))}
+            </tbody>
+          </table>
+        </div>
         
         {/* Pagination component */}
-        {currentAgents.length > 0 && (
-          <div className="mt-5">
-            <Pagination>
-              <PaginationContent>
+        <div className="mt-5">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {/* Show first page */}
+              {currentPage > 3 && (
                 <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
+                  <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
                 </PaginationItem>
-                
-                {/* Show first page */}
-                {currentPage > 3 && (
-                  <PaginationItem>
-                    <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
-                  </PaginationItem>
-                )}
-                
-                {/* Show ellipsis if needed */}
-                {currentPage > 3 && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                )}
-                
-                {/* Show pages around current page */}
-                {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (currentPage <= 2) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 1) {
-                    pageNum = totalPages - 2 + i;
-                  } else {
-                    pageNum = currentPage - 1 + i;
-                  }
-                  
-                  if (pageNum > 0 && pageNum <= totalPages) {
-                    return (
-                      <PaginationItem key={pageNum}>
-                        <PaginationLink 
-                          isActive={pageNum === currentPage}
-                          onClick={() => handlePageChange(pageNum)}
-                        >
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  }
-                  return null;
-                })}
-                
-                {/* Show ellipsis if needed */}
-                {currentPage < totalPages - 2 && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                )}
-                
-                {/* Show last page */}
-                {currentPage < totalPages - 2 && (
-                  <PaginationItem>
-                    <PaginationLink onClick={() => handlePageChange(totalPages)}>
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>
-                )}
-                
+              )}
+              
+              {/* Show ellipsis if needed */}
+              {currentPage > 3 && (
                 <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
+                  <PaginationEllipsis />
                 </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
+              )}
+              
+              {/* Show pages around current page */}
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                let pageNum;
+                if (currentPage <= 2) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 1) {
+                  pageNum = totalPages - 2 + i;
+                } else {
+                  pageNum = currentPage - 1 + i;
+                }
+                
+                if (pageNum > 0 && pageNum <= totalPages) {
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink 
+                        isActive={pageNum === currentPage}
+                        onClick={() => handlePageChange(pageNum)}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              {/* Show ellipsis if needed */}
+              {currentPage < totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+              
+              {/* Show last page */}
+              {currentPage < totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationLink onClick={() => handlePageChange(totalPages)}>
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              )}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </Layout>
   );

@@ -1,4 +1,3 @@
-
 export type Agent = {
   id: string;
   agentId: string;
@@ -27,7 +26,6 @@ export type Agent = {
   trainingModules?: { name: string; completed: boolean; date: string }[];
   performance?: { month: string; sales: number; target: number }[];
   documents?: { name: string; type: string; url: string }[];
-  company?: string; // Added company field
 };
 
 // Helper function to generate a random date between two dates
@@ -92,66 +90,6 @@ const generatePerformance = (): { month: string; sales: number; target: number }
   return result;
 };
 
-// Define company to branch mapping
-export const COMPANIES = [
-  "EPD",
-  "EAM",
-  "ESB",
-  "HASB",
-  "ACM",
-];
-
-export const BRANCHES_BY_COMPANY: Record<string, string[]> = {
-  "EPD": [
-    "Edaran Otomobil Nasional Bhd (Glenmarie)",
-    "Edaran Otomobil Nasional Bhd (Damansara)",
-    "Edaran Otomobil Nasional Bhd (Alor Setar)",
-    "Edaran Otomobil Nasional Bhd (Makloom)",
-    "Edaran Otomobil Nasional Bhd (Juru)",
-    "Edaran Otomobil Nasional Bhd (Banting)",
-    "Edaran Otomobil Nasional Bhd (Taiping)",
-    "Edaran Otomobil Nasional Bhd (Larkin)",
-    "Edaran Otomobil Nasional Bhd (Batu Pahat)",
-    "Edaran Otomobil Nasional Bhd (Kota Bharu)",
-  ],
-  "EAM": [
-    "EON AUTO MART AMPANG",
-    "EON AUTO MART GLENMARIE",
-    "EON AUTO MART BAYAN LEPAS",
-    "EON AUTO MART MELAKA",
-    "EON AUTO MART KOTA KINABALU",
-    "EON AUTO MART TAWAU",
-    "EON AUTO MART KUCHING",
-    "EON AUTO MART JOHOR BAHRU",
-    "EON AUTO MART KK2 PUTATAN",
-  ],
-  "ESB": [
-    "Edaran Setia Berhad HQ",
-    "Edaran Setia Berhad (Penang)",
-    "Edaran Setia Berhad (Johor)",
-    "Edaran Setia Berhad (Kuching)",
-  ],
-  "HASB": [
-    "Volkswagen Seremban (HICOM Auto)",
-    "HICOM Auto (Shah Alam)",
-    "HICOM Auto (Penang)",
-  ],
-  "ACM": [
-    "Audi Centre GM",
-    "Audi Damansara",
-    "Automotive Corporation (M) - Batu Caves",
-    "ACM Parts & Services Penang",
-    "ACM Parts & Services Kuantan",
-    "Automotive Corporation (M) - Juru",
-    "Automotive Corporation (M) - Ipoh",
-    "Automotive Corporation (M) - Kuantan",
-    "Automotive Corporation (M) - Johor Bahru",
-  ],
-};
-
-// Flatten branches list for backwards compatibility
-export const BRANCHES = Object.values(BRANCHES_BY_COMPANY).flat();
-
 // Helper function to generate list of agents
 const generateAgents = (count: number): Agent[] => {
   const firstNames = ['Ahmad', 'Siti', 'Michael', 'David', 'Nurul', 'Lee', 'Raj', 'Kavita', 'Tan', 'Wong', 'Lily', 'Hassan', 'Fatimah', 'Chong', 'Kumar', 'Mei Ling', 'Jason', 'Wei Chen', 'Aisha', 'Surinder'];
@@ -166,12 +104,6 @@ const generateAgents = (count: number): Agent[] => {
   const agents = [];
   
   for (let i = 0; i < count; i++) {
-    // Assign a random company
-    const company = COMPANIES[Math.floor(Math.random() * COMPANIES.length)];
-    // Get branches for that company and pick a random one
-    const companyBranches = BRANCHES_BY_COMPANY[company];
-    const branch = companyBranches[Math.floor(Math.random() * companyBranches.length)];
-    
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const fullName = `${firstName} ${lastName}`;
@@ -223,8 +155,7 @@ const generateAgents = (count: number): Agent[] => {
         { name: status === 'active' ? 'Agreement' : 'Application', type: 'pdf', url: '#' }
       ],
       gender,
-      branch,
-      company
+      branch: Math.random() > 0.5 ? 'Branch A' : 'Branch B'
     });
   }
   
@@ -244,12 +175,6 @@ const generateCommissionPayouts = (count: number) => {
     const ytdTotal = Math.floor(Math.random() * 20000) + 3000;
     const lastAmount = Math.floor(Math.random() * 4000) + 1000;
     
-    // Assign a random company
-    const company = COMPANIES[Math.floor(Math.random() * COMPANIES.length)];
-    // Get branches for that company and pick a random one
-    const companyBranches = BRANCHES_BY_COMPANY[company];
-    const branch = companyBranches[Math.floor(Math.random() * companyBranches.length)];
-    
     payouts.push({
       agentId: `EON${id.toString().padStart(3, '0')}`,
       name: `Agent ${id}`,
@@ -258,9 +183,7 @@ const generateCommissionPayouts = (count: number) => {
       lastDate: status === 'paid' ? '2025-04-15' : '',
       nextDate: status !== 'failed' ? '2025-05-15' : '',
       ytdTotal,
-      status,
-      company,
-      branch
+      status
     });
   }
   
@@ -308,9 +231,7 @@ export const baseAgents: Agent[] = [
       { name: 'NDA', type: 'pdf', url: '#' },
       { name: 'Agreement', type: 'pdf', url: '#' }
     ],
-    gender: 'M',
-    company: 'EPD',
-    branch: 'Edaran Otomobil Nasional Bhd (Glenmarie)'
+    gender: 'M'
   },
   {
     id: '2',
@@ -347,9 +268,7 @@ export const baseAgents: Agent[] = [
       { name: 'NRIC', type: 'pdf', url: '#' },
       { name: 'NDA', type: 'pdf', url: '#' }
     ],
-    gender: 'F',
-    company: 'EAM',
-    branch: 'EON AUTO MART AMPANG'
+    gender: 'F'
   },
   {
     id: '3',
@@ -389,9 +308,7 @@ export const baseAgents: Agent[] = [
       { name: 'NDA', type: 'pdf', url: '#' },
       { name: 'Agreement', type: 'pdf', url: '#' }
     ],
-    gender: 'M',
-    company: 'ESB',
-    branch: 'Edaran Setia Berhad HQ'
+    gender: 'M'
   },
   {
     id: '4',
@@ -425,9 +342,7 @@ export const baseAgents: Agent[] = [
     documents: [
       { name: 'NRIC', type: 'pdf', url: '#' }
     ],
-    gender: 'M',
-    company: 'HASB',
-    branch: 'Volkswagen Seremban (HICOM Auto)'
+    gender: 'M'
   },
   {
     id: '5',
@@ -469,9 +384,7 @@ export const baseAgents: Agent[] = [
       { name: 'NDA', type: 'pdf', url: '#' },
       { name: 'Agreement', type: 'pdf', url: '#' }
     ],
-    gender: 'F',
-    company: 'ACM',
-    branch: 'Audi Centre GM'
+    gender: 'F'
   }
 ];
 
@@ -508,18 +421,18 @@ export const baseDashboardData = {
   ],
   
   recentlyApproved: [
-    { id: 'EON023', name: 'Tan Mei Lin', joinDate: '2025-05-01', email: 'tan.meilin@example.com', status: 'active', region: 'Penang', company: 'EPD', branch: 'Edaran Otomobil Nasional Bhd (Damansara)' },
-    { id: 'EON022', name: 'Hassan bin Musa', joinDate: '2025-04-29', email: 'hassan@example.com', status: 'active', region: 'Kuala Lumpur', company: 'EAM', branch: 'EON AUTO MART GLENMARIE' },
-    { id: 'EON021', name: 'Kavita Rai', joinDate: '2025-04-28', email: 'kavita@example.com', status: 'active', region: 'Selangor', company: 'ESB', branch: 'Edaran Setia Berhad HQ' },
-    { id: 'EON020', name: 'Wong Jun Wei', joinDate: '2025-04-26', email: 'wong.jw@example.com', status: 'active', region: 'Johor', company: 'HASB', branch: 'HICOM Auto (Shah Alam)' },
-    { id: 'EON019', name: 'Aisha Binti Ahmad', joinDate: '2025-04-25', email: 'aisha@example.com', status: 'active', region: 'Kelantan', company: 'ACM', branch: 'Audi Damansara' },
-    { id: 'EON018', name: 'David Chen', joinDate: '2025-04-24', email: 'david.c@example.com', status: 'active', region: 'Penang', company: 'EPD', branch: 'Edaran Otomobil Nasional Bhd (Juru)' },
-    { id: 'EON017', name: 'Surinder Singh', joinDate: '2025-04-23', email: 'surinder@example.com', status: 'active', region: 'Selangor', company: 'EAM', branch: 'EON AUTO MART MELAKA' },
-    { id: 'EON016', name: 'Lily Tan', joinDate: '2025-04-22', email: 'lily@example.com', status: 'active', region: 'Kuala Lumpur', company: 'ESB', branch: 'Edaran Setia Berhad (Penang)' },
-    { id: 'EON015', name: 'Chong Wei Ming', joinDate: '2025-04-21', email: 'chong.wm@example.com', status: 'active', region: 'Sarawak', company: 'HASB', branch: 'HICOM Auto (Penang)' },
-    { id: 'EON014', name: 'Fatimah Zahra', joinDate: '2025-04-20', email: 'fatimah@example.com', status: 'active', region: 'Kelantan', company: 'ACM', branch: 'Automotive Corporation (M) - Batu Caves' },
-    { id: 'EON013', name: 'Jason Lee', joinDate: '2025-04-19', email: 'jason@example.com', status: 'active', region: 'Kuala Lumpur', company: 'EPD', branch: 'Edaran Otomobil Nasional Bhd (Alor Setar)' },
-    { id: 'EON012', name: 'Kumar Patel', joinDate: '2025-04-18', email: 'kumar@example.com', status: 'active', region: 'Penang', company: 'EAM', branch: 'EON AUTO MART BAYAN LEPAS' }
+    { id: 'EON023', name: 'Tan Mei Lin', joinDate: '2025-05-01', email: 'tan.meilin@example.com', status: 'active', region: 'Penang' },
+    { id: 'EON022', name: 'Hassan bin Musa', joinDate: '2025-04-29', email: 'hassan@example.com', status: 'active', region: 'Kuala Lumpur' },
+    { id: 'EON021', name: 'Kavita Rai', joinDate: '2025-04-28', email: 'kavita@example.com', status: 'active', region: 'Selangor' },
+    { id: 'EON020', name: 'Wong Jun Wei', joinDate: '2025-04-26', email: 'wong.jw@example.com', status: 'active', region: 'Johor' },
+    { id: 'EON019', name: 'Aisha Binti Ahmad', joinDate: '2025-04-25', email: 'aisha@example.com', status: 'active', region: 'Kelantan' },
+    { id: 'EON018', name: 'David Chen', joinDate: '2025-04-24', email: 'david.c@example.com', status: 'active', region: 'Penang' },
+    { id: 'EON017', name: 'Surinder Singh', joinDate: '2025-04-23', email: 'surinder@example.com', status: 'active', region: 'Selangor' },
+    { id: 'EON016', name: 'Lily Tan', joinDate: '2025-04-22', email: 'lily@example.com', status: 'active', region: 'Kuala Lumpur' },
+    { id: 'EON015', name: 'Chong Wei Ming', joinDate: '2025-04-21', email: 'chong.wm@example.com', status: 'active', region: 'Sarawak' },
+    { id: 'EON014', name: 'Fatimah Zahra', joinDate: '2025-04-20', email: 'fatimah@example.com', status: 'active', region: 'Kelantan' },
+    { id: 'EON013', name: 'Jason Lee', joinDate: '2025-04-19', email: 'jason@example.com', status: 'active', region: 'Kuala Lumpur' },
+    { id: 'EON012', name: 'Kumar Patel', joinDate: '2025-04-18', email: 'kumar@example.com', status: 'active', region: 'Penang' }
   ]
 };
 
@@ -530,80 +443,6 @@ export const dashboardData = {
   activeAgents: mockAgents.filter(agent => agent.status === 'active').length,
   pendingApprovals: mockAgents.filter(agent => agent.status === 'pending').length
 };
-
-// Generate dashboard data per company
-export const dashboardDataByCompany: Record<string, any> = {};
-
-COMPANIES.forEach(company => {
-  const companyAgents = mockAgents.filter(agent => agent.company === company);
-  
-  // Generate company-specific dashboard data
-  dashboardDataByCompany[company] = {
-    totalAgents: companyAgents.length,
-    activeAgents: companyAgents.filter(agent => agent.status === 'active').length,
-    pendingApprovals: companyAgents.filter(agent => agent.status === 'pending').length,
-    approvedThisMonth: Math.floor(companyAgents.length * 0.1),
-    ytdCommissionPaid: Math.floor(companyAgents.reduce((sum, agent) => sum + (agent.ytdCommission || 0), 0)),
-    avgApprovalTime: `${(Math.random() * 3 + 1).toFixed(1)} days`,
-    
-    monthlyRegistrations: [
-      { month: 'Dec', count: Math.floor(Math.random() * 10) + 2 },
-      { month: 'Jan', count: Math.floor(Math.random() * 10) + 5 },
-      { month: 'Feb', count: Math.floor(Math.random() * 10) + 8 },
-      { month: 'Mar', count: Math.floor(Math.random() * 10) + 6 },
-      { month: 'Apr', count: Math.floor(Math.random() * 10) + 10 },
-      { month: 'May', count: Math.floor(Math.random() * 10) + 5 }
-    ],
-    
-    regionDistribution: [
-      { region: 'Kuala Lumpur', count: Math.floor(companyAgents.length * 0.35) },
-      { region: 'Selangor', count: Math.floor(companyAgents.length * 0.25) },
-      { region: 'Penang', count: Math.floor(companyAgents.length * 0.15) },
-      { region: 'Johor', count: Math.floor(companyAgents.length * 0.1) },
-      { region: 'Sabah', count: Math.floor(companyAgents.length * 0.05) }
-    ],
-    
-    // Filter recently approved agents by company
-    recentlyApproved: baseDashboardData.recentlyApproved.filter(agent => agent.company === company)
-  };
-});
-
-// Generate dashboard data per branch
-export const dashboardDataByBranch: Record<string, any> = {};
-
-BRANCHES.forEach(branch => {
-  const branchAgents = mockAgents.filter(agent => agent.branch === branch);
-  
-  // Generate branch-specific dashboard data
-  dashboardDataByBranch[branch] = {
-    totalAgents: branchAgents.length,
-    activeAgents: branchAgents.filter(agent => agent.status === 'active').length,
-    pendingApprovals: branchAgents.filter(agent => agent.status === 'pending').length,
-    approvedThisMonth: Math.floor(branchAgents.length * 0.1),
-    ytdCommissionPaid: Math.floor(branchAgents.reduce((sum, agent) => sum + (agent.ytdCommission || 0), 0)),
-    avgApprovalTime: `${(Math.random() * 3 + 1).toFixed(1)} days`,
-    
-    monthlyRegistrations: [
-      { month: 'Dec', count: Math.floor(Math.random() * 5) + 1 },
-      { month: 'Jan', count: Math.floor(Math.random() * 5) + 2 },
-      { month: 'Feb', count: Math.floor(Math.random() * 5) + 3 },
-      { month: 'Mar', count: Math.floor(Math.random() * 5) + 2 },
-      { month: 'Apr', count: Math.floor(Math.random() * 5) + 4 },
-      { month: 'May', count: Math.floor(Math.random() * 5) + 3 }
-    ],
-    
-    regionDistribution: [
-      { region: 'Kuala Lumpur', count: Math.floor(branchAgents.length * 0.35) },
-      { region: 'Selangor', count: Math.floor(branchAgents.length * 0.25) },
-      { region: 'Penang', count: Math.floor(branchAgents.length * 0.15) },
-      { region: 'Johor', count: Math.floor(branchAgents.length * 0.1) },
-      { region: 'Sabah', count: Math.floor(branchAgents.length * 0.05) }
-    ],
-    
-    // Filter recently approved agents by branch
-    recentlyApproved: baseDashboardData.recentlyApproved.filter(agent => agent.branch === branch)
-  };
-});
 
 // Base commission data
 export const baseCommissionData = {
@@ -618,9 +457,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 15000,
-      status: 'paid',
-      company: 'EPD',
-      branch: 'Edaran Otomobil Nasional Bhd (Glenmarie)'
+      status: 'paid'
     },
     {
       agentId: 'EON003',
@@ -630,9 +467,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 18000,
-      status: 'paid',
-      company: 'ESB',
-      branch: 'Edaran Setia Berhad HQ'
+      status: 'paid'
     },
     {
       agentId: 'EON005',
@@ -642,9 +477,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 9600,
-      status: 'paid',
-      company: 'ACM',
-      branch: 'Audi Centre GM'
+      status: 'paid'
     },
     {
       agentId: 'EON010',
@@ -654,9 +487,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 16200,
-      status: 'paid',
-      company: 'EPD',
-      branch: 'Edaran Otomobil Nasional Bhd (Juru)'
+      status: 'paid'
     },
     {
       agentId: 'EON012',
@@ -666,9 +497,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 8900,
-      status: 'pending',
-      company: 'EAM',
-      branch: 'EON AUTO MART BAYAN LEPAS'
+      status: 'pending'
     },
     {
       agentId: 'EON015',
@@ -678,9 +507,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 4500,
-      status: 'pending',
-      company: 'HASB',
-      branch: 'HICOM Auto (Penang)'
+      status: 'pending'
     },
     {
       agentId: 'EON018',
@@ -690,9 +517,7 @@ export const baseCommissionData = {
       lastDate: '2025-04-15',
       nextDate: '2025-05-15',
       ytdTotal: 7800,
-      status: 'failed',
-      company: 'ESB',
-      branch: 'Edaran Setia Berhad (Penang)'
+      status: 'failed'
     }
   ]
 };
@@ -705,45 +530,3 @@ export const commissionData = {
   ...baseCommissionData,
   payouts: [...baseCommissionData.payouts, ...additionalCommissionPayouts]
 };
-
-// Generate commission data per company
-export const commissionDataByCompany: Record<string, any> = {};
-
-COMPANIES.forEach(company => {
-  const companyPayouts = commissionData.payouts.filter(payout => payout.company === company);
-  
-  const totalPaid = companyPayouts
-    .filter(payout => payout.status === 'paid')
-    .reduce((sum, payout) => sum + payout.lastAmount, 0);
-    
-  const totalPending = companyPayouts
-    .filter(payout => payout.status === 'pending')
-    .reduce((sum, payout) => sum + payout.lastAmount, 0);
-  
-  commissionDataByCompany[company] = {
-    totalPaidThisMonth: totalPaid,
-    totalPending: totalPending,
-    payouts: companyPayouts
-  };
-});
-
-// Generate commission data per branch
-export const commissionDataByBranch: Record<string, any> = {};
-
-BRANCHES.forEach(branch => {
-  const branchPayouts = commissionData.payouts.filter(payout => payout.branch === branch);
-  
-  const totalPaid = branchPayouts
-    .filter(payout => payout.status === 'paid')
-    .reduce((sum, payout) => sum + payout.lastAmount, 0);
-    
-  const totalPending = branchPayouts
-    .filter(payout => payout.status === 'pending')
-    .reduce((sum, payout) => sum + payout.lastAmount, 0);
-  
-  commissionDataByBranch[branch] = {
-    totalPaidThisMonth: totalPaid,
-    totalPending: totalPending,
-    payouts: branchPayouts
-  };
-});

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronDown, Filter, Calendar } from "lucide-react";
@@ -6,7 +7,6 @@ import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { COMPANIES, BRANCHES_BY_COMPANY } from '../utils/mockData';
 
 export type FilterDropdownsProps = {
   showDateFilter?: boolean;
@@ -20,39 +20,57 @@ export type DateRange = {
   to: Date | undefined;
 }
 
-const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ 
-  showDateFilter = true, 
-  onDateChange, 
-  onCompanyChange, 
-  onBranchChange 
-}) => {
-  const [dateRange, setDateRange] = useState<DateRange>({
+const COMPANIES = [
+  "EPD",
+  "EAM",
+  "ESB",
+  "HASB",
+  "ACM",
+];
+
+const BRANCHES = [
+  "Edaran Otomobil Nasional Bhd (Glenmarie)",
+  "Edaran Otomobil Nasional Bhd (Damansara)",
+  "Edaran Otomobil Nasional Bhd (Alor Setar)",
+  "Edaran Otomobil Nasional Bhd (Makloom)",
+  "Edaran Otomobil Nasional Bhd (Juru)",
+  "Edaran Otomobil Nasional Bhd (Banting)",
+  "Edaran Otomobil Nasional Bhd (Taiping)",
+  "Edaran Otomobil Nasional Bhd (Larkin)",
+  "Edaran Otomobil Nasional Bhd (Batu Pahat)",
+  "Edaran Otomobil Nasional Bhd (Kota Bharu)",
+  "EON AUTO MART AMPANG",
+  "EON AUTO MART GLENMARIE",
+  "EON AUTO MART BAYAN LEPAS",
+  "EON AUTO MART MELAKA",
+  "EON AUTO MART KOTA KINABALU",
+  "EON AUTO MART TAWAU",
+  "EON AUTO MART KUCHING",
+  "EON AUTO MART JOHOR BAHRU",
+  "Audi Centre GM",
+  "Volkswagen Seremban (HICOM Auto)",
+  "EON AUTO MART KK2 PUTATAN",
+  "Audi Damansara",
+  "Automotive Corporation (M) - Batu Caves",
+  "ACM Parts & Services Penang",
+  "ACM Parts & Services Kuantan",
+  "Automotive Corporation (M) - Juru",
+  "Automotive Corporation (M) - Ipoh",
+  "Automotive Corporation (M) - Kuantan",
+  "Automotive Corporation (M) - Johor Bahru",
+];
+
+const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true, onDateChange, onCompanyChange, onBranchChange }) => {
+  const [dateRange, setDateRange] = React.useState<DateRange>({
     from: new Date(2025, 0, 1),
     to: new Date(2025, 4, 31)
   });
-  const [dateFilterOpen, setDateFilterOpen] = useState(false);
-  const [dateFilterOption, setDateFilterOption] = useState("today");
-  const [company, setCompany] = useState<string>("EPD");
-  const [companyOpen, setCompanyOpen] = useState(false);
-  const [branch, setBranch] = useState<string>("Edaran Otomobil Nasional Bhd (Glenmarie)");
-  const [branchOpen, setBranchOpen] = useState(false);
-  const [availableBranches, setAvailableBranches] = useState<string[]>(BRANCHES_BY_COMPANY["EPD"]);
-
-  // Update branches when company changes
-  useEffect(() => {
-    if (company) {
-      const companyBranches = BRANCHES_BY_COMPANY[company] || [];
-      setAvailableBranches(companyBranches);
-      // If current branch doesn't exist in the new company, set the first branch
-      if (!companyBranches.includes(branch) && companyBranches.length > 0) {
-        const newBranch = companyBranches[0];
-        setBranch(newBranch);
-        if (onBranchChange) {
-          onBranchChange(newBranch);
-        }
-      }
-    }
-  }, [company]);
+  const [dateFilterOpen, setDateFilterOpen] = React.useState(false);
+  const [dateFilterOption, setDateFilterOption] = React.useState("today");
+  const [company, setCompany] = React.useState<string>("EPD");
+  const [companyOpen, setCompanyOpen] = React.useState(false);
+  const [branch, setBranch] = React.useState<string>("Edaran Otomobil Nasional Bhd (Glenmarie)");
+  const [branchOpen, setBranchOpen] = React.useState(false);
 
   const handleDateChange = (range: DateRange) => {
     setDateRange(range);
@@ -169,7 +187,7 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({
             <CommandInput placeholder="Search branch..." />
             <CommandEmpty>No branch found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">
-              {availableBranches.map((item) => (
+              {BRANCHES.map((item) => (
                 <CommandItem
                   key={item}
                   value={item}
@@ -206,7 +224,7 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({
               </span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white" align="start">
+          <PopoverContent className="w-auto p-0" align="start">
             <div className="grid p-2 gap-2">
               <div className="grid gap-1">
                 <Button 
