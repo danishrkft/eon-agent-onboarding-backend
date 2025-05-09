@@ -9,6 +9,7 @@ import Applications from './pages/Applications';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
+import CampaignManagement from './pages/CampaignManagement';
 import './App.css';
 
 const App: React.FC = () => {
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/agents" element={<AgentManagement />} />
           <Route path="/agents/:agentId" element={<AgentManagement />} />
           <Route path="/commission" element={<CommissionPayout />} />
+          <Route path="/campaigns" element={<CampaignManagement />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/settings" element={<Settings />} />

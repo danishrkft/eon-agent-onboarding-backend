@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChartBar, ClipboardCheck, Database, CreditCard, Settings, Archive, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ChartBar, ClipboardCheck, Database, CreditCard, Settings, Archive, ArrowLeft, ArrowRight, FileText } from 'lucide-react';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -28,6 +28,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     module: 'Finance',
     icon: <CreditCard className="w-5 h-5" />,
     path: '/commission'
+  }, {
+    name: 'Campaigns',
+    module: 'Registration',
+    icon: <FileText className="w-5 h-5" />,
+    path: '/campaigns'
   }, {
     name: 'Reports',
     module: 'Analytics',

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar, Download, Filter, Search, ChevronDown } from 'lucide-react';
 import Layout from '../components/Layout';
@@ -159,7 +158,7 @@ const Reports = () => {
                         key={year} 
                         variant="ghost" 
                         className="justify-start rounded-none h-9"
-                        onClick={() => setRevenueYear(year as keyof typeof yearlyRevenueData)}
+                        onClick={() => setRevenueYear(Number(year) as 2023 | 2024 | 2025)}
                       >
                         {year}
                       </Button>
@@ -203,7 +202,7 @@ const Reports = () => {
                         key={year} 
                         variant="ghost" 
                         className="justify-start rounded-none h-9"
-                        onClick={() => setProductivityYear(year as keyof typeof yearlyAgentProductivityData)}
+                        onClick={() => setProductivityYear(Number(year) as 2023 | 2024 | 2025)}
                       >
                         {year}
                       </Button>
