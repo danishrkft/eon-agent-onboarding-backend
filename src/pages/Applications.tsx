@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, PlusCircle, Search, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 import Layout from '../components/Layout';
@@ -131,7 +130,6 @@ const applicationData = [{
   documents: 3,
   campaign: 'Winter Agent Acquisition'
 }];
-
 const Applications = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -144,9 +142,7 @@ const Applications = () => {
 
   // Filter data based on search term, status, type, and campaign
   const filteredData = applicationData.filter(application => {
-    const matchesSearch = application.agent.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         application.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         application.campaign.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = application.agent.toLowerCase().includes(searchTerm.toLowerCase()) || application.id.toLowerCase().includes(searchTerm.toLowerCase()) || application.campaign.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'All' || application.status === filterStatus;
     const matchesType = filterType === 'All' || application.type === filterType;
     const matchesCampaign = filterCampaign === 'All' || application.campaign === filterCampaign;
@@ -176,7 +172,7 @@ const Applications = () => {
           <h1 className="text-2xl font-bold text-[#00205C]">Applications</h1>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <FilterDropdowns showDateFilter={false} />
-            <Button className="bg-[#00205C] hover:bg-[#001A45]">
+            <Button className="bg-blue-600 hover:bg-blue-500">
               <PlusCircle className="mr-2 h-4 w-4" />
               New Application
             </Button>
