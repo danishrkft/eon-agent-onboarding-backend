@@ -519,7 +519,7 @@ const Settings = () => {
             {/* API Logs Section - New */}
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-medium flex items-center">
+                <h2 className="text-lg flex items-center font-semibold">
                   <FileText className="h-5 w-5 mr-2 text-[#00205C]" />
                   API Request Logs
                 </h2>
@@ -582,7 +582,7 @@ const Settings = () => {
             {/* Edit Logs Section - New */}
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-medium flex items-center">
+                <h2 className="text-lg flex items-center font-semibold">
                   <History className="h-5 w-5 mr-2 text-[#00205C]" />
                   System Edit Logs
                 </h2>
@@ -634,7 +634,7 @@ const Settings = () => {
 
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-medium">API Documentation</h2>
+                <h2 className="text-lg font-semibold">API Documentation</h2>
                 <p className="text-sm text-gray-500">Resources for developers</p>
               </div>
               <div className="p-4">
