@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -145,7 +146,7 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[180px] p-0">
+        <PopoverContent className="w-[180px] p-0 bg-white">
           <Command>
             <CommandInput placeholder="Search company..." />
             <CommandEmpty>No company found.</CommandEmpty>
@@ -181,7 +182,7 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className="w-[300px] p-0 bg-white">
           <Command>
             <CommandInput placeholder="Search branch..." />
             <CommandEmpty>No branch found.</CommandEmpty>

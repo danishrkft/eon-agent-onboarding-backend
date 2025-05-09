@@ -13,7 +13,19 @@ export type Agent = {
   gender?: string;
   branch?: string;
   joinDate?: string;
-  address?: string; // Add the address field to the type
+  address?: string;
+  kwspNumber?: string;
+  taxId?: string;
+  sponsor?: string;
+  commissionTier?: string;
+  ytdSales?: number;
+  ytdCommission?: number;
+  lastPayout?: number;
+  lastPayoutDate?: string;
+  nextPaymentDate?: string;
+  trainingModules?: { name: string; completed: boolean; date: string }[];
+  performance?: { month: string; sales: number; target: number }[];
+  documents?: { name: string; type: string; url: string }[];
 };
 
 // Helper function to generate a random date between two dates
