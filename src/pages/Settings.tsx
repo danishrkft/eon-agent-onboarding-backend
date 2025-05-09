@@ -190,7 +190,7 @@ const Settings: React.FC = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="bg-[#00205C] hover:bg-[#001A45]">Save Preferences</Button>
+                <Button className="bg-blue-600 hover:bg-blue-500">Save Preferences</Button>
               </CardFooter>
             </Card>
           </TabsContent>
