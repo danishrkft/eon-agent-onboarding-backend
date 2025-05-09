@@ -364,7 +364,7 @@ const Settings: React.FC = () => {
                     <Input placeholder="Search users..." className="pl-9" />
                   </div>
                   <div className="flex gap-2">
-                    <Button className="bg-[#00205C] hover:bg-[#001A45]">
+                    <Button className="bg-blue-600 hover:bg-blue-500">
                       <UserPlus className="h-4 w-4 mr-2" />
                       Add User
                     </Button>
