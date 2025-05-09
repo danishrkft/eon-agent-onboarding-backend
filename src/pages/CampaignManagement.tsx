@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,93 +16,81 @@ import { cn } from '@/lib/utils';
 import FilterDropdowns from '../components/FilterDropdowns';
 
 // Sample data for campaigns
-const activeCampaignData = [
-  {
-    id: 'CAMP001',
-    name: 'Summer Recruitment Drive',
-    startDate: new Date(2025, 5, 1),
-    endDate: new Date(2025, 7, 31),
-    target: 50,
-    status: 'Active',
-    progress: 28,
-    customLink: 'https://eon.my/summer-drive'
-  }, {
-    id: 'CAMP003',
-    name: 'Q3 Expansion Program',
-    startDate: new Date(2025, 6, 1),
-    endDate: new Date(2025, 8, 30),
-    target: 30,
-    status: 'Active',
-    progress: 12,
-    customLink: 'https://eon.my/q3-expansion'
-  }
-];
-
-const upcomingCampaignData = [
-  {
-    id: 'CAMP002',
-    name: 'Winter Agent Acquisition',
-    startDate: new Date(2025, 10, 1),
-    endDate: new Date(2026, 0, 31),
-    target: 75,
-    status: 'Upcoming',
-    progress: 0,
-    customLink: 'https://eon.my/winter-acquisition'
-  }, {
-    id: 'CAMP005',
-    name: 'New Market Entry Campaign',
-    startDate: new Date(2025, 8, 1),
-    endDate: new Date(2025, 11, 31),
-    target: 100,
-    status: 'Upcoming',
-    progress: 0,
-    customLink: 'https://eon.my/new-market'
-  },
-  {
-    id: 'CAMP007',
-    name: 'East Coast Expansion',
-    startDate: new Date(2025, 9, 15),
-    endDate: new Date(2025, 11, 15),
-    target: 60,
-    status: 'Upcoming',
-    progress: 0,
-    customLink: 'https://eon.my/east-coast'
-  }
-];
-
-const completedCampaignData = [
-  {
-    id: 'CAMP004',
-    name: 'Regional Partnership Initiative',
-    startDate: new Date(2025, 3, 15),
-    endDate: new Date(2025, 5, 15),
-    target: 25,
-    status: 'Completed',
-    progress: 25,
-    customLink: 'https://eon.my/regional-partnership'
-  },
-  {
-    id: 'CAMP006',
-    name: 'Graduate Recruitment Program',
-    startDate: new Date(2025, 1, 1),
-    endDate: new Date(2025, 2, 31),
-    target: 40,
-    status: 'Completed',
-    progress: 38,
-    customLink: 'https://eon.my/graduate-program'
-  },
-  {
-    id: 'CAMP008',
-    name: 'Referral Incentive Campaign',
-    startDate: new Date(2025, 0, 15),
-    endDate: new Date(2025, 2, 15),
-    target: 35,
-    status: 'Completed',
-    progress: 32,
-    customLink: 'https://eon.my/referral-incentive'
-  }
-];
-
+const activeCampaignData = [{
+  id: 'CAMP001',
+  name: 'Summer Recruitment Drive',
+  startDate: new Date(2025, 5, 1),
+  endDate: new Date(2025, 7, 31),
+  target: 50,
+  status: 'Active',
+  progress: 28,
+  customLink: 'https://eon.my/summer-drive'
+}, {
+  id: 'CAMP003',
+  name: 'Q3 Expansion Program',
+  startDate: new Date(2025, 6, 1),
+  endDate: new Date(2025, 8, 30),
+  target: 30,
+  status: 'Active',
+  progress: 12,
+  customLink: 'https://eon.my/q3-expansion'
+}];
+const upcomingCampaignData = [{
+  id: 'CAMP002',
+  name: 'Winter Agent Acquisition',
+  startDate: new Date(2025, 10, 1),
+  endDate: new Date(2026, 0, 31),
+  target: 75,
+  status: 'Upcoming',
+  progress: 0,
+  customLink: 'https://eon.my/winter-acquisition'
+}, {
+  id: 'CAMP005',
+  name: 'New Market Entry Campaign',
+  startDate: new Date(2025, 8, 1),
+  endDate: new Date(2025, 11, 31),
+  target: 100,
+  status: 'Upcoming',
+  progress: 0,
+  customLink: 'https://eon.my/new-market'
+}, {
+  id: 'CAMP007',
+  name: 'East Coast Expansion',
+  startDate: new Date(2025, 9, 15),
+  endDate: new Date(2025, 11, 15),
+  target: 60,
+  status: 'Upcoming',
+  progress: 0,
+  customLink: 'https://eon.my/east-coast'
+}];
+const completedCampaignData = [{
+  id: 'CAMP004',
+  name: 'Regional Partnership Initiative',
+  startDate: new Date(2025, 3, 15),
+  endDate: new Date(2025, 5, 15),
+  target: 25,
+  status: 'Completed',
+  progress: 25,
+  customLink: 'https://eon.my/regional-partnership'
+}, {
+  id: 'CAMP006',
+  name: 'Graduate Recruitment Program',
+  startDate: new Date(2025, 1, 1),
+  endDate: new Date(2025, 2, 31),
+  target: 40,
+  status: 'Completed',
+  progress: 38,
+  customLink: 'https://eon.my/graduate-program'
+}, {
+  id: 'CAMP008',
+  name: 'Referral Incentive Campaign',
+  startDate: new Date(2025, 0, 15),
+  endDate: new Date(2025, 2, 15),
+  target: 35,
+  status: 'Completed',
+  progress: 32,
+  customLink: 'https://eon.my/referral-incentive'
+}];
 const CampaignManagement: React.FC = () => {
   const [campaigns] = useState([...activeCampaignData, ...upcomingCampaignData, ...completedCampaignData]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,14 +109,12 @@ const CampaignManagement: React.FC = () => {
       return matchesSearch && matchesStatus;
     });
   };
-
   const handleEditCampaign = (campaign: any) => {
     setEditCampaign(campaign);
     setStartDate(campaign.startDate);
     setEndDate(campaign.endDate);
     setShowDialog(true);
   };
-  
   return <Layout>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -224,7 +209,7 @@ const CampaignManagement: React.FC = () => {
         <Tabs defaultValue="active" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-3 mb-6">
             <TabsTrigger value="active">Active Campaigns</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming Campaigns</TabsTrigger>
+            <TabsTrigger value="upcoming" className="text-sm">Upcoming Campaigns</TabsTrigger>
             <TabsTrigger value="completed">Completed Campaigns</TabsTrigger>
           </TabsList>
           
@@ -271,10 +256,7 @@ const CampaignManagement: React.FC = () => {
                     <TableBody>
                       {getFilteredCampaigns(activeCampaignData).map(campaign => <TableRow key={campaign.id}>
                           <TableCell className="font-medium">
-                            <button 
-                              className="text-blue-600 hover:underline" 
-                              onClick={() => handleEditCampaign(campaign)}
-                            >
+                            <button className="text-blue-600 hover:underline" onClick={() => handleEditCampaign(campaign)}>
                               {campaign.id}
                             </button>
                           </TableCell>
@@ -316,13 +298,11 @@ const CampaignManagement: React.FC = () => {
                             </div>
                           </TableCell>
                         </TableRow>)}
-                        {getFilteredCampaigns(activeCampaignData).length === 0 && (
-                          <TableRow>
+                        {getFilteredCampaigns(activeCampaignData).length === 0 && <TableRow>
                             <TableCell colSpan={8} className="text-center py-6 text-gray-500">
                               No active campaigns found
                             </TableCell>
-                          </TableRow>
-                        )}
+                          </TableRow>}
                     </TableBody>
                   </Table>
                 </div>
@@ -344,7 +324,7 @@ const CampaignManagement: React.FC = () => {
           <TabsContent value="upcoming">
             <Card>
               <CardHeader>
-                <CardTitle>Upcoming Campaigns</CardTitle>
+                <CardTitle className="font-semibold text-lg">Upcoming Campaigns</CardTitle>
                 <CardDescription>
                   Registration campaigns scheduled for future dates.
                 </CardDescription>
@@ -372,10 +352,7 @@ const CampaignManagement: React.FC = () => {
                     <TableBody>
                       {getFilteredCampaigns(upcomingCampaignData).map(campaign => <TableRow key={campaign.id}>
                           <TableCell className="font-medium">
-                            <button 
-                              className="text-blue-600 hover:underline" 
-                              onClick={() => handleEditCampaign(campaign)}
-                            >
+                            <button className="text-blue-600 hover:underline" onClick={() => handleEditCampaign(campaign)}>
                               {campaign.id}
                             </button>
                           </TableCell>
@@ -407,13 +384,11 @@ const CampaignManagement: React.FC = () => {
                             </div>
                           </TableCell>
                         </TableRow>)}
-                        {getFilteredCampaigns(upcomingCampaignData).length === 0 && (
-                          <TableRow>
+                        {getFilteredCampaigns(upcomingCampaignData).length === 0 && <TableRow>
                             <TableCell colSpan={7} className="text-center py-6 text-gray-500">
                               No upcoming campaigns found
                             </TableCell>
-                          </TableRow>
-                        )}
+                          </TableRow>}
                     </TableBody>
                   </Table>
                 </div>
@@ -452,10 +427,7 @@ const CampaignManagement: React.FC = () => {
                     <TableBody>
                       {getFilteredCampaigns(completedCampaignData).map(campaign => <TableRow key={campaign.id}>
                           <TableCell className="font-medium">
-                            <button 
-                              className="text-blue-600 hover:underline" 
-                              onClick={() => handleEditCampaign(campaign)}
-                            >
+                            <button className="text-blue-600 hover:underline" onClick={() => handleEditCampaign(campaign)}>
                               {campaign.id}
                             </button>
                           </TableCell>
@@ -487,13 +459,11 @@ const CampaignManagement: React.FC = () => {
                             </div>
                           </TableCell>
                         </TableRow>)}
-                        {getFilteredCampaigns(completedCampaignData).length === 0 && (
-                          <TableRow>
+                        {getFilteredCampaigns(completedCampaignData).length === 0 && <TableRow>
                             <TableCell colSpan={7} className="text-center py-6 text-gray-500">
                               No completed campaigns found
                             </TableCell>
-                          </TableRow>
-                        )}
+                          </TableRow>}
                     </TableBody>
                   </Table>
                 </div>
