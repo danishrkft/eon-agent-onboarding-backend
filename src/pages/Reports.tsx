@@ -306,7 +306,7 @@ const Reports = () => {
   const [revenueYear, setRevenueYear] = useState<keyof typeof yearlyRevenueData>(2025);
   const [productivityYear, setProductivityYear] = useState<keyof typeof yearlyAgentProductivityData>(2025);
   const itemsPerPage = 10;
-  
+
   // New state for filters
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(2025, 0, 1),
@@ -341,12 +341,8 @@ const Reports = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-[#00205C]">Reports</h1>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <FilterDropdowns 
-              onDateChange={setDateRange}
-              onCompanyChange={setCompany}
-              onBranchChange={setBranch}
-            />
-            <Button className="bg-[#00205C] hover:bg-[#001845]">
+            <FilterDropdowns onDateChange={setDateRange} onCompanyChange={setCompany} onBranchChange={setBranch} />
+            <Button className="bg-blue-600 hover:bg-blue-500">
               <Calendar className="mr-2 h-4 w-4" />
               Schedule Report
             </Button>
