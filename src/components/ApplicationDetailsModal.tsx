@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { FileText, FileCheck, Calendar, UserCheck, Briefcase } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Trash } from "@/components/ui/trash";
 
 interface ApplicationDetailsModalProps {
   open: boolean;

@@ -11,8 +11,8 @@ export type Agent = {
   region?: string;
   status: string;
   gender?: string;
-  // Add the branch field
   branch?: string;
+  joinDate?: string; // Add the joinDate field to the type
 };
 
 // Helper function to generate a random date between two dates
