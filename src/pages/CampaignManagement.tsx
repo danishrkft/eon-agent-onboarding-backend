@@ -157,7 +157,7 @@ const CampaignManagement: React.FC = () => {
           <TabsContent value="active">
             <Card>
               <CardHeader>
-                <CardTitle>Active Campaigns</CardTitle>
+                <CardTitle className="text-lg font-semibold">Active Campaigns</CardTitle>
                 <CardDescription>
                   Registration campaigns that are currently in progress.
                 </CardDescription>
