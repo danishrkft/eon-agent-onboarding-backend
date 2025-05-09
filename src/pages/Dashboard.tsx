@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Users, UserCheck, Clock, Calendar, DollarSign, Timer, TrendingUp, Target, Shield } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from 'recharts';
@@ -6,6 +5,7 @@ import { Cell, Pie, PieChart } from 'recharts';
 import Layout from '../components/Layout';
 import DashboardCard from '../components/DashboardCard';
 import { dashboardData } from '../utils/mockData';
+import FilterDropdowns, { DateRange } from '../components/FilterDropdowns';
 import { 
   Pagination, 
   PaginationContent, 
@@ -22,6 +22,14 @@ const Dashboard = () => {
   const [monthFilter, setMonthFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // New state for filters
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(2025, 0, 1),
+    to: new Date(2025, 4, 31)
+  });
+  const [company, setCompany] = useState("EPD");
+  const [branch, setBranch] = useState("Edaran Otomobil Nasional Bhd (Glenmarie)");
 
   // Extended historical data for Agent Registrations (2 years back)
   const historicalRegistrationData = [
@@ -91,7 +99,7 @@ const Dashboard = () => {
   // Pagination for Recently Approved Agents
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentAgents = dashboardData.recentlyApproved.slice(indexOfFirstItem, indexOfLastItem);
+  const currentAgents = dashboardData.recentlyApproved.slice(indexOfFirstItem, indexOfFirstItem);
   const totalPages = Math.ceil(dashboardData.recentlyApproved.length / itemsPerPage);
 
   // Handle page change
@@ -101,9 +109,16 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#00205C]">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here's an overview of agent performance</p>
+      <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#00205C]">Dashboard</h1>
+          <p className="text-gray-600">Welcome back! Here's an overview of agent performance</p>
+        </div>
+        <FilterDropdowns 
+          onDateChange={setDateRange}
+          onCompanyChange={setCompany}
+          onBranchChange={setBranch}
+        />
       </div>
 
       {/* Summary Cards */}

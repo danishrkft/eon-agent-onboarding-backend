@@ -1,31 +1,18 @@
-
 export type Agent = {
   id: string;
+  agentId: string;
   name: string;
-  mobile: string;
   email: string;
-  status: 'active' | 'pending' | 'rejected';
-  joinDate: string;
-  region: string;
+  mobile: string;
   nric: string;
   dob: string;
-  address: string;
-  bankName: string;
   accountNumber: string;
-  kwspNumber: string;
-  taxId: string;
-  agentId: string;
-  sponsor: string;
-  commissionTier: string;
-  ytdSales: number;
-  ytdCommission: number;
-  lastPayout: number;
-  lastPayoutDate: string;
-  nextPaymentDate: string;
-  trainingModules: { name: string; completed: boolean; date: string }[];
-  performance: { month: string; sales: number; target: number }[];
-  documents: { name: string; type: string; url: string }[];
-  gender?: 'M' | 'F';
+  bankName: string;
+  region?: string;
+  status: string;
+  gender?: string;
+  // Add the branch field
+  branch?: string;
 };
 
 // Helper function to generate a random date between two dates
@@ -154,7 +141,8 @@ const generateAgents = (count: number): Agent[] => {
         { name: 'NDA', type: 'pdf', url: '#' },
         { name: status === 'active' ? 'Agreement' : 'Application', type: 'pdf', url: '#' }
       ],
-      gender
+      gender,
+      branch: Math.random() > 0.5 ? 'Branch A' : 'Branch B'
     });
   }
   

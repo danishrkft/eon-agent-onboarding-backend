@@ -7,6 +7,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ResponsiveContainer } from 'recharts';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import FilterDropdowns, { DateRange } from '../components/FilterDropdowns';
 
 // Sample report data
 const reportData = [{
@@ -305,6 +306,14 @@ const Reports = () => {
   const [revenueYear, setRevenueYear] = useState<keyof typeof yearlyRevenueData>(2025);
   const [productivityYear, setProductivityYear] = useState<keyof typeof yearlyAgentProductivityData>(2025);
   const itemsPerPage = 10;
+  
+  // New state for filters
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(2025, 0, 1),
+    to: new Date(2025, 4, 31)
+  });
+  const [company, setCompany] = useState("EPD");
+  const [branch, setBranch] = useState("Edaran Otomobil Nasional Bhd (Glenmarie)");
 
   // Filter data based on search term and category
   const filteredData = reportData.filter(report => {
@@ -329,12 +338,19 @@ const Reports = () => {
   };
   return <Layout>
       <div className="w-full space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-[#00205C]">Reports</h1>
-          <Button className="bg-[#00205C] hover:bg-[#001845]">
-            <Calendar className="mr-2 h-4 w-4" />
-            Schedule Report
-          </Button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <FilterDropdowns 
+              onDateChange={setDateRange}
+              onCompanyChange={setCompany}
+              onBranchChange={setBranch}
+            />
+            <Button className="bg-[#00205C] hover:bg-[#001845]">
+              <Calendar className="mr-2 h-4 w-4" />
+              Schedule Report
+            </Button>
+          </div>
         </div>
 
         {/* Analytics Charts */}

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, PlusCircle, Search, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 import Layout from '../components/Layout';
@@ -6,138 +7,160 @@ import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
+import FilterDropdowns from '../components/FilterDropdowns';
 
-// Sample application data
+// Sample application data with Malaysian names and campaign column
 const applicationData = [{
   id: 'APP001',
-  agent: 'John Doe',
+  agent: 'Ahmad Faizal bin Razali',
   type: 'New Agent',
   submissionDate: '2025-04-01',
   status: 'Pending',
-  documents: 4
+  documents: 4,
+  campaign: 'Summer Recruitment Drive'
 }, {
   id: 'APP002',
-  agent: 'Sarah Johnson',
+  agent: 'Nur Hidayah binti Abdullah',
   type: 'License Renewal',
   submissionDate: '2025-04-02',
   status: 'Approved',
-  documents: 3
+  documents: 3,
+  campaign: 'Q3 Expansion Program'
 }, {
   id: 'APP003',
-  agent: 'Michael Brown',
+  agent: 'Mohd Zulkifli bin Hassan',
   type: 'New Agent',
   submissionDate: '2025-04-03',
   status: 'Rejected',
-  documents: 5
+  documents: 5,
+  campaign: 'Regional Partnership Initiative'
 }, {
   id: 'APP004',
-  agent: 'Jessica Williams',
+  agent: 'Siti Aisyah binti Kamal',
   type: 'Address Change',
   submissionDate: '2025-04-03',
   status: 'Pending',
-  documents: 2
+  documents: 2,
+  campaign: 'Summer Recruitment Drive'
 }, {
   id: 'APP005',
-  agent: 'David Miller',
+  agent: 'Tan Wei Ming',
   type: 'New Agent',
   submissionDate: '2025-04-04',
   status: 'Approved',
-  documents: 4
+  documents: 4,
+  campaign: 'New Market Entry Campaign'
 }, {
   id: 'APP006',
-  agent: 'Emily Davis',
+  agent: 'Rajesh Kumar a/l Govindasamy',
   type: 'License Renewal',
   submissionDate: '2025-04-05',
   status: 'Pending',
-  documents: 3
+  documents: 3,
+  campaign: 'Graduate Recruitment Program'
 }, {
   id: 'APP007',
-  agent: 'Robert Wilson',
+  agent: 'Lim Chee Keong',
   type: 'New Agent',
   submissionDate: '2025-04-06',
   status: 'Pending',
-  documents: 5
+  documents: 5,
+  campaign: 'East Coast Expansion'
 }, {
   id: 'APP008',
-  agent: 'Jennifer Garcia',
+  agent: 'Nurul Huda binti Ibrahim',
   type: 'Address Change',
   submissionDate: '2025-04-07',
   status: 'Approved',
-  documents: 2
+  documents: 2,
+  campaign: 'Winter Agent Acquisition'
 }, {
   id: 'APP009',
-  agent: 'Thomas Martinez',
+  agent: 'Santana a/l Muthu',
   type: 'License Renewal',
   submissionDate: '2025-04-08',
   status: 'Rejected',
-  documents: 3
+  documents: 3,
+  campaign: 'Referral Incentive Campaign'
 }, {
   id: 'APP010',
-  agent: 'Lisa Robinson',
+  agent: 'Wong Mei Ling',
   type: 'New Agent',
   submissionDate: '2025-04-09',
   status: 'Pending',
-  documents: 4
+  documents: 4,
+  campaign: 'Summer Recruitment Drive'
 }, {
   id: 'APP011',
-  agent: 'Daniel Lee',
+  agent: 'Amirul Hakimi bin Ismail',
   type: 'Address Change',
   submissionDate: '2025-04-10',
   status: 'Approved',
-  documents: 2
+  documents: 2,
+  campaign: 'Q3 Expansion Program'
 }, {
   id: 'APP012',
-  agent: 'Nancy Clark',
+  agent: 'Lai Siew Mei',
   type: 'License Renewal',
   submissionDate: '2025-04-11',
   status: 'Pending',
-  documents: 3
+  documents: 3,
+  campaign: 'Regional Partnership Initiative'
 }, {
   id: 'APP013',
-  agent: 'Paul Harris',
+  agent: 'Abdul Rahman bin Omar',
   type: 'New Agent',
   submissionDate: '2025-04-12',
   status: 'Approved',
-  documents: 5
+  documents: 5,
+  campaign: 'Graduate Recruitment Program'
 }, {
   id: 'APP014',
-  agent: 'Karen Lewis',
+  agent: 'Kavitha a/p Raj',
   type: 'Address Change',
   submissionDate: '2025-04-13',
   status: 'Rejected',
-  documents: 2
+  documents: 2,
+  campaign: 'East Coast Expansion'
 }, {
   id: 'APP015',
-  agent: 'Jason Walker',
+  agent: 'Lee Chong Wei',
   type: 'License Renewal',
   submissionDate: '2025-04-14',
   status: 'Pending',
-  documents: 3
+  documents: 3,
+  campaign: 'Winter Agent Acquisition'
 }];
+
 const Applications = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterType, setFilterType] = useState('All');
+  const [filterCampaign, setFilterCampaign] = useState('All');
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const itemsPerPage = 10;
 
-  // Filter data based on search term, status, and type
+  // Filter data based on search term, status, type, and campaign
   const filteredData = applicationData.filter(application => {
-    const matchesSearch = application.agent.toLowerCase().includes(searchTerm.toLowerCase()) || application.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = application.agent.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         application.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         application.campaign.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'All' || application.status === filterStatus;
     const matchesType = filterType === 'All' || application.type === filterType;
-    return matchesSearch && matchesStatus && matchesType;
+    const matchesCampaign = filterCampaign === 'All' || application.campaign === filterCampaign;
+    return matchesSearch && matchesStatus && matchesType && matchesCampaign;
   });
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Extract unique statuses and types
+  // Extract unique statuses, types, and campaigns
   const statuses = ['All', ...Array.from(new Set(applicationData.map(app => app.status)))];
   const types = ['All', ...Array.from(new Set(applicationData.map(app => app.type)))];
+  const campaigns = ['All', ...Array.from(new Set(applicationData.map(app => app.campaign)))];
 
   // Count applications by status
   const pendingCount = applicationData.filter(app => app.status === 'Pending').length;
@@ -149,12 +172,15 @@ const Applications = () => {
   };
   return <Layout>
       <div className="w-full space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-[#00205C]">Applications</h1>
-          <Button className="bg-blue-600 hover:bg-blue-500">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            New Application
-          </Button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <FilterDropdowns showDateFilter={false} />
+            <Button className="bg-[#00205C] hover:bg-[#001A45]">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              New Application
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -214,6 +240,12 @@ const Applications = () => {
               }}>
                   {types.map(type => <option key={type} value={type}>{type}</option>)}
                 </select>
+                <select className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00205C]" value={filterCampaign} onChange={e => {
+                setFilterCampaign(e.target.value);
+                setCurrentPage(1);
+              }}>
+                  {campaigns.map(campaign => <option key={campaign} value={campaign}>{campaign}</option>)}
+                </select>
               </div>
             </div>
           </div>
@@ -224,6 +256,7 @@ const Applications = () => {
                 <TableHead>Application ID</TableHead>
                 <TableHead>Agent Name</TableHead>
                 <TableHead>Type</TableHead>
+                <TableHead>Campaign</TableHead>
                 <TableHead>Submission Date</TableHead>
                 <TableHead>Documents</TableHead>
                 <TableHead>Status</TableHead>
@@ -239,6 +272,7 @@ const Applications = () => {
                     </TableCell>
                     <TableCell>{application.agent}</TableCell>
                     <TableCell>{application.type}</TableCell>
+                    <TableCell>{application.campaign}</TableCell>
                     <TableCell>{new Date(application.submissionDate).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
@@ -257,7 +291,7 @@ const Applications = () => {
                       </Button>
                     </TableCell>
                   </TableRow>) : <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                     No applications found matching your criteria
                   </TableCell>
                 </TableRow>}

@@ -1,0 +1,71 @@
+
+import React from 'react';
+import { CheckIcon, ChevronRightIcon } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
+type Status = {
+  label: string;
+  date?: string;
+  time?: string;
+  completed: boolean;
+  active: boolean;
+};
+
+interface StatusBreadcrumbsProps {
+  statuses: Status[];
+  showAgingPeriod?: boolean;
+  agingDays?: number;
+}
+
+const StatusBreadcrumbs: React.FC<StatusBreadcrumbsProps> = ({ statuses, showAgingPeriod = false, agingDays = 0 }) => {
+  return (
+    <div className="w-full mb-6">
+      <div className="flex items-center flex-wrap gap-2">
+        {statuses.map((status, index) => (
+          <React.Fragment key={index}>
+            <div 
+              className={cn(
+                "flex flex-col items-center relative px-3 py-2 rounded-md border",
+                status.completed ? "bg-[#00205C]/10 border-[#00205C]/20" : 
+                status.active ? "bg-[#E5241B]/10 border-[#E5241B]/20" : 
+                "bg-gray-100 border-gray-200"
+              )}
+            >
+              <div className="flex items-center gap-1">
+                {status.completed && (
+                  <CheckIcon className="h-4 w-4 text-[#00205C]" />
+                )}
+                <span className={cn(
+                  "font-medium",
+                  status.active ? "text-[#E5241B]" : status.completed ? "text-[#00205C]" : "text-gray-500"
+                )}>
+                  {status.label}
+                </span>
+                
+                {(status.active && showAgingPeriod && agingDays > 0) && (
+                  <Badge variant="outline" className="ml-2 text-xs bg-yellow-50 text-yellow-800 border-yellow-200">
+                    {agingDays} days
+                  </Badge>
+                )}
+              </div>
+              
+              {(status.date || status.time) && (
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                  {status.date && <span>{status.date}</span>}
+                  {status.time && <span>{status.time}</span>}
+                </div>
+              )}
+            </div>
+            
+            {index < statuses.length - 1 && (
+              <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default StatusBreadcrumbs;

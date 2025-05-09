@@ -1,255 +1,261 @@
 
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose
-} from '@/components/ui/dialog';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { FileText, FileCheck, User, Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { FileText, FileCheck, Calendar, UserCheck, Briefcase } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
-// Sample application document type
-type ApplicationDocument = {
-  id: string;
-  name: string;
-  type: string;
-  status: 'Verified' | 'Pending' | 'Rejected';
-  uploadedDate: string;
-};
-
-// Sample application type
-type Application = {
-  id: string;
-  agent: string;
-  type: string;
-  submissionDate: string;
-  status: string;
-  documents: number;
-  description?: string;
-  email?: string;
-  phone?: string;
-  comments?: string[];
-  documentList?: ApplicationDocument[];
-};
-
-type ApplicationDetailsModalProps = {
+interface ApplicationDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  application: Application | null;
-};
+  application: any;
+}
 
-const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
-  open,
-  onOpenChange,
-  application
-}) => {
+const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ open, onOpenChange, application }) => {
   if (!application) return null;
 
-  // Sample document list (in real app, this would come from the application data)
-  const sampleDocuments: ApplicationDocument[] = application.documentList || [
-    {
-      id: '1',
-      name: 'Identity Card',
-      type: 'PDF',
-      status: 'Verified',
-      uploadedDate: '2025-04-02'
-    },
-    {
-      id: '2',
-      name: 'Professional License',
-      type: 'PDF',
-      status: 'Verified',
-      uploadedDate: '2025-04-02'
-    },
-    {
-      id: '3',
-      name: 'Bank Statement',
-      type: 'PDF',
-      status: 'Pending',
-      uploadedDate: '2025-04-02'
-    },
-    {
-      id: '4',
-      name: 'Address Proof',
-      type: 'JPG',
-      status: 'Rejected',
-      uploadedDate: '2025-04-03'
-    },
-  ];
-
-  const getStatusIcon = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Approved':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
+        return 'bg-green-100 text-green-800 hover:bg-green-100';
       case 'Rejected':
-        return <XCircle className="h-5 w-5 text-[#E5241B]" />;
+        return 'bg-red-100 text-red-800 hover:bg-red-100';
       default:
-        return <Clock className="h-5 w-5 text-yellow-500" />;
+        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100';
     }
   };
 
-  const getDocumentStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Verified':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Verified</Badge>;
-      case 'Rejected':
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Rejected</Badge>;
+  const documents = [
+    { name: 'Identity Card.pdf', type: 'PDF', size: '2.3 MB', uploaded: '2025-04-01', status: 'Verified' },
+    { name: 'Driver License.jpg', type: 'JPG', size: '1.5 MB', uploaded: '2025-04-01', status: 'Verified' },
+    { name: 'Bank Statement.pdf', type: 'PDF', size: '3.8 MB', uploaded: '2025-04-01', status: 'Pending' },
+    { name: 'Resume.docx', type: 'DOCX', size: '1.2 MB', uploaded: '2025-04-01', status: 'Verified' }
+  ];
+  
+  const getDocumentIcon = (type: string) => {
+    switch (type) {
+      case 'PDF':
+        return <FileText className="h-4 w-4 text-red-500" />;
+      case 'DOCX':
+        return <FileText className="h-4 w-4 text-blue-500" />;
+      case 'JPG':
+        return <FileText className="h-4 w-4 text-green-500" />;
       default:
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pending</Badge>;
+        return <FileText className="h-4 w-4" />;
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#00205C]">
-            <FileText className="h-5 w-5" />
-            Application Details: {application.id}
-          </DialogTitle>
+          <DialogTitle>Application Details</DialogTitle>
           <DialogDescription>
-            Submitted on {new Date(application.submissionDate).toLocaleDateString()} - 
-            <span className={
-              application.status === 'Approved' 
-                ? 'text-green-600 ml-1' 
-                : application.status === 'Rejected'
-                  ? 'text-[#E5241B] ml-1'
-                  : 'text-yellow-600 ml-1'
-            }>
-              {application.status}
-            </span>
+            View the details for application {application.id}
           </DialogDescription>
         </DialogHeader>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-6">
+        
+        <div className="space-y-6 pt-4">
+          <div className="flex flex-wrap items-center gap-4 border-b pb-4">
             <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-3">Application Information</h3>
-              <div className="bg-gray-50 rounded-md p-4 space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Type:</span>
-                  <span className="text-sm font-medium">{application.type}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Status:</span>
-                  <div className="flex items-center gap-1">
-                    {getStatusIcon(application.status)}
-                    <span className="text-sm font-medium">{application.status}</span>
-                  </div>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Submission Date:</span>
-                  <span className="text-sm font-medium">{new Date(application.submissionDate).toLocaleDateString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Documents:</span>
-                  <span className="text-sm font-medium">{application.documents}</span>
-                </div>
-              </div>
+              <Badge className={getStatusColor(application.status)}>
+                {application.status}
+              </Badge>
             </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-3">Agent Information</h3>
-              <div className="bg-gray-50 rounded-md p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="bg-[#00205C] text-white p-2 rounded-full">
-                    <User className="h-4 w-4" />
+            <div className="flex items-center text-sm text-gray-500">
+              <Calendar className="mr-2 h-4 w-4" />
+              Submitted on {new Date(application.submissionDate).toLocaleDateString()}
+            </div>
+            <div className="flex items-center text-sm text-gray-500">
+              <Briefcase className="mr-2 h-4 w-4" />
+              {application.campaign}
+            </div>
+            <div className="flex items-center text-sm text-gray-500">
+              <UserCheck className="mr-2 h-4 w-4" />
+              {application.type}
+            </div>
+          </div>
+          
+          <Tabs defaultValue="summary">
+            <TabsList className="mb-4">
+              <TabsTrigger value="summary">Summary</TabsTrigger>
+              <TabsTrigger value="documents">Documents ({application.documents})</TabsTrigger>
+              <TabsTrigger value="history">History</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="summary" className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium">Applicant Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="font-medium">{application.agent}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{application.agent}</p>
-                    <p className="text-sm text-gray-500">{application.email || "email@example.com"}</p>
-                    <p className="text-sm text-gray-500">{application.phone || "+1 (555) 123-4567"}</p>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="font-medium">{application.agent.replace(/\s/g, '.').toLowerCase()}@email.com</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-medium">+6012-{Math.floor(1000000 + Math.random() * 9000000)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">NRIC</p>
+                    <p className="font-medium">{Math.floor(800000 + Math.random() * 100000)}-{Math.floor(10 + Math.random() * 90)}-{Math.floor(1000 + Math.random() * 9000)}</p>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {application.description && (
+              
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-3">Description</h3>
-                <div className="bg-gray-50 rounded-md p-4">
-                  <p className="text-sm">{application.description}</p>
+                <h3 className="text-lg font-medium">Application Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <p className="text-sm text-gray-500">Type</p>
+                    <p className="font-medium">{application.type}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Campaign</p>
+                    <p className="font-medium">{application.campaign}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Submission Date</p>
+                    <p className="font-medium">{new Date(application.submissionDate).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Status</p>
+                    <Badge className={getStatusColor(application.status)}>
+                      {application.status}
+                    </Badge>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-3">Documents</h3>
-              <div className="bg-gray-50 rounded-md p-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sampleDocuments.map((doc) => (
-                      <TableRow key={doc.id}>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <FileCheck className="h-4 w-4 text-[#00205C] mr-2" />
-                            {doc.name}
-                          </div>
-                        </TableCell>
-                        <TableCell>{doc.type}</TableCell>
-                        <TableCell>{getDocumentStatusBadge(doc.status)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              
+              <div className="flex justify-end space-x-2">
+                {application.status === 'Pending' && (
+                  <>
+                    <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-50">
+                      Reject
+                    </Button>
+                    <Button className="bg-[#00205C] hover:bg-[#001A45]">
+                      Approve
+                    </Button>
+                  </>
+                )}
+                {application.status === 'Rejected' && (
+                  <Button className="bg-[#00205C] hover:bg-[#001A45]">
+                    Reconsider
+                  </Button>
+                )}
+                {application.status === 'Approved' && (
+                  <Button variant="outline" className="border-[#00205C] text-[#00205C]">
+                    View Certificate
+                  </Button>
+                )}
               </div>
-            </div>
-
-            {application.comments && application.comments.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-3">Comments</h3>
-                <div className="bg-gray-50 rounded-md p-4 space-y-3">
-                  {application.comments.map((comment, index) => (
-                    <div key={index} className="pb-3 border-b border-gray-200 last:border-0 last:pb-0">
-                      <p className="text-sm">{comment}</p>
-                      <p className="text-xs text-gray-500 mt-1">Added on {new Date().toLocaleDateString()}</p>
+            </TabsContent>
+            
+            <TabsContent value="documents">
+              <div className="space-y-4">
+                <div className="rounded-md border">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead>
+                      <tr>
+                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
+                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uploaded</th>
+                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {documents.map((doc, index) => (
+                        <tr key={index}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center">
+                              {getDocumentIcon(doc.type)}
+                              <span className="ml-2">{doc.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doc.type}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doc.size}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(doc.uploaded).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <Badge className={doc.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                              {doc.status}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <Button variant="ghost" size="sm">View</Button>
+                            <Button variant="ghost" size="sm">Download</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div className="flex justify-end">
+                  <Button className="bg-[#00205C] hover:bg-[#001A45]">
+                    <FileCheck className="mr-2 h-4 w-4" />
+                    Verify All Documents
+                  </Button>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="history">
+              <div className="space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <div className="relative mr-3">
+                      <div className="h-8 w-8 rounded-full bg-[#00205C] flex items-center justify-center text-white">
+                        <FileText className="h-4 w-4" />
+                      </div>
+                      <span className="absolute top-8 left-1/2 -ml-px h-full w-0.5 bg-gray-200"></span>
                     </div>
-                  ))}
-                </div>
+                    <div className="min-w-0 flex-1 pt-1.5">
+                      <p className="text-sm font-medium text-gray-900">Application submitted</p>
+                      <p className="mt-1 text-sm text-gray-500">
+                        {new Date(application.submissionDate).toLocaleDateString()} at {new Date(application.submissionDate).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="relative mr-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        <Calendar className="h-4 w-4" />
+                      </div>
+                      <span className="absolute top-8 left-1/2 -ml-px h-full w-0.5 bg-gray-200"></span>
+                    </div>
+                    <div className="min-w-0 flex-1 pt-1.5">
+                      <p className="text-sm font-medium text-gray-900">Documents reviewed</p>
+                      <p className="mt-1 text-sm text-gray-500">
+                        {new Date(new Date(application.submissionDate).getTime() + 86400000).toLocaleDateString()} at {new Date(new Date(application.submissionDate).getTime() + 86400000).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </li>
+                  {application.status !== 'Pending' && (
+                    <li className="flex items-start">
+                      <div className="relative mr-3">
+                        <div className={`h-8 w-8 rounded-full ${application.status === 'Approved' ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center text-white`}>
+                          {application.status === 'Approved' ? <UserCheck className="h-4 w-4" /> : <Trash className="h-4 w-4" />}
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1 pt-1.5">
+                        <p className="text-sm font-medium text-gray-900">Application {application.status.toLowerCase()}</p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {new Date(new Date(application.submissionDate).getTime() + 172800000).toLocaleDateString()} at {new Date(new Date(application.submissionDate).getTime() + 172800000).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </li>
+                  )}
+                </ul>
               </div>
-            )}
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Close</Button>
-          </DialogClose>
-          {application.status === 'Pending' && (
-            <>
-              <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Approve
-              </Button>
-              <Button variant="outline" className="border-[#E5241B] text-[#E5241B] hover:bg-red-50">
-                <XCircle className="h-4 w-4 mr-2" />
-                Reject
-              </Button>
-            </>
-          )}
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

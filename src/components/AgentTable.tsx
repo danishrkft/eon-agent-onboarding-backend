@@ -1,16 +1,25 @@
+
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Eye, Trash2 } from 'lucide-react';
+import { Search, Filter, Plus, Eye, Trash2, MoreHorizontal, Check } from 'lucide-react';
 import { Agent } from '../utils/mockData';
 import AddAgentModal from './AddAgentModal';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+
 type AgentTableProps = {
   agents: Agent[];
   onSelectAgent: (agent: Agent) => void;
   selectedAgentId: string | null;
 };
+
 const AgentTable: React.FC<AgentTableProps> = ({
   agents,
   onSelectAgent,
@@ -27,6 +36,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const itemsPerPage = 10;
+
   const filteredAgents = agents.filter(agent => {
     // Apply search filter
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || agent.agentId.toLowerCase().includes(searchTerm.toLowerCase()) || agent.mobile.includes(searchTerm) || agent.email.toLowerCase().includes(searchTerm.toLowerCase()) || agent.nric.includes(searchTerm);
@@ -61,6 +71,25 @@ const AgentTable: React.FC<AgentTableProps> = ({
     setAgentToDelete(agent);
     setDeleteDialogOpen(true);
   };
+
+  // Handle approve agent
+  const handleApproveClick = (agent: Agent, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast({
+      title: "Agent Approved",
+      description: `${agent.name} has been approved successfully.`
+    });
+  };
+
+  // Handle edit agent
+  const handleEditClick = (agent: Agent, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast({
+      title: "Edit Agent",
+      description: `Editing ${agent.name}'s details.`
+    });
+  };
+
   const confirmDelete = () => {
     if (agentToDelete) {
       toast({
@@ -73,6 +102,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
     setDeleteDialogOpen(false);
     setAgentToDelete(null);
   };
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
@@ -85,6 +115,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
+
   const handleAddAgent = (data: any) => {
     console.log('New agent data:', data);
     // This would typically make an API call to add the agent
@@ -93,6 +124,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
 
   // Get unique regions for filter dropdown
   const regions = ['all', ...new Set(agents.map(agent => agent.region?.split(',')[1]?.trim()).filter(Boolean))];
+  
   return <div className="bg-white rounded-lg shadow-card overflow-hidden">
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -154,6 +186,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
               <th className="px-6 py-3 bg-gray-50">DOB</th>
               <th className="px-6 py-3 bg-gray-50">Bank Account #</th>
               <th className="px-6 py-3 bg-gray-50">Issuing Bank</th>
+              <th className="px-6 py-3 bg-gray-50">Branch</th>
               <th className="px-6 py-3 bg-gray-50">District, State</th>
               <th className="px-6 py-3 bg-gray-50">Gender</th>
               <th className="px-6 py-3 bg-gray-50">Status</th>
@@ -164,7 +197,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
             {currentAgents.length > 0 ? currentAgents.map((agent, index) => <tr key={agent.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{indexOfFirstItem + index + 1}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button onClick={e => handleViewAgent(agent, e)} className=" focus:outline-none text-blue-500">
+                  <button onClick={e => handleViewAgent(agent, e)} className="focus:outline-none text-blue-500">
                     {agent.agentId}
                   </button>
                 </td>
@@ -175,6 +208,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(agent.dob).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.accountNumber}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.bankName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.branch || "EON AUTO MART GLENMARIE"}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.region}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.gender || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -183,17 +217,39 @@ const AgentTable: React.FC<AgentTableProps> = ({
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <div className="flex space-x-2">
-                    <button onClick={e => handleViewAgent(agent, e)} className="p-1 text-gray-500 hover:text-[#00205C] rounded-full hover:bg-gray-100" title="View Agent Details">
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button onClick={e => handleDeleteClick(agent, e)} className="p-1 text-gray-500 hover:text-[#E5241B] rounded-full hover:bg-gray-100" title="Delete Agent">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                  <div className="flex items-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-gray-100">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewAgent(agent, e as unknown as React.MouseEvent);
+                        }}>
+                          <Eye className="mr-2 h-4 w-4" />
+                          <span>View</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(agent, e as unknown as React.MouseEvent);
+                        }}>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Edit</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleApproveClick(agent, e as unknown as React.MouseEvent);
+                        }}>
+                          <Check className="mr-2 h-4 w-4" />
+                          <span>Approve</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </td>
               </tr>) : <tr>
-                <td colSpan={13} className="px-6 py-4 text-center text-sm text-gray-500">
+                <td colSpan={14} className="px-6 py-4 text-center text-sm text-gray-500">
                   No agents found
                 </td>
               </tr>}
