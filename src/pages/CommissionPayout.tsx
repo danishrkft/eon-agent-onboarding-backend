@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { commissionData } from '../utils/mockData';
+import { 
+  commissionData, 
+  commissionDataByCompany, 
+  commissionDataByBranch 
+} from '../utils/mockData';
 import { Calendar, Filter, Download, CreditCard, Search } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useNavigate } from 'react-router-dom';
-import FilterDropdowns from '../components/FilterDropdowns';
+import FilterDropdowns, { DateRange } from '../components/FilterDropdowns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import StatusBreadcrumbs from '../components/StatusBreadcrumbs';
+
 const CommissionPayout = () => {
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -14,7 +20,40 @@ const CommissionPayout = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [company, setCompany] = useState("EPD");
+  const [branch, setBranch] = useState("Edaran Otomobil Nasional Bhd (Glenmarie)");
+  const [filteredData, setFilteredData] = useState<any>(commissionData);
+  
   const itemsPerPage = 10;
+
+  // Update data when filters change
+  useEffect(() => {
+    if (company && branch) {
+      // First filter by company
+      const companyData = commissionDataByCompany[company];
+      
+      // Then filter by branch if available
+      const branchData = commissionDataByBranch[branch];
+      
+      if (branchData) {
+        setFilteredData(branchData);
+      } else if (companyData) {
+        setFilteredData(companyData);
+      } else {
+        setFilteredData(commissionData);
+      }
+    } else if (company) {
+      const companyData = commissionDataByCompany[company];
+      if (companyData) {
+        setFilteredData(companyData);
+      } else {
+        setFilteredData(commissionData);
+      }
+    } else {
+      setFilteredData(commissionData);
+    }
+  }, [company, branch]);
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-MY', {
       style: 'currency',
@@ -22,6 +61,7 @@ const CommissionPayout = () => {
       minimumFractionDigits: 2
     }).format(value);
   };
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'Submitted':
@@ -46,17 +86,20 @@ const CommissionPayout = () => {
   };
 
   // Updated payout data with new statuses
-  const updatedPayouts = commissionData.payouts.map(payout => ({
+  const updatedPayouts = (filteredData?.payouts || []).map((payout: any) => ({
     ...payout,
-    status: ['Submitted', 'Pending Verification', 'Verified', 'Pending Payment', 'Paid', 'Rejected'][Math.floor(Math.random() * 6)],
-    agingDays: Math.floor(Math.random() * 30) + 1
+    status: payout.status || ['Submitted', 'Pending Verification', 'Verified', 'Pending Payment', 'Paid', 'Rejected'][Math.floor(Math.random() * 6)],
+    agingDays: payout.agingDays || Math.floor(Math.random() * 30) + 1
   }));
-  const filteredPayouts = updatedPayouts.filter(payout => {
+
+  const filteredPayouts = updatedPayouts.filter((payout: any) => {
     // Apply search filter
-    const matchesSearch = payout.name.toLowerCase().includes(searchTerm.toLowerCase()) || payout.agentId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = payout.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         payout.agentId.toLowerCase().includes(searchTerm.toLowerCase());
 
     // Apply status filter
     const matchesStatus = selectedStatus === 'all' || payout.status.toLowerCase() === selectedStatus.toLowerCase();
+    
     return matchesSearch && matchesStatus;
   });
 
@@ -65,9 +108,20 @@ const CommissionPayout = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPayouts = filteredPayouts.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredPayouts.length / itemsPerPage);
+
   const handleAgentClick = (agent: any) => {
     setSelectedAgent(agent);
     setDetailsModalOpen(true);
+  };
+
+  const handleCompanyChange = (newCompany: string) => {
+    setCompany(newCompany);
+    setCurrentPage(1); // Reset pagination when filters change
+  };
+
+  const handleBranchChange = (newBranch: string) => {
+    setBranch(newBranch);
+    setCurrentPage(1); // Reset pagination when filters change
   };
 
   // Generate status flow for the selected agent
@@ -122,13 +176,18 @@ const CommissionPayout = () => {
     }
     return statuses;
   };
-  return <Layout>
+
+  return (
+    <Layout>
       <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#00205C]">Commission Payout</h1>
           <p className="text-gray-600">Manage agent commission payments</p>
         </div>
-        <FilterDropdowns />
+        <FilterDropdowns 
+          onCompanyChange={handleCompanyChange}
+          onBranchChange={handleBranchChange}
+        />
       </div>
 
       {/* Summary Cards */}
@@ -137,7 +196,7 @@ const CommissionPayout = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm mb-1">Total Paid This Month</p>
-              <h3 className="text-2xl font-bold">{formatCurrency(commissionData.totalPaidThisMonth)}</h3>
+              <h3 className="text-2xl font-bold">{formatCurrency(filteredData?.totalPaidThisMonth || 0)}</h3>
             </div>
             <div className="bg-green-100 text-green-600 p-3 rounded-lg">
               <CreditCard className="h-6 w-6" />
@@ -148,7 +207,7 @@ const CommissionPayout = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm mb-1">Total Pending</p>
-              <h3 className="text-2xl font-bold">{formatCurrency(commissionData.totalPending)}</h3>
+              <h3 className="text-2xl font-bold">{formatCurrency(filteredData?.totalPending || 0)}</h3>
             </div>
             <div className="bg-yellow-100 text-yellow-600 p-3 rounded-lg">
               <Calendar className="h-6 w-6" />
@@ -163,12 +222,22 @@ const CommissionPayout = () => {
           <div className="flex items-center space-x-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-              <input type="text" placeholder="Search by name or ID..." className="pl-9 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C] text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <input 
+                type="text" 
+                placeholder="Search by name or ID..." 
+                className="pl-9 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C] text-sm" 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+              />
             </div>
             
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-500" />
-              <select className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C]" value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
+              <select 
+                className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C]" 
+                value={selectedStatus} 
+                onChange={e => setSelectedStatus(e.target.value)}
+              >
                 <option value="all">All Status</option>
                 <option value="submitted">Submitted</option>
                 <option value="pending verification">Pending Verification</option>
@@ -181,11 +250,11 @@ const CommissionPayout = () => {
           </div>
           
           <div className="flex items-center space-x-2">
-            <button className="text-white px-3 py-2 rounded-md text-sm flex items-center bg-blue-600 hover:bg-blue-500">
+            <button className="text-white px-3 py-2 rounded-md text-sm flex items-center bg-[#00205C] hover:bg-[#001a4a]">
               <CreditCard className="w-4 h-4 mr-2" />
               Trigger Payout
             </button>
-            <button className="px-3 py-2 rounded-md text-sm flex items-center text-white bg-emerald-600 hover:bg-emerald-500">
+            <button className="px-3 py-2 rounded-md text-sm flex items-center text-white bg-[#E5241B] hover:bg-[#c51f16]">
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </button>
@@ -195,79 +264,108 @@ const CommissionPayout = () => {
 
       {/* Payout Table */}
       <div className="bg-white rounded-lg shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <th className="px-6 py-3 bg-gray-50">Agent ID</th>
-                <th className="px-6 py-3 bg-gray-50">Name</th>
-                <th className="px-6 py-3 bg-gray-50">Commission Tier</th>
-                <th className="px-6 py-3 bg-gray-50">Last Payout</th>
-                <th className="px-6 py-3 bg-gray-50">Last Date</th>
-                <th className="px-6 py-3 bg-gray-50">Next Payment</th>
-                <th className="px-6 py-3 bg-gray-50">YTD Total</th>
-                <th className="px-6 py-3 bg-gray-50">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {currentPayouts.map(payout => <tr key={payout.agentId}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onClick={() => handleAgentClick(payout)} className="text-blue-600 hover:underline font-medium">
-                      {payout.agentId}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.tier}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{formatCurrency(payout.lastAmount)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(payout.lastDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(payout.nextDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{formatCurrency(payout.ytdTotal)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payout.status)}`}>
-                      {payout.status}
-                    </span>
-                  </td>
-                </tr>)}
-            </tbody>
-          </table>
-        </div>
+        {filteredPayouts.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 bg-gray-50">Agent ID</th>
+                  <th className="px-6 py-3 bg-gray-50">Name</th>
+                  <th className="px-6 py-3 bg-gray-50">Commission Tier</th>
+                  <th className="px-6 py-3 bg-gray-50">Company</th>
+                  <th className="px-6 py-3 bg-gray-50">Branch</th>
+                  <th className="px-6 py-3 bg-gray-50">Last Payout</th>
+                  <th className="px-6 py-3 bg-gray-50">Last Date</th>
+                  <th className="px-6 py-3 bg-gray-50">Next Payment</th>
+                  <th className="px-6 py-3 bg-gray-50">YTD Total</th>
+                  <th className="px-6 py-3 bg-gray-50">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {currentPayouts.map((payout: any) => (
+                  <tr key={payout.agentId}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button 
+                        onClick={() => handleAgentClick(payout)} 
+                        className="text-[#00205C] hover:underline font-medium"
+                      >
+                        {payout.agentId}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.tier}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.company}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm truncate max-w-[150px]" title={payout.branch}>{payout.branch}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{formatCurrency(payout.lastAmount)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.lastDate ? new Date(payout.lastDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{payout.nextDate ? new Date(payout.nextDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{formatCurrency(payout.ytdTotal)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payout.status)}`}>
+                        {payout.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-10 text-gray-500">
+            No commission payouts found for the selected filters.
+          </div>
+        )}
         
         {/* Pagination */}
-        {filteredPayouts.length > 0 && <div className="py-4">
+        {filteredPayouts.length > 0 && (
+          <div className="py-4">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} />
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                  />
                 </PaginationItem>
                 
                 {Array.from({
-              length: Math.min(totalPages, 5)
-            }).map((_, i) => {
-              // Show pagination numbers based on current page
-              let pageNumber;
-              if (totalPages <= 5) {
-                pageNumber = i + 1;
-              } else if (currentPage <= 3) {
-                pageNumber = i + 1;
-                if (i === 4) pageNumber = totalPages;
-              } else if (currentPage >= totalPages - 2) {
-                pageNumber = totalPages - 4 + i;
-              } else {
-                pageNumber = currentPage - 2 + i;
-              }
-              return <PaginationItem key={i}>
-                      <PaginationLink isActive={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)} className="cursor-pointer">
+                  length: Math.min(totalPages, 5)
+                }).map((_, i) => {
+                  // Show pagination numbers based on current page
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                    if (i === 4) pageNumber = totalPages;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+                  return (
+                    <PaginationItem key={i}>
+                      <PaginationLink 
+                        isActive={pageNumber === currentPage} 
+                        onClick={() => setCurrentPage(pageNumber)} 
+                        className="cursor-pointer"
+                      >
                         {pageNumber}
                       </PaginationLink>
-                    </PaginationItem>;
-            })}
+                    </PaginationItem>
+                  );
+                })}
                 
                 <PaginationItem>
-                  <PaginationNext onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} />
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                  />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>}
+          </div>
+        )}
       </div>
 
       {/* Commission Details Modal */}
@@ -280,8 +378,13 @@ const CommissionPayout = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {selectedAgent && <div className="space-y-6 pt-4">
-              <StatusBreadcrumbs statuses={getAgentStatusFlow(selectedAgent)} showAgingPeriod={selectedAgent.status === 'Pending Payment'} agingDays={selectedAgent.agingDays} />
+          {selectedAgent && (
+            <div className="space-y-6 pt-4">
+              <StatusBreadcrumbs 
+                statuses={getAgentStatusFlow(selectedAgent)} 
+                showAgingPeriod={selectedAgent.status === 'Pending Payment'} 
+                agingDays={selectedAgent.agingDays} 
+              />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -321,12 +424,26 @@ const CommissionPayout = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Last Date</p>
-                      <p className="font-medium">{new Date(selectedAgent.lastDate).toLocaleDateString()}</p>
+                      <p className="font-medium">{selectedAgent.lastDate ? new Date(selectedAgent.lastDate).toLocaleDateString() : '-'}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Next Date</p>
-                      <p className="font-medium">{new Date(selectedAgent.nextDate).toLocaleDateString()}</p>
+                      <p className="font-medium">{selectedAgent.nextDate ? new Date(selectedAgent.nextDate).toLocaleDateString() : '-'}</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-gray-500">Company & Branch</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-xs text-gray-500">Company</p>
+                    <p className="font-medium">{selectedAgent.company}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Branch</p>
+                    <p className="font-medium">{selectedAgent.branch}</p>
                   </div>
                 </div>
               </div>
@@ -344,11 +461,12 @@ const CommissionPayout = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {[...Array(4)].map((_, i) => {
-                  const date = new Date();
-                  date.setMonth(date.getMonth() - i);
-                  const statuses = ['Paid', 'Paid', 'Paid', 'Rejected'];
-                  const amounts = [selectedAgent.lastAmount, selectedAgent.lastAmount * 0.9, selectedAgent.lastAmount * 0.85, selectedAgent.lastAmount * 0.75];
-                  return <tr key={i}>
+                      const date = new Date();
+                      date.setMonth(date.getMonth() - i);
+                      const statuses = ['Paid', 'Paid', 'Paid', 'Rejected'];
+                      const amounts = [selectedAgent.lastAmount, selectedAgent.lastAmount * 0.9, selectedAgent.lastAmount * 0.85, selectedAgent.lastAmount * 0.75];
+                      return (
+                        <tr key={i}>
                           <td className="px-4 py-2 whitespace-nowrap text-sm">
                             {date.toLocaleDateString()}
                           </td>
@@ -363,14 +481,18 @@ const CommissionPayout = () => {
                               {statuses[i]}
                             </span>
                           </td>
-                        </tr>;
-                })}
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
-            </div>}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default CommissionPayout;
