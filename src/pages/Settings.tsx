@@ -346,7 +346,7 @@ const Settings = () => {
                 </div>
               </div>
               <div className="p-4 bg-gray-50 flex justify-end">
-                <Button onClick={() => handleSaveSettings('profile')} className="bg-[#00205C] hover:bg-[#001845]">
+                <Button onClick={() => handleSaveSettings('profile')} className="bg-blue-600 hover:bg-blue-500">
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
