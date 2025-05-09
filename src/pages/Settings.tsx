@@ -660,7 +660,7 @@ const Settings = () => {
           <TabsContent value="organization" className="space-y-4">
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-medium">Organization Details</h2>
+                <h2 className="text-lg font-semibold">Organization Details</h2>
                 <p className="text-sm text-gray-500">Manage your company information</p>
               </div>
               <div className="p-4 space-y-4">
