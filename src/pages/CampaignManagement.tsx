@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,54 +15,47 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 // Sample data for campaigns
-const campaignData = [
-  { 
-    id: 'CAMP001', 
-    name: 'Summer Recruitment Drive', 
-    startDate: new Date(2025, 5, 1), 
-    endDate: new Date(2025, 7, 31), 
-    target: 50, 
-    status: 'Active',
-    progress: 28
-  },
-  { 
-    id: 'CAMP002', 
-    name: 'Winter Agent Acquisition', 
-    startDate: new Date(2025, 10, 1), 
-    endDate: new Date(2026, 0, 31), 
-    target: 75, 
-    status: 'Upcoming',
-    progress: 0
-  },
-  { 
-    id: 'CAMP003', 
-    name: 'Q3 Expansion Program', 
-    startDate: new Date(2025, 6, 1), 
-    endDate: new Date(2025, 8, 30), 
-    target: 30, 
-    status: 'Active',
-    progress: 12
-  },
-  { 
-    id: 'CAMP004', 
-    name: 'Regional Partnership Initiative', 
-    startDate: new Date(2025, 3, 15), 
-    endDate: new Date(2025, 5, 15), 
-    target: 25, 
-    status: 'Completed',
-    progress: 25
-  },
-  { 
-    id: 'CAMP005', 
-    name: 'New Market Entry Campaign', 
-    startDate: new Date(2025, 8, 1), 
-    endDate: new Date(2025, 11, 31), 
-    target: 100, 
-    status: 'Upcoming',
-    progress: 0
-  }
-];
-
+const campaignData = [{
+  id: 'CAMP001',
+  name: 'Summer Recruitment Drive',
+  startDate: new Date(2025, 5, 1),
+  endDate: new Date(2025, 7, 31),
+  target: 50,
+  status: 'Active',
+  progress: 28
+}, {
+  id: 'CAMP002',
+  name: 'Winter Agent Acquisition',
+  startDate: new Date(2025, 10, 1),
+  endDate: new Date(2026, 0, 31),
+  target: 75,
+  status: 'Upcoming',
+  progress: 0
+}, {
+  id: 'CAMP003',
+  name: 'Q3 Expansion Program',
+  startDate: new Date(2025, 6, 1),
+  endDate: new Date(2025, 8, 30),
+  target: 30,
+  status: 'Active',
+  progress: 12
+}, {
+  id: 'CAMP004',
+  name: 'Regional Partnership Initiative',
+  startDate: new Date(2025, 3, 15),
+  endDate: new Date(2025, 5, 15),
+  target: 25,
+  status: 'Completed',
+  progress: 25
+}, {
+  id: 'CAMP005',
+  name: 'New Market Entry Campaign',
+  startDate: new Date(2025, 8, 1),
+  endDate: new Date(2025, 11, 31),
+  target: 100,
+  status: 'Upcoming',
+  progress: 0
+}];
 const CampaignManagement: React.FC = () => {
   const [campaigns] = useState(campaignData);
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,23 +63,20 @@ const CampaignManagement: React.FC = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  
+
   // Filter campaigns based on search term and status filter
   const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         campaign.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) || campaign.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
-  
-  return (
-    <Layout>
+  return <Layout>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Registration Campaign Management</h1>
+          <h1 className="font-bold text-[00205c] text-[#00205c]">Registration Campaign Management</h1>
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#00205C] hover:bg-[#00205C]/90">Create New Campaign</Button>
+              <Button className="bg-blue-600 hover:bg-blue-500">Create New Campaign</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px]">
               <DialogHeader>
@@ -110,24 +99,13 @@ const CampaignManagement: React.FC = () => {
                   <div className="col-span-3">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !startDate && "text-muted-foreground"
-                          )}
-                        >
+                        <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {startDate ? format(startDate, "PPP") : "Select date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={startDate}
-                          onSelect={setStartDate}
-                          initialFocus
-                        />
+                        <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
                       </PopoverContent>
                     </Popover>
                   </div>
@@ -139,24 +117,13 @@ const CampaignManagement: React.FC = () => {
                   <div className="col-span-3">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !endDate && "text-muted-foreground"
-                          )}
-                        >
+                        <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {endDate ? format(endDate, "PPP") : "Select date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={endDate}
-                          onSelect={setEndDate}
-                          initialFocus
-                        />
+                        <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
                       </PopoverContent>
                     </Popover>
                   </div>
@@ -165,25 +132,14 @@ const CampaignManagement: React.FC = () => {
                   <Label htmlFor="target" className="text-right">
                     Target
                   </Label>
-                  <Input 
-                    id="target" 
-                    type="number" 
-                    className="col-span-3" 
-                    placeholder="Enter registration target"
-                  />
+                  <Input id="target" type="number" className="col-span-3" placeholder="Enter registration target" />
                 </div>
               </div>
               <DialogFooter>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowDialog(false)}
-                >
+                <Button variant="outline" onClick={() => setShowDialog(false)}>
                   Cancel
                 </Button>
-                <Button 
-                  className="bg-[#00205C] hover:bg-[#00205C]/90" 
-                  onClick={() => setShowDialog(false)}
-                >
+                <Button className="bg-[#00205C] hover:bg-[#00205C]/90" onClick={() => setShowDialog(false)}>
                   Create Campaign
                 </Button>
               </DialogFooter>
@@ -209,16 +165,9 @@ const CampaignManagement: React.FC = () => {
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1 mr-4">
-                    <Input
-                      placeholder="Search campaigns..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <Input placeholder="Search campaigns..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
                   </div>
-                  <Select
-                    value={statusFilter}
-                    onValueChange={setStatusFilter}
-                  >
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
@@ -245,8 +194,7 @@ const CampaignManagement: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredCampaigns.map((campaign) => (
-                        <TableRow key={campaign.id}>
+                      {filteredCampaigns.map(campaign => <TableRow key={campaign.id}>
                           <TableCell className="font-medium">{campaign.id}</TableCell>
                           <TableCell>{campaign.name}</TableCell>
                           <TableCell>
@@ -256,25 +204,16 @@ const CampaignManagement: React.FC = () => {
                           <TableCell>{campaign.target}</TableCell>
                           <TableCell>
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
-                              <div 
-                                className={`h-2.5 rounded-full ${
-                                  campaign.status === 'Completed' ? 'bg-green-500' : 'bg-[#00205C]'
-                                }`} 
-                                style={{ width: `${(campaign.progress / campaign.target) * 100}%` }}
-                              ></div>
+                              <div className={`h-2.5 rounded-full ${campaign.status === 'Completed' ? 'bg-green-500' : 'bg-[#00205C]'}`} style={{
+                            width: `${campaign.progress / campaign.target * 100}%`
+                          }}></div>
                             </div>
                             <div className="text-xs text-gray-500 mt-1">
-                              {campaign.progress} of {campaign.target} ({Math.round((campaign.progress / campaign.target) * 100)}%)
+                              {campaign.progress} of {campaign.target} ({Math.round(campaign.progress / campaign.target * 100)}%)
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              campaign.status === 'Active' 
-                                ? 'bg-green-100 text-green-800'
-                                : campaign.status === 'Upcoming' 
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : 'bg-gray-100 text-gray-800'
-                            }`}>
+                            <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${campaign.status === 'Active' ? 'bg-green-100 text-green-800' : campaign.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                               {campaign.status}
                             </div>
                           </TableCell>
@@ -288,8 +227,7 @@ const CampaignManagement: React.FC = () => {
                               </Button>
                             </div>
                           </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableRow>)}
                     </TableBody>
                   </Table>
                 </div>
@@ -297,18 +235,10 @@ const CampaignManagement: React.FC = () => {
               <CardFooter className="flex justify-between">
                 <Button variant="outline">Export Data</Button>
                 <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled
-                  >
+                  <Button variant="outline" size="sm" disabled>
                     Previous
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled
-                  >
+                  <Button variant="outline" size="sm" disabled>
                     Next
                   </Button>
                 </div>
@@ -398,8 +328,6 @@ const CampaignManagement: React.FC = () => {
           </Card>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default CampaignManagement;
