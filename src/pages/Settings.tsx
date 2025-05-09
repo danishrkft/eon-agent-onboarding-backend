@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '../components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,26 +12,51 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Edit, Trash2, UserPlus, UserCog, Key } from 'lucide-react';
-
 const Settings: React.FC = () => {
   // Sample user data for User Access tab
-  const users = [
-    { id: 1, name: "Ahmad Faizal", email: "ahmad.faizal@eon.my", role: "Admin", status: "Active", lastActive: "2025-04-25" },
-    { id: 2, name: "Nur Hidayah", email: "nur.hidayah@eon.my", role: "Manager", status: "Active", lastActive: "2025-04-24" },
-    { id: 3, name: "Tan Wei Ming", email: "wei.ming@eon.my", role: "Editor", status: "Active", lastActive: "2025-04-26" },
-    { id: 4, name: "Rajesh Kumar", email: "rajesh.kumar@eon.my", role: "Viewer", status: "Inactive", lastActive: "2025-03-30" },
-    { id: 5, name: "Lim Chee Keong", email: "chee.keong@eon.my", role: "Viewer", status: "Active", lastActive: "2025-04-23" },
-  ];
-
+  const users = [{
+    id: 1,
+    name: "Ahmad Faizal",
+    email: "ahmad.faizal@eon.my",
+    role: "Admin",
+    status: "Active",
+    lastActive: "2025-04-25"
+  }, {
+    id: 2,
+    name: "Nur Hidayah",
+    email: "nur.hidayah@eon.my",
+    role: "Manager",
+    status: "Active",
+    lastActive: "2025-04-24"
+  }, {
+    id: 3,
+    name: "Tan Wei Ming",
+    email: "wei.ming@eon.my",
+    role: "Editor",
+    status: "Active",
+    lastActive: "2025-04-26"
+  }, {
+    id: 4,
+    name: "Rajesh Kumar",
+    email: "rajesh.kumar@eon.my",
+    role: "Viewer",
+    status: "Inactive",
+    lastActive: "2025-03-30"
+  }, {
+    id: 5,
+    name: "Lim Chee Keong",
+    email: "chee.keong@eon.my",
+    role: "Viewer",
+    status: "Active",
+    lastActive: "2025-04-23"
+  }];
   const userRolePermissions = {
     "Admin": ["View Reports", "Edit Reports", "Manage Users", "Manage Settings", "Approve Applications", "Manage Campaigns"],
     "Manager": ["View Reports", "Edit Reports", "Approve Applications", "Manage Campaigns"],
     "Editor": ["View Reports", "Edit Reports", "Manage Campaigns"],
     "Viewer": ["View Reports"]
   };
-
-  return (
-    <Layout>
+  return <Layout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-[#00205C]">Settings</h1>
@@ -78,7 +102,7 @@ const Settings: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="bg-[#00205C] hover:bg-[#001A45]">Save Changes</Button>
+                  <Button className="bg-blue-600 hover:bg-blue-500">Save Changes</Button>
                 </CardFooter>
               </Card>
 
@@ -104,7 +128,7 @@ const Settings: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="bg-[#00205C] hover:bg-[#001A45]">Change Password</Button>
+                  <Button className="bg-blue-600 hover:bg-blue-500">Change Password</Button>
                 </CardFooter>
               </Card>
             </div>
@@ -360,8 +384,7 @@ const Settings: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {users.map(user => (
-                        <TableRow key={user.id}>
+                      {users.map(user => <TableRow key={user.id}>
                           <TableCell className="font-medium">{user.name}</TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>{user.role}</TableCell>
@@ -384,8 +407,7 @@ const Settings: React.FC = () => {
                               </Button>
                             </div>
                           </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableRow>)}
                     </TableBody>
                   </Table>
                 </div>
@@ -410,8 +432,7 @@ const Settings: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {Object.entries(userRolePermissions).flatMap(([_, perms]) => perms).filter((value, index, self) => self.indexOf(value) === index).map((permission, i) => (
-                        <TableRow key={i}>
+                      {Object.entries(userRolePermissions).flatMap(([_, perms]) => perms).filter((value, index, self) => self.indexOf(value) === index).map((permission, i) => <TableRow key={i}>
                           <TableCell>{permission}</TableCell>
                           <TableCell>
                             <Checkbox checked={userRolePermissions["Admin"].includes(permission)} disabled />
@@ -425,8 +446,7 @@ const Settings: React.FC = () => {
                           <TableCell>
                             <Checkbox checked={userRolePermissions["Viewer"].includes(permission)} disabled />
                           </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableRow>)}
                     </TableBody>
                   </Table>
                 </div>
@@ -438,8 +458,6 @@ const Settings: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Settings;
