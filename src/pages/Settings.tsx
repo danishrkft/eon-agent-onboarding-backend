@@ -358,7 +358,7 @@ const Settings = () => {
           <TabsContent value="security" className="space-y-4">
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-medium">Password</h2>
+                <h2 className="text-lg font-semibold">Password</h2>
                 <p className="text-sm text-gray-500">Update your password</p>
               </div>
               <form onSubmit={handleChangePassword} className="p-4 space-y-4">
