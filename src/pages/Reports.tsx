@@ -95,8 +95,8 @@ const Reports = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
-  const [revenueYear, setRevenueYear] = useState<keyof typeof yearlyRevenueData>("2025");
-  const [productivityYear, setProductivityYear] = useState<keyof typeof yearlyAgentProductivityData>("2025");
+  const [revenueYear, setRevenueYear] = useState<keyof typeof yearlyRevenueData>(2025);
+  const [productivityYear, setProductivityYear] = useState<keyof typeof yearlyAgentProductivityData>(2025);
   
   const itemsPerPage = 10;
   
