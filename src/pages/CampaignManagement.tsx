@@ -282,7 +282,7 @@ const CampaignManagement: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Campaign Performance</CardTitle>
+              <CardTitle className="text-lg font-semibold">Campaign Performance</CardTitle>
               <CardDescription>Registration conversion rates for active campaigns</CardDescription>
             </CardHeader>
             <CardContent>
@@ -296,7 +296,7 @@ const CampaignManagement: React.FC = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Campaign Statistics</CardTitle>
+              <CardTitle className="text-lg">Campaign Statistics</CardTitle>
               <CardDescription>Key metrics for all registration campaigns</CardDescription>
             </CardHeader>
             <CardContent>
