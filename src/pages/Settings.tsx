@@ -475,7 +475,7 @@ const Settings = () => {
           <TabsContent value="api" className="space-y-4">
             <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-medium">API Configuration</h2>
+                <h2 className="text-lg font-semibold">API Configuration</h2>
                 <p className="text-sm text-gray-500">Manage API keys and integrations</p>
               </div>
               <div className="p-4 space-y-4">
