@@ -399,7 +399,7 @@ const CampaignManagement: React.FC = () => {
           <TabsContent value="completed">
             <Card>
               <CardHeader>
-                <CardTitle>Completed Campaigns</CardTitle>
+                <CardTitle className="text-lg">Completed Campaigns</CardTitle>
                 <CardDescription>
                   Registration campaigns that have ended.
                 </CardDescription>
