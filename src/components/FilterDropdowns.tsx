@@ -28,37 +28,52 @@ const COMPANIES = [
   "ACM",
 ];
 
-const BRANCHES = [
-  "Edaran Otomobil Nasional Bhd (Glenmarie)",
-  "Edaran Otomobil Nasional Bhd (Damansara)",
-  "Edaran Otomobil Nasional Bhd (Alor Setar)",
-  "Edaran Otomobil Nasional Bhd (Makloom)",
-  "Edaran Otomobil Nasional Bhd (Juru)",
-  "Edaran Otomobil Nasional Bhd (Banting)",
-  "Edaran Otomobil Nasional Bhd (Taiping)",
-  "Edaran Otomobil Nasional Bhd (Larkin)",
-  "Edaran Otomobil Nasional Bhd (Batu Pahat)",
-  "Edaran Otomobil Nasional Bhd (Kota Bharu)",
-  "EON AUTO MART AMPANG",
-  "EON AUTO MART GLENMARIE",
-  "EON AUTO MART BAYAN LEPAS",
-  "EON AUTO MART MELAKA",
-  "EON AUTO MART KOTA KINABALU",
-  "EON AUTO MART TAWAU",
-  "EON AUTO MART KUCHING",
-  "EON AUTO MART JOHOR BAHRU",
-  "Audi Centre GM",
-  "Volkswagen Seremban (HICOM Auto)",
-  "EON AUTO MART KK2 PUTATAN",
-  "Audi Damansara",
-  "Automotive Corporation (M) - Batu Caves",
-  "ACM Parts & Services Penang",
-  "ACM Parts & Services Kuantan",
-  "Automotive Corporation (M) - Juru",
-  "Automotive Corporation (M) - Ipoh",
-  "Automotive Corporation (M) - Kuantan",
-  "Automotive Corporation (M) - Johor Bahru",
-];
+// Map of companies to their branches
+const COMPANY_BRANCHES: Record<string, string[]> = {
+  "EPD": [
+    "Edaran Otomobil Nasional Bhd (Glenmarie)",
+    "Edaran Otomobil Nasional Bhd (Damansara)",
+    "Edaran Otomobil Nasional Bhd (Alor Setar)",
+    "Edaran Otomobil Nasional Bhd (Makloom)",
+    "Edaran Otomobil Nasional Bhd (Juru)",
+    "Edaran Otomobil Nasional Bhd (Banting)",
+    "Edaran Otomobil Nasional Bhd (Taiping)",
+    "Edaran Otomobil Nasional Bhd (Larkin)",
+    "Edaran Otomobil Nasional Bhd (Batu Pahat)",
+    "Edaran Otomobil Nasional Bhd (Kota Bharu)",
+  ],
+  "EAM": [
+    "EON AUTO MART AMPANG",
+    "EON AUTO MART GLENMARIE",
+    "EON AUTO MART BAYAN LEPAS",
+    "EON AUTO MART MELAKA",
+    "EON AUTO MART KOTA KINABALU",
+    "EON AUTO MART TAWAU",
+    "EON AUTO MART KUCHING",
+    "EON AUTO MART JOHOR BAHRU",
+    "EON AUTO MART KK2 PUTATAN",
+  ],
+  "ESB": [
+    "Edaran Setia Bhd (HQ)",
+    "Edaran Setia Bhd (Penang)",
+    "Edaran Setia Bhd (Johor)",
+  ],
+  "HASB": [
+    "HICOM Auto Sdn Bhd (HQ)",
+    "Volkswagen Seremban (HICOM Auto)",
+  ],
+  "ACM": [
+    "Audi Centre GM",
+    "Audi Damansara",
+    "Automotive Corporation (M) - Batu Caves",
+    "ACM Parts & Services Penang",
+    "ACM Parts & Services Kuantan",
+    "Automotive Corporation (M) - Juru",
+    "Automotive Corporation (M) - Ipoh",
+    "Automotive Corporation (M) - Kuantan",
+    "Automotive Corporation (M) - Johor Bahru",
+  ],
+};
 
 const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true, onDateChange, onCompanyChange, onBranchChange }) => {
   const [dateRange, setDateRange] = React.useState<DateRange>({
@@ -69,8 +84,20 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true
   const [dateFilterOption, setDateFilterOption] = React.useState("today");
   const [company, setCompany] = React.useState<string>("EPD");
   const [companyOpen, setCompanyOpen] = React.useState(false);
-  const [branch, setBranch] = React.useState<string>("Edaran Otomobil Nasional Bhd (Glenmarie)");
+  const [branch, setBranch] = React.useState<string>("");
   const [branchOpen, setBranchOpen] = React.useState(false);
+  
+  // Set initial branch when component mounts
+  React.useEffect(() => {
+    if (company && COMPANY_BRANCHES[company]?.length > 0) {
+      setBranch(COMPANY_BRANCHES[company][0]);
+    }
+  }, []);
+
+  // Get available branches based on selected company
+  const availableBranches = React.useMemo(() => {
+    return company ? (COMPANY_BRANCHES[company] || []) : [];
+  }, [company]);
 
   const handleDateChange = (range: DateRange) => {
     setDateRange(range);
@@ -124,6 +151,17 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true
 
   const handleCompanyChange = (value: string) => {
     setCompany(value);
+    
+    // When company changes, set the first branch of that company
+    if (COMPANY_BRANCHES[value]?.length > 0) {
+      const firstBranch = COMPANY_BRANCHES[value][0];
+      setBranch(firstBranch);
+      
+      if (onBranchChange) {
+        onBranchChange(firstBranch);
+      }
+    }
+    
     if (onCompanyChange) {
       onCompanyChange(value);
     }
@@ -187,7 +225,7 @@ const FilterDropdowns: React.FC<FilterDropdownsProps> = ({ showDateFilter = true
             <CommandInput placeholder="Search branch..." />
             <CommandEmpty>No branch found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">
-              {BRANCHES.map((item) => (
+              {availableBranches.map((item) => (
                 <CommandItem
                   key={item}
                   value={item}
