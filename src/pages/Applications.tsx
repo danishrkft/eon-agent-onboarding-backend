@@ -1,347 +1,40 @@
+
 import React, { useState } from 'react';
-import { Filter, PlusCircle, Search, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 import Layout from '../components/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
-import FilterDropdowns from '../components/FilterDropdowns';
+import { Button } from "@/components/ui/button";
+import { Plus } from 'lucide-react';
+import ApplicationForm from '../components/ApplicationForm';
 
-// Sample application data with Malaysian names and campaign column
-const applicationData = [{
-  id: 'APP001',
-  agent: 'Ahmad Faizal bin Razali',
-  type: 'New Agent',
-  submissionDate: '2025-04-01',
-  status: 'Pending',
-  documents: 4,
-  campaign: 'Summer Recruitment Drive'
-}, {
-  id: 'APP002',
-  agent: 'Nur Hidayah binti Abdullah',
-  type: 'License Renewal',
-  submissionDate: '2025-04-02',
-  status: 'Approved',
-  documents: 3,
-  campaign: 'Q3 Expansion Program'
-}, {
-  id: 'APP003',
-  agent: 'Mohd Zulkifli bin Hassan',
-  type: 'New Agent',
-  submissionDate: '2025-04-03',
-  status: 'Rejected',
-  documents: 5,
-  campaign: 'Regional Partnership Initiative'
-}, {
-  id: 'APP004',
-  agent: 'Siti Aisyah binti Kamal',
-  type: 'Address Change',
-  submissionDate: '2025-04-03',
-  status: 'Pending',
-  documents: 2,
-  campaign: 'Summer Recruitment Drive'
-}, {
-  id: 'APP005',
-  agent: 'Tan Wei Ming',
-  type: 'New Agent',
-  submissionDate: '2025-04-04',
-  status: 'Approved',
-  documents: 4,
-  campaign: 'New Market Entry Campaign'
-}, {
-  id: 'APP006',
-  agent: 'Rajesh Kumar a/l Govindasamy',
-  type: 'License Renewal',
-  submissionDate: '2025-04-05',
-  status: 'Pending',
-  documents: 3,
-  campaign: 'Graduate Recruitment Program'
-}, {
-  id: 'APP007',
-  agent: 'Lim Chee Keong',
-  type: 'New Agent',
-  submissionDate: '2025-04-06',
-  status: 'Pending',
-  documents: 5,
-  campaign: 'East Coast Expansion'
-}, {
-  id: 'APP008',
-  agent: 'Nurul Huda binti Ibrahim',
-  type: 'Address Change',
-  submissionDate: '2025-04-07',
-  status: 'Approved',
-  documents: 2,
-  campaign: 'Winter Agent Acquisition'
-}, {
-  id: 'APP009',
-  agent: 'Santana a/l Muthu',
-  type: 'License Renewal',
-  submissionDate: '2025-04-08',
-  status: 'Rejected',
-  documents: 3,
-  campaign: 'Referral Incentive Campaign'
-}, {
-  id: 'APP010',
-  agent: 'Wong Mei Ling',
-  type: 'New Agent',
-  submissionDate: '2025-04-09',
-  status: 'Pending',
-  documents: 4,
-  campaign: 'Summer Recruitment Drive'
-}, {
-  id: 'APP011',
-  agent: 'Amirul Hakimi bin Ismail',
-  type: 'Address Change',
-  submissionDate: '2025-04-10',
-  status: 'Approved',
-  documents: 2,
-  campaign: 'Q3 Expansion Program'
-}, {
-  id: 'APP012',
-  agent: 'Lai Siew Mei',
-  type: 'License Renewal',
-  submissionDate: '2025-04-11',
-  status: 'Pending',
-  documents: 3,
-  campaign: 'Regional Partnership Initiative'
-}, {
-  id: 'APP013',
-  agent: 'Abdul Rahman bin Omar',
-  type: 'New Agent',
-  submissionDate: '2025-04-12',
-  status: 'Approved',
-  documents: 5,
-  campaign: 'Graduate Recruitment Program'
-}, {
-  id: 'APP014',
-  agent: 'Kavitha a/p Raj',
-  type: 'Address Change',
-  submissionDate: '2025-04-13',
-  status: 'Rejected',
-  documents: 2,
-  campaign: 'East Coast Expansion'
-}, {
-  id: 'APP015',
-  agent: 'Lee Chong Wei',
-  type: 'License Renewal',
-  submissionDate: '2025-04-14',
-  status: 'Pending',
-  documents: 3,
-  campaign: 'Winter Agent Acquisition'
-}];
-const Applications = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
-  const [filterType, setFilterType] = useState('All');
-  const [filterCampaign, setFilterCampaign] = useState('All');
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const itemsPerPage = 10;
+const Applications: React.FC = () => {
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
 
-  // Filter data based on search term, status, type, and campaign
-  const filteredData = applicationData.filter(application => {
-    const matchesSearch = application.agent.toLowerCase().includes(searchTerm.toLowerCase()) || application.id.toLowerCase().includes(searchTerm.toLowerCase()) || application.campaign.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'All' || application.status === filterStatus;
-    const matchesType = filterType === 'All' || application.type === filterType;
-    const matchesCampaign = filterCampaign === 'All' || application.campaign === filterCampaign;
-    return matchesSearch && matchesStatus && matchesType && matchesCampaign;
-  });
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  // Extract unique statuses, types, and campaigns
-  const statuses = ['All', ...Array.from(new Set(applicationData.map(app => app.status)))];
-  const types = ['All', ...Array.from(new Set(applicationData.map(app => app.type)))];
-  const campaigns = ['All', ...Array.from(new Set(applicationData.map(app => app.campaign)))];
-
-  // Count applications by status
-  const pendingCount = applicationData.filter(app => app.status === 'Pending').length;
-  const approvedCount = applicationData.filter(app => app.status === 'Approved').length;
-  const rejectedCount = applicationData.filter(app => app.status === 'Rejected').length;
-  const handleViewApplication = (application: any) => {
-    setSelectedApplication(application);
-    setDetailsModalOpen(true);
-  };
-  return <Layout>
-      <div className="w-full space-y-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-[#00205C]">Applications</h1>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <FilterDropdowns showDateFilter={false} />
-            <Button className="bg-blue-600 hover:bg-blue-500">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              New Application
-            </Button>
-          </div>
+  return (
+    <Layout>
+      <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#00205C] dark:text-white">Applications Management</h1>
+          <p className="text-gray-600 dark:text-gray-400">Review and manage agent applications</p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center">
-            <div className="rounded-full bg-blue-100 p-3 mr-4">
-              <Clock className="h-6 w-6 text-[#00205C]" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Pending Applications</p>
-              <p className="text-2xl font-bold">{pendingCount}</p>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center">
-            <div className="rounded-full bg-green-100 p-3 mr-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Approved Applications</p>
-              <p className="text-2xl font-bold">{approvedCount}</p>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center">
-            <div className="rounded-full bg-red-100 p-3 mr-4">
-              <XCircle className="h-6 w-6 text-[#E5241B]" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Rejected Applications</p>
-              <p className="text-2xl font-bold">{rejectedCount}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
-          <div className="p-4 border-b flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-            <h2 className="text-lg font-semibold">Application Submissions</h2>
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input placeholder="Search applications..." className="pl-9" value={searchTerm} onChange={e => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }} />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Filter className="text-gray-400 h-4 w-4" />
-                <select className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00205C]" value={filterStatus} onChange={e => {
-                setFilterStatus(e.target.value);
-                setCurrentPage(1);
-              }}>
-                  {statuses.map(status => <option key={status} value={status}>{status}</option>)}
-                </select>
-                <select className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00205C]" value={filterType} onChange={e => {
-                setFilterType(e.target.value);
-                setCurrentPage(1);
-              }}>
-                  {types.map(type => <option key={type} value={type}>{type}</option>)}
-                </select>
-                <select className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00205C]" value={filterCampaign} onChange={e => {
-                setFilterCampaign(e.target.value);
-                setCurrentPage(1);
-              }}>
-                  {campaigns.map(campaign => <option key={campaign} value={campaign}>{campaign}</option>)}
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Application ID</TableHead>
-                <TableHead>Agent Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Campaign</TableHead>
-                <TableHead>Submission Date</TableHead>
-                <TableHead>Documents</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedData.length > 0 ? paginatedData.map(application => <TableRow key={application.id}>
-                    <TableCell className="font-medium">
-                      <button onClick={() => handleViewApplication(application)} className=" focus:outline-none text-blue-600">
-                        {application.id}
-                      </button>
-                    </TableCell>
-                    <TableCell>{application.agent}</TableCell>
-                    <TableCell>{application.type}</TableCell>
-                    <TableCell>{application.campaign}</TableCell>
-                    <TableCell>{new Date(application.submissionDate).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <FileText className="h-4 w-4 mr-1 text-gray-500" />
-                        {application.documents}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={application.status === 'Approved' ? 'bg-green-100 text-green-800 hover:bg-green-100' : application.status === 'Rejected' ? 'bg-red-100 text-red-800 hover:bg-red-100' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'}>
-                        {application.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button size="sm" variant="outline" className="border-[#00205C] text-[#00205C] hover:bg-[#00205C] hover:text-white" onClick={() => handleViewApplication(application)}>
-                        View
-                      </Button>
-                    </TableCell>
-                  </TableRow>) : <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                    No applications found matching your criteria
-                  </TableCell>
-                </TableRow>}
-            </TableBody>
-          </Table>
-          
-          {/* Pagination */}
-          {totalPages > 1 && <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3">
-              <div className="flex flex-1 justify-between sm:hidden">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                  Previous
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                  Next
-                </Button>
-              </div>
-              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
-                    <span className="font-medium">
-                      {Math.min(currentPage * itemsPerPage, filteredData.length)}
-                    </span> of{' '}
-                    <span className="font-medium">{filteredData.length}</span> applications
-                  </p>
-                </div>
-                <div>
-                  <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                    <Button variant="outline" size="icon" className="rounded-l-md" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                      <span className="sr-only">Previous</span>
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                      </svg>
-                    </Button>
-                    {Array.from({
-                  length: totalPages
-                }, (_, i) => i + 1).map(page => <Button key={page} variant={currentPage === page ? "default" : "outline"} size="icon" className={currentPage === page ? "bg-[#00205C]" : ""} onClick={() => setCurrentPage(page)}>
-                        {page}
-                      </Button>)}
-                    <Button variant="outline" size="icon" className="rounded-r-md" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                      <span className="sr-only">Next</span>
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                      </svg>
-                    </Button>
-                  </nav>
-                </div>
-              </div>
-            </div>}
-        </div>
+        <Button 
+          className="bg-[#00205C] hover:bg-[#001A45]"
+          onClick={() => setShowApplicationForm(true)}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          New Application
+        </Button>
       </div>
 
-      {/* Application Details Modal */}
-      <ApplicationDetailsModal open={detailsModalOpen} onOpenChange={setDetailsModalOpen} application={selectedApplication} />
-    </Layout>;
+      {/* Applications content will go here */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <p className="text-gray-500">Applications list will be displayed here...</p>
+      </div>
+
+      <ApplicationForm 
+        isOpen={showApplicationForm}
+        onClose={() => setShowApplicationForm(false)}
+      />
+    </Layout>
+  );
 };
+
 export default Applications;

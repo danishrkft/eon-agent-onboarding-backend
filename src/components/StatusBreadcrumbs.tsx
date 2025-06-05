@@ -20,22 +20,24 @@ interface StatusBreadcrumbsProps {
 
 const StatusBreadcrumbs: React.FC<StatusBreadcrumbsProps> = ({ statuses, showAgingPeriod = false, agingDays = 0 }) => {
   return (
-    <div className="w-full mb-6">
-      <div className="flex items-center flex-wrap gap-2">
+    <div className="w-full">
+      <div className="flex items-center w-full">
         {statuses.map((status, index) => (
           <React.Fragment key={index}>
             <div 
               className={cn(
-                "flex flex-col items-center relative px-3 py-2 rounded-md border",
+                "flex flex-col items-center relative px-4 py-3 border flex-1",
+                index === 0 ? "rounded-l-md" : "",
+                index === statuses.length - 1 ? "rounded-r-md" : "",
                 "bg-[#2563EB]/10 border-[#2563EB]/20"
               )}
             >
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2 justify-center w-full">
                 {status.completed && (
                   <CheckIcon className="h-4 w-4 text-[#2563EB]" />
                 )}
                 <span className={cn(
-                  "font-medium",
+                  "font-medium text-center",
                   status.active ? "text-[#E5241B]" : status.completed ? "text-[#2563EB]" : "text-gray-500"
                 )}>
                   {status.label}
@@ -57,7 +59,7 @@ const StatusBreadcrumbs: React.FC<StatusBreadcrumbsProps> = ({ statuses, showAgi
             </div>
             
             {index < statuses.length - 1 && (
-              <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+              <ChevronRightIcon className="h-5 w-5 text-gray-400 -mx-1 z-10" />
             )}
           </React.Fragment>
         ))}

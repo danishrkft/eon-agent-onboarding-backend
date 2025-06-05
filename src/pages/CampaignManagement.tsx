@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import FilterDropdowns from '../components/FilterDropdowns';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
 
 // Sample data for campaigns
 const activeCampaignData = [{
@@ -91,6 +92,26 @@ const completedCampaignData = [{
   progress: 32,
   customLink: 'https://eon.my/referral-incentive'
 }];
+// Sample performance data for charts
+const campaignPerformanceData = {
+  active: [
+    { month: 'May', applications: 28, completed: 22, conversion: 78.6 },
+    { month: 'Jun', applications: 35, completed: 28, conversion: 80.0 },
+    { month: 'Jul', applications: 42, completed: 32, conversion: 76.2 }
+  ],
+  upcoming: [
+    { month: 'Aug', projected: 50, target: 60 },
+    { month: 'Sep', projected: 45, target: 55 },
+    { month: 'Oct', projected: 38, target: 45 }
+  ],
+  completed: [
+    { month: 'Jan', applications: 32, completed: 30, conversion: 93.8 },
+    { month: 'Feb', applications: 38, completed: 35, conversion: 92.1 },
+    { month: 'Mar', applications: 45, completed: 40, conversion: 88.9 },
+    { month: 'Apr', applications: 52, completed: 48, conversion: 92.3 }
+  ]
+};
+
 const CampaignManagement: React.FC = () => {
   const [campaigns] = useState([...activeCampaignData, ...upcomingCampaignData, ...completedCampaignData]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,6 +136,62 @@ const CampaignManagement: React.FC = () => {
     setEndDate(campaign.endDate);
     setShowDialog(true);
   };
+
+  const renderPerformanceChart = (tabValue: string) => {
+    switch (tabValue) {
+      case 'active':
+        return (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={campaignPerformanceData.active}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="applications" name="Applications" fill="#00205C" />
+                <Bar dataKey="completed" name="Completed" fill="#E5241B" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        );
+      case 'upcoming':
+        return (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={campaignPerformanceData.upcoming}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="projected" name="Projected" stroke="#00205C" strokeWidth={2} />
+                <Line type="monotone" dataKey="target" name="Target" stroke="#E5241B" strokeWidth={2} strokeDasharray="5 5" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        );
+      case 'completed':
+        return (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={campaignPerformanceData.completed}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip formatter={(value, name) => [
+                  name === 'conversion' ? `${value}%` : value,
+                  name === 'conversion' ? 'Conversion Rate' : name
+                ]} />
+                <Bar dataKey="applications" name="Applications" fill="#00205C" />
+                <Bar dataKey="completed" name="Completed" fill="#E5241B" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return <Layout>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -476,14 +553,10 @@ const CampaignManagement: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold">Campaign Performance</CardTitle>
-              <CardDescription>Registration conversion rates for active campaigns</CardDescription>
+              <CardDescription>Registration metrics for {activeTab} campaigns</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px] flex flex-col justify-center items-center">
-                <div className="text-center text-gray-500">
-                  <p>Campaign performance charts will appear here</p>
-                </div>
-              </div>
+              {renderPerformanceChart(activeTab)}
             </CardContent>
           </Card>
           

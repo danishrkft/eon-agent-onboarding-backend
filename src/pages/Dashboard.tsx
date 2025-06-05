@@ -81,6 +81,20 @@ const Dashboard = () => {
     { month: 'Jun', newAgents: 42, activatedAgents: 35, convertedLeads: 65 },
   ];
 
+  // Sample data for recently approved agents
+  const recentlyApprovedAgents = [
+    { id: 'AG001', agentId: 'AG001', name: 'John Smith', email: 'john.smith@email.com', region: 'Kuala Lumpur', joinDate: '2025-06-01', status: 'active' },
+    { id: 'AG002', agentId: 'AG002', name: 'Sarah Johnson', email: 'sarah.johnson@email.com', region: 'Selangor', joinDate: '2025-06-02', status: 'active' },
+    { id: 'AG003', agentId: 'AG003', name: 'Michael Brown', email: 'michael.brown@email.com', region: 'Penang', joinDate: '2025-06-03', status: 'active' },
+    { id: 'AG004', agentId: 'AG004', name: 'Emily Davis', email: 'emily.davis@email.com', region: 'Johor', joinDate: '2025-06-04', status: 'active' },
+    { id: 'AG005', agentId: 'AG005', name: 'David Wilson', email: 'david.wilson@email.com', region: 'Perak', joinDate: '2025-06-05', status: 'active' },
+    { id: 'AG006', agentId: 'AG006', name: 'Lisa Anderson', email: 'lisa.anderson@email.com', region: 'Kuala Lumpur', joinDate: '2025-06-06', status: 'active' },
+    { id: 'AG007', agentId: 'AG007', name: 'Robert Taylor', email: 'robert.taylor@email.com', region: 'Selangor', joinDate: '2025-06-07', status: 'active' },
+    { id: 'AG008', agentId: 'AG008', name: 'Jennifer Martinez', email: 'jennifer.martinez@email.com', region: 'Penang', joinDate: '2025-06-08', status: 'active' },
+    { id: 'AG009', agentId: 'AG009', name: 'Christopher Lee', email: 'christopher.lee@email.com', region: 'Johor', joinDate: '2025-06-09', status: 'active' },
+    { id: 'AG010', agentId: 'AG010', name: 'Amanda White', email: 'amanda.white@email.com', region: 'Perak', joinDate: '2025-06-10', status: 'active' }
+  ];
+
   // Filter registration data based on selected year and month
   const filteredRegistrationData = React.useMemo(() => {
     return historicalRegistrationData.filter(item => {
@@ -99,8 +113,8 @@ const Dashboard = () => {
   // Pagination for Recently Approved Agents
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentAgents = dashboardData.recentlyApproved.slice(indexOfFirstItem, indexOfFirstItem);
-  const totalPages = Math.ceil(dashboardData.recentlyApproved.length / itemsPerPage);
+  const currentAgents = recentlyApprovedAgents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(recentlyApprovedAgents.length / itemsPerPage);
 
   // Handle page change
   const handlePageChange = (pageNumber: number) => {
@@ -301,7 +315,7 @@ const Dashboard = () => {
               {currentAgents.map((agent, index) => (
                 <tr key={agent.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{indexOfFirstItem + index + 1}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{agent.agentId}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{agent.region}</td>
