@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Edit, Trash2, UserPlus, UserCog, Key } from 'lucide-react';
+import AddUserModal from '../components/AddUserModal';
+import EditPermissionsModal from '../components/EditPermissionsModal';
+
 const Settings: React.FC = () => {
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showEditPermissionsModal, setShowEditPermissionsModal] = useState(false);
+
   // Sample user data for User Access tab
   const users = [{
     id: 1,
@@ -50,13 +57,16 @@ const Settings: React.FC = () => {
     status: "Active",
     lastActive: "2025-04-23"
   }];
+
   const userRolePermissions = {
     "Admin": ["View Reports", "Edit Reports", "Manage Users", "Manage Settings", "Approve Applications", "Manage Campaigns"],
     "Manager": ["View Reports", "Edit Reports", "Approve Applications", "Manage Campaigns"],
     "Editor": ["View Reports", "Edit Reports", "Manage Campaigns"],
     "Viewer": ["View Reports"]
   };
-  return <Layout>
+
+  return (
+    <Layout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-[#00205C]">Settings</h1>
@@ -364,7 +374,10 @@ const Settings: React.FC = () => {
                     <Input placeholder="Search users..." className="pl-9" />
                   </div>
                   <div className="flex gap-2">
-                    <Button className="bg-blue-600 hover:bg-blue-500">
+                    <Button 
+                      className="bg-[#00205C] hover:bg-[#001A45]"
+                      onClick={() => setShowAddUserModal(true)}
+                    >
                       <UserPlus className="h-4 w-4 mr-2" />
                       Add User
                     </Button>
@@ -384,7 +397,8 @@ const Settings: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {users.map(user => <TableRow key={user.id}>
+                      {users.map(user => (
+                        <TableRow key={user.id}>
                           <TableCell className="font-medium">{user.name}</TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>{user.role}</TableCell>
@@ -407,7 +421,8 @@ const Settings: React.FC = () => {
                               </Button>
                             </div>
                           </TableCell>
-                        </TableRow>)}
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -432,7 +447,8 @@ const Settings: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {Object.entries(userRolePermissions).flatMap(([_, perms]) => perms).filter((value, index, self) => self.indexOf(value) === index).map((permission, i) => <TableRow key={i}>
+                      {Object.entries(userRolePermissions).flatMap(([_, perms]) => perms).filter((value, index, self) => self.indexOf(value) === index).map((permission, i) => (
+                        <TableRow key={i}>
                           <TableCell>{permission}</TableCell>
                           <TableCell>
                             <Checkbox checked={userRolePermissions["Admin"].includes(permission)} disabled />
@@ -446,18 +462,36 @@ const Settings: React.FC = () => {
                           <TableCell>
                             <Checkbox checked={userRolePermissions["Viewer"].includes(permission)} disabled />
                           </TableCell>
-                        </TableRow>)}
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="bg-blue-600 hover:bg-blue-500">Edit Role Permissions</Button>
+                <Button 
+                  className="bg-[#00205C] hover:bg-[#001A45]"
+                  onClick={() => setShowEditPermissionsModal(true)}
+                >
+                  Edit Role Permissions
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>
         </Tabs>
+
+        <AddUserModal 
+          isOpen={showAddUserModal}
+          onClose={() => setShowAddUserModal(false)}
+        />
+
+        <EditPermissionsModal 
+          isOpen={showEditPermissionsModal}
+          onClose={() => setShowEditPermissionsModal(false)}
+        />
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default Settings;
