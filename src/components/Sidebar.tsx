@@ -19,6 +19,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     icon: <ChartBar className="w-5 h-5" />,
     path: '/dashboard'
   }, {
+    name: 'Applications',
+    module: 'Management',
+    icon: <Archive className="w-5 h-5" />,
+    path: '/applications'
+  }, {
     name: 'Agents',
     module: 'Management',
     icon: <ClipboardCheck className="w-5 h-5" />,
@@ -33,16 +38,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     module: 'Registration',
     icon: <FileText className="w-5 h-5" />,
     path: '/campaigns'
-  }, {
-    name: 'Reports',
-    module: 'Analytics',
-    icon: <Database className="w-5 h-5" />,
-    path: '/reports'
-  }, {
-    name: 'Applications',
-    module: 'Management',
-    icon: <Archive className="w-5 h-5" />,
-    path: '/applications'
   }, {
     name: 'Settings',
     module: 'System',

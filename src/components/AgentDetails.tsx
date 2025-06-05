@@ -1,7 +1,8 @@
-
 import React from 'react';
 import { Agent } from '../utils/mockData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Download } from 'lucide-react';
 import StatusBreadcrumbs from './StatusBreadcrumbs';
 
 interface AgentDetailsProps {
@@ -41,16 +42,40 @@ const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
     }
   ];
 
+  const sampleDocuments = [
+    { name: `NRIC_${agent.name.replace(/\s+/g, '_')}`, type: 'PDF', size: '2.4 MB' },
+    { name: `Agent_agreement_${agent.agentId}_${agent.name.replace(/\s+/g, '_')}`, type: 'PDF', size: '1.8 MB' },
+    { name: `NDA_${agent.agentId}`, type: 'PDF', size: '0.9 MB' },
+    { name: `Bank_verification_${agent.agentId}`, type: 'PDF', size: '1.2 MB' },
+    { name: `Training_certificate_${agent.name.replace(/\s+/g, '_')}`, type: 'PDF', size: '3.1 MB' }
+  ];
+
+  const sampleActivities = [
+    { date: '2025-06-01', time: '14:30', action: 'Application submitted', details: 'Initial application form completed' },
+    { date: '2025-06-02', time: '09:15', action: 'Documents uploaded', details: 'NRIC and bank details submitted' },
+    { date: '2025-06-03', time: '11:45', action: 'Application approved', details: 'Background check completed successfully' },
+    { date: '2025-06-05', time: '16:20', action: 'Training assigned', details: 'Compliance training module assigned' },
+    { date: '2025-06-08', time: '13:10', action: 'Training completed', details: 'Passed with 95% score' }
+  ];
+
+  const handleDownloadDocument = (documentName: string) => {
+    // Simulate document download
+    console.log(`Downloading ${documentName}`);
+    // In a real app, this would trigger actual file download
+  };
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <StatusBreadcrumbs statuses={agentStatuses} />
+      <div className="w-full mb-6">
+        <StatusBreadcrumbs statuses={agentStatuses} />
+      </div>
       
-      <Tabs defaultValue="profile">
-        <TabsList className="mb-6">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-          <TabsTrigger value="commissions">Commissions</TabsTrigger>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="mb-6 w-full grid grid-cols-4">
+          <TabsTrigger value="profile" className="flex-1">Profile</TabsTrigger>
+          <TabsTrigger value="documents" className="flex-1">Documents</TabsTrigger>
+          <TabsTrigger value="activity" className="flex-1">Activity</TabsTrigger>
+          <TabsTrigger value="commissions" className="flex-1">Commissions</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -122,20 +147,82 @@ const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
         </TabsContent>
         
         <TabsContent value="documents">
-          <div className="text-center py-10 text-gray-500">
-            <p>Agent's submitted documents will appear here.</p>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold">Documents</h2>
+            <div className="grid gap-4">
+              {sampleDocuments.map((doc, index) => (
+                <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <p className="font-medium">{doc.name}.{doc.type.toLowerCase()}</p>
+                    <p className="text-sm text-gray-500">{doc.type} • {doc.size}</p>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDownloadDocument(doc.name)}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         </TabsContent>
         
         <TabsContent value="activity">
-          <div className="text-center py-10 text-gray-500">
-            <p>Agent's activity history will appear here.</p>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold">Activity History</h2>
+            <div className="space-y-4">
+              {sampleActivities.map((activity, index) => (
+                <div key={index} className="border-l-2 border-[#2563EB] pl-4 pb-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium">{activity.action}</span>
+                    <span className="text-sm text-gray-500">
+                      {activity.date} at {activity.time}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">{activity.details}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </TabsContent>
         
         <TabsContent value="commissions">
-          <div className="text-center py-10 text-gray-500">
-            <p>Agent's commission details will appear here.</p>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold">Commission Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-gray-500">Current Month</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-xs text-gray-500">Commission Earned</p>
+                    <p className="font-medium">RM 2,450.00</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Status</p>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Paid
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-gray-500">Year to Date</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-xs text-gray-500">Total Earned</p>
+                    <p className="font-medium">RM 14,750.00</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Total Paid</p>
+                    <p className="font-medium">RM 12,300.00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

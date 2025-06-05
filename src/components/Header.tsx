@@ -1,9 +1,13 @@
+
 import React, { useState } from 'react';
 import { Search, Menu, Bell, User, Settings, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import NotificationModal from './NotificationModal';
+
 type HeaderProps = {
   toggleSidebar: () => void;
 };
+
 const sampleNotifications = [{
   id: '1',
   title: 'New agent registration',
@@ -34,13 +38,43 @@ const sampleNotifications = [{
   content: 'New compliance training module has been added.',
   time: '2 days ago',
   read: true
+}, {
+  id: '6',
+  title: 'Document verification required',
+  content: 'Siti Aminah\'s documents need verification.',
+  time: '3 days ago',
+  read: false
+}, {
+  id: '7',
+  title: 'Campaign launch reminder',
+  content: 'Q2 2025 campaign launches tomorrow.',
+  time: '4 days ago',
+  read: true
+}, {
+  id: '8',
+  title: 'Monthly report available',
+  content: 'April 2025 performance report is ready.',
+  time: '5 days ago',
+  read: true
 }];
-const Header: React.FC<HeaderProps> = ({
-  toggleSidebar
-}) => {
+
+const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  return <header className="bg-white border-b border-gray-200 shadow-sm w-full">
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    // Sign out logic here
+    navigate('/login');
+  };
+
+  const handleSettingsClick = () => {
+    navigate('/settings');
+    setProfileMenuOpen(false);
+  };
+
+  return (
+    <header className="bg-white border-b border-gray-200 shadow-sm w-full">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
           <button onClick={toggleSidebar} className="mr-4 text-eon-blue focus:outline-none lg:hidden">
@@ -63,34 +97,44 @@ const Header: React.FC<HeaderProps> = ({
 
           <div className="relative">
             <button className="flex items-center focus:outline-none" onClick={() => setProfileMenuOpen(!profileMenuOpen)}>
-              <div className="text-white rounded-full w-8 h-8 flex items-center justify-center bg-eon-red">
+              <div className="text-white rounded-full w-8 h-8 flex items-center justify-center bg-[#E5241B]">
                 <span className="font-medium text-sm">AD</span>
               </div>
             </button>
             
-            {profileMenuOpen && <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
+            {profileMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
                 <div className="px-4 py-3 border-b">
                   <p className="text-sm font-medium text-gray-900">Admin User</p>
                   <p className="text-xs text-gray-500">admin@eon.com</p>
                 </div>
-                <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <User className="h-4 w-4 mr-3" />
-                  Profile
-                </a>
-                <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <button 
+                  onClick={handleSettingsClick}
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                >
                   <Settings className="h-4 w-4 mr-3" />
                   Settings
-                </a>
-                <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                </button>
+                <button 
+                  onClick={handleSignOut}
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                >
                   <LogOut className="h-4 w-4 mr-3" />
                   Sign out
-                </a>
-              </div>}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
       
-      <NotificationModal isOpen={notificationsOpen} onClose={() => setNotificationsOpen(false)} notifications={sampleNotifications} />
-    </header>;
+      <NotificationModal 
+        isOpen={notificationsOpen} 
+        onClose={() => setNotificationsOpen(false)} 
+        notifications={sampleNotifications} 
+      />
+    </header>
+  );
 };
+
 export default Header;

@@ -27,18 +27,16 @@ const StatusBreadcrumbs: React.FC<StatusBreadcrumbsProps> = ({ statuses, showAgi
             <div 
               className={cn(
                 "flex flex-col items-center relative px-3 py-2 rounded-md border",
-                status.completed ? "bg-[#00205C]/10 border-[#00205C]/20" : 
-                status.active ? "bg-[#E5241B]/10 border-[#E5241B]/20" : 
-                "bg-gray-100 border-gray-200"
+                "bg-[#2563EB]/10 border-[#2563EB]/20"
               )}
             >
               <div className="flex items-center gap-1">
                 {status.completed && (
-                  <CheckIcon className="h-4 w-4 text-[#00205C]" />
+                  <CheckIcon className="h-4 w-4 text-[#2563EB]" />
                 )}
                 <span className={cn(
                   "font-medium",
-                  status.active ? "text-[#E5241B]" : status.completed ? "text-[#00205C]" : "text-gray-500"
+                  status.active ? "text-[#E5241B]" : status.completed ? "text-[#2563EB]" : "text-gray-500"
                 )}>
                   {status.label}
                 </span>
