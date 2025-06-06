@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import FilterDropdowns from '../components/FilterDropdowns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import StatusBreadcrumbs from '../components/StatusBreadcrumbs';
+import TriggerPayoutModal from '../components/TriggerPayoutModal';
+
 const CommissionPayout = () => {
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -14,7 +16,9 @@ const CommissionPayout = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [triggerPayoutModalOpen, setTriggerPayoutModalOpen] = useState(false);
   const itemsPerPage = 10;
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-MY', {
       style: 'currency',
@@ -22,6 +26,7 @@ const CommissionPayout = () => {
       minimumFractionDigits: 2
     }).format(value);
   };
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'Submitted':
@@ -65,6 +70,7 @@ const CommissionPayout = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPayouts = filteredPayouts.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredPayouts.length / itemsPerPage);
+
   const handleAgentClick = (agent: any) => {
     setSelectedAgent(agent);
     setDetailsModalOpen(true);
@@ -122,7 +128,9 @@ const CommissionPayout = () => {
     }
     return statuses;
   };
-  return <Layout>
+
+  return (
+    <Layout>
       <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#00205C]">Commission Payout</h1>
@@ -163,12 +171,22 @@ const CommissionPayout = () => {
           <div className="flex items-center space-x-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-              <input type="text" placeholder="Search by name or ID..." className="pl-9 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C] text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <input 
+                type="text" 
+                placeholder="Search by name or ID..." 
+                className="pl-9 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C] text-sm" 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+              />
             </div>
             
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-500" />
-              <select className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C]" value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
+              <select 
+                className="text-sm rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#00205C] focus:border-[#00205C]" 
+                value={selectedStatus} 
+                onChange={e => setSelectedStatus(e.target.value)}
+              >
                 <option value="all">All Status</option>
                 <option value="submitted">Submitted</option>
                 <option value="pending verification">Pending Verification</option>
@@ -181,7 +199,10 @@ const CommissionPayout = () => {
           </div>
           
           <div className="flex items-center space-x-2">
-            <button className="text-white px-3 py-2 rounded-md text-sm flex items-center bg-blue-600 hover:bg-blue-500">
+            <button 
+              onClick={() => setTriggerPayoutModalOpen(true)}
+              className="text-white px-3 py-2 rounded-md text-sm flex items-center bg-blue-600 hover:bg-blue-500"
+            >
               <CreditCard className="w-4 h-4 mr-2" />
               Trigger Payout
             </button>
@@ -210,9 +231,13 @@ const CommissionPayout = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {currentPayouts.map(payout => <tr key={payout.agentId}>
+              {currentPayouts.map(payout => (
+                <tr key={payout.agentId}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onClick={() => handleAgentClick(payout)} className="text-blue-600 hover:underline font-medium">
+                    <button 
+                      onClick={() => handleAgentClick(payout)} 
+                      className="text-blue-600 hover:underline font-medium"
+                    >
                       {payout.agentId}
                     </button>
                   </td>
@@ -227,47 +252,61 @@ const CommissionPayout = () => {
                       {payout.status}
                     </span>
                   </td>
-                </tr>)}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
         
         {/* Pagination */}
-        {filteredPayouts.length > 0 && <div className="py-4">
+        {filteredPayouts.length > 0 && (
+          <div className="py-4">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} />
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                  />
                 </PaginationItem>
                 
-                {Array.from({
-              length: Math.min(totalPages, 5)
-            }).map((_, i) => {
-              // Show pagination numbers based on current page
-              let pageNumber;
-              if (totalPages <= 5) {
-                pageNumber = i + 1;
-              } else if (currentPage <= 3) {
-                pageNumber = i + 1;
-                if (i === 4) pageNumber = totalPages;
-              } else if (currentPage >= totalPages - 2) {
-                pageNumber = totalPages - 4 + i;
-              } else {
-                pageNumber = currentPage - 2 + i;
-              }
-              return <PaginationItem key={i}>
-                      <PaginationLink isActive={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)} className="cursor-pointer">
+                {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                  // Show pagination numbers based on current page
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                    if (i === 4) pageNumber = totalPages;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <PaginationItem key={i}>
+                      <PaginationLink 
+                        isActive={pageNumber === currentPage} 
+                        onClick={() => setCurrentPage(pageNumber)} 
+                        className="cursor-pointer"
+                      >
                         {pageNumber}
                       </PaginationLink>
-                    </PaginationItem>;
-            })}
+                    </PaginationItem>
+                  );
+                })}
                 
                 <PaginationItem>
-                  <PaginationNext onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} />
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                  />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>}
+          </div>
+        )}
       </div>
 
       {/* Commission Details Modal */}
@@ -280,8 +319,13 @@ const CommissionPayout = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {selectedAgent && <div className="space-y-6 pt-4">
-              <StatusBreadcrumbs statuses={getAgentStatusFlow(selectedAgent)} showAgingPeriod={selectedAgent.status === 'Pending Payment'} agingDays={selectedAgent.agingDays} />
+          {selectedAgent && (
+            <div className="space-y-6 pt-4">
+              <StatusBreadcrumbs 
+                statuses={getAgentStatusFlow(selectedAgent)} 
+                showAgingPeriod={selectedAgent.status === 'Pending Payment'} 
+                agingDays={selectedAgent.agingDays} 
+              />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -344,11 +388,13 @@ const CommissionPayout = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {[...Array(4)].map((_, i) => {
-                  const date = new Date();
-                  date.setMonth(date.getMonth() - i);
-                  const statuses = ['Paid', 'Paid', 'Paid', 'Rejected'];
-                  const amounts = [selectedAgent.lastAmount, selectedAgent.lastAmount * 0.9, selectedAgent.lastAmount * 0.85, selectedAgent.lastAmount * 0.75];
-                  return <tr key={i}>
+                      const date = new Date();
+                      date.setMonth(date.getMonth() - i);
+                      const statuses = ['Paid', 'Paid', 'Paid', 'Rejected'];
+                      const amounts = [selectedAgent.lastAmount, selectedAgent.lastAmount * 0.9, selectedAgent.lastAmount * 0.85, selectedAgent.lastAmount * 0.75];
+                      
+                      return (
+                        <tr key={i}>
                           <td className="px-4 py-2 whitespace-nowrap text-sm">
                             {date.toLocaleDateString()}
                           </td>
@@ -363,14 +409,24 @@ const CommissionPayout = () => {
                               {statuses[i]}
                             </span>
                           </td>
-                        </tr>;
-                })}
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
-            </div>}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
-    </Layout>;
+
+      {/* Trigger Payout Modal */}
+      <TriggerPayoutModal 
+        open={triggerPayoutModalOpen} 
+        onOpenChange={setTriggerPayoutModalOpen} 
+      />
+    </Layout>
+  );
 };
+
 export default CommissionPayout;
