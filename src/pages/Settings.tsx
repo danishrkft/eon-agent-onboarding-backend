@@ -9,16 +9,17 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Edit, Trash2, UserPlus, UserCog, Key } from 'lucide-react';
 import AddUserModal from '../components/AddUserModal';
 import EditPermissionsModal from '../components/EditPermissionsModal';
+import ScheduleReportForm from '../components/ScheduleReportForm';
 
 const Settings: React.FC = () => {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showEditPermissionsModal, setShowEditPermissionsModal] = useState(false);
+  const [activeApiTab, setActiveApiTab] = useState('keys');
 
   // Sample user data for User Access tab
   const users = [{
@@ -65,6 +66,46 @@ const Settings: React.FC = () => {
     "Viewer": ["View Reports"]
   };
 
+  // Sample API logs with pagination data
+  const apiLogs = Array.from({ length: 36 }, (_, index) => {
+    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
+    const endpoints = [
+      '/api/agents', 
+      '/api/commission/payout', 
+      '/api/applications', 
+      '/api/reports',
+      '/api/sales',
+      '/api/users'
+    ];
+    const statuses = [
+      { code: '200 OK', bg: 'bg-green-50 text-green-700 border-green-200' },
+      { code: '201 Created', bg: 'bg-green-50 text-green-700 border-green-200' },
+      { code: '400 Bad Request', bg: 'bg-red-50 text-red-700 border-red-200' },
+      { code: '404 Not Found', bg: 'bg-red-50 text-red-700 border-red-200' },
+      { code: '500 Server Error', bg: 'bg-red-50 text-red-700 border-red-200' },
+    ];
+    
+    // Generate a date in the past week
+    const date = new Date();
+    date.setDate(date.getDate() - Math.floor(Math.random() * 7));
+    
+    return {
+      id: `log-${index + 1}`,
+      endpoint: endpoints[Math.floor(Math.random() * endpoints.length)],
+      method: methods[Math.floor(Math.random() * methods.length)],
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      timestamp: date,
+    };
+  });
+  
+  const [currentApiPage, setCurrentApiPage] = useState(1);
+  const logsPerPage = 12;
+  
+  const indexOfLastLog = currentApiPage * logsPerPage;
+  const indexOfFirstLog = indexOfLastLog - logsPerPage;
+  const currentLogs = apiLogs.slice(indexOfFirstLog, indexOfLastLog);
+  const totalApiPages = Math.ceil(apiLogs.length / logsPerPage);
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -73,76 +114,14 @@ const Settings: React.FC = () => {
           <p className="text-gray-600">Manage your application settings</p>
         </div>
 
-        <Tabs defaultValue="profile" className="w-full">
+        <Tabs defaultValue="notifications" className="w-full">
           <TabsList className="grid grid-cols-5 gap-4 mb-8">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="api">API</TabsTrigger>
             <TabsTrigger value="branding">Branding</TabsTrigger>
             <TabsTrigger value="user-access">User Access</TabsTrigger>
+            <TabsTrigger value="schedule-report">Schedule Report</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="profile">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Personal Information</CardTitle>
-                  <CardDescription>Update your personal information.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <Avatar className="h-20 w-20">
-                      <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <Button size="sm" variant="outline">Upload new photo</Button>
-                      <p className="text-xs text-gray-500">JPG, GIF or PNG. 1MB max.</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" defaultValue="John Doe" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" defaultValue="john.doe@example.com" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button className="bg-blue-600 hover:bg-blue-500">Save Changes</Button>
-                </CardFooter>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Password</CardTitle>
-                  <CardDescription>Change your password.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="current-password">Current Password</Label>
-                    <Input id="current-password" type="password" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="new-password">New Password</Label>
-                    <Input id="new-password" type="password" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm New Password</Label>
-                    <Input id="confirm-password" type="password" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button className="bg-blue-600 hover:bg-blue-500">Change Password</Button>
-                </CardFooter>
-              </Card>
-            </div>
-          </TabsContent>
           
           <TabsContent value="notifications">
             <Card>
@@ -200,115 +179,172 @@ const Settings: React.FC = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="bg-blue-600 hover:bg-blue-500">Save Preferences</Button>
+                <Button className="bg-[#00205C] hover:bg-[#001A45]">Save Preferences</Button>
               </CardFooter>
             </Card>
           </TabsContent>
 
           <TabsContent value="api">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>API Keys</CardTitle>
-                  <CardDescription>Manage your API access keys.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Created</TableHead>
-                          <TableHead>Last Used</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>Production Key</TableCell>
-                          <TableCell>2025-01-15</TableCell>
-                          <TableCell>2025-04-28</TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm">Revoke</Button>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Development Key</TableCell>
-                          <TableCell>2025-03-02</TableCell>
-                          <TableCell>2025-04-27</TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm">Revoke</Button>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
+            <div className="space-y-6">
+              <div>
+                <Tabs defaultValue="keys" onValueChange={setActiveApiTab}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="keys">API Keys</TabsTrigger>
+                    <TabsTrigger value="logs">API Logs</TabsTrigger>
+                  </TabsList>
                   
-                  <Button variant="outline" className="w-full">
-                    <Key className="mr-2 h-4 w-4" />
-                    Generate New API Key
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>API Logs</CardTitle>
-                  <CardDescription>View recent API activity.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2 mb-4">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                      <Input placeholder="Search logs..." className="pl-9" />
-                    </div>
-                    <Button variant="outline">Filter</Button>
+                  <div className="mt-6">
+                    {activeApiTab === 'keys' ? (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>API Keys</CardTitle>
+                          <CardDescription>Manage your API access keys.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="rounded-md border">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Name</TableHead>
+                                  <TableHead>Created</TableHead>
+                                  <TableHead>Last Used</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell>Production Key</TableCell>
+                                  <TableCell>2025-01-15</TableCell>
+                                  <TableCell>2025-04-28</TableCell>
+                                  <TableCell>
+                                    <Button variant="ghost" size="sm">Revoke</Button>
+                                  </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                  <TableCell>Development Key</TableCell>
+                                  <TableCell>2025-03-02</TableCell>
+                                  <TableCell>2025-04-27</TableCell>
+                                  <TableCell>
+                                    <Button variant="ghost" size="sm">Revoke</Button>
+                                  </TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </div>
+                          
+                          <Button variant="outline" className="w-full">
+                            <Key className="mr-2 h-4 w-4" />
+                            Generate New API Key
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>API Logs</CardTitle>
+                          <CardDescription>View recent API activity.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex flex-col md:flex-row gap-3">
+                            <div className="relative flex-1">
+                              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                              <Input placeholder="Search logs..." className="pl-9" />
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Select defaultValue="all-methods">
+                                <SelectTrigger className="w-[150px]">
+                                  <SelectValue placeholder="All Methods" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all-methods">All Methods</SelectItem>
+                                  <SelectItem value="get">GET</SelectItem>
+                                  <SelectItem value="post">POST</SelectItem>
+                                  <SelectItem value="put">PUT</SelectItem>
+                                  <SelectItem value="delete">DELETE</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              
+                              <Select defaultValue="all-status">
+                                <SelectTrigger className="w-[150px]">
+                                  <SelectValue placeholder="All Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all-status">All Status</SelectItem>
+                                  <SelectItem value="success">Success (2xx)</SelectItem>
+                                  <SelectItem value="error">Error (4xx/5xx)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              
+                              <Button variant="outline">
+                                Filter by Date
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          <div className="rounded-md border">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Endpoint</TableHead>
+                                  <TableHead>Method</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Timestamp</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {currentLogs.map(log => (
+                                  <TableRow key={log.id}>
+                                    <TableCell className="font-mono text-sm">{log.endpoint}</TableCell>
+                                    <TableCell>{log.method}</TableCell>
+                                    <TableCell>
+                                      <Badge variant="outline" className={log.status.bg}>{log.status.code}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-gray-500 text-sm">
+                                      {log.timestamp.toLocaleDateString()}, {log.timestamp.toLocaleTimeString()}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                          
+                          <div className="flex items-center justify-center gap-2 mt-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => setCurrentApiPage(prev => Math.max(1, prev - 1))}
+                              disabled={currentApiPage === 1}
+                            >
+                              Previous
+                            </Button>
+                            
+                            {Array.from({ length: totalApiPages }, (_, i) => (
+                              <Button 
+                                key={i} 
+                                variant={currentApiPage === i + 1 ? 'default' : 'outline'} 
+                                size="sm"
+                                onClick={() => setCurrentApiPage(i + 1)}
+                              >
+                                {i + 1}
+                              </Button>
+                            ))}
+                            
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setCurrentApiPage(prev => Math.min(totalApiPages, prev + 1))}
+                              disabled={currentApiPage === totalApiPages}
+                            >
+                              Next
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
-                  
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Endpoint</TableHead>
-                          <TableHead>Method</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Timestamp</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-mono text-sm">/api/agents</TableCell>
-                          <TableCell>GET</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">200 OK</Badge>
-                          </TableCell>
-                          <TableCell className="text-gray-500 text-sm">28 Apr 2025, 14:35:22</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-mono text-sm">/api/commission/payout</TableCell>
-                          <TableCell>POST</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">201 Created</Badge>
-                          </TableCell>
-                          <TableCell className="text-gray-500 text-sm">28 Apr 2025, 14:32:17</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-mono text-sm">/api/applications/APP003</TableCell>
-                          <TableCell>GET</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">404 Not Found</Badge>
-                          </TableCell>
-                          <TableCell className="text-gray-500 text-sm">28 Apr 2025, 14:30:05</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-                  
-                  <div className="flex justify-center">
-                    <Button variant="ghost" size="sm">Load More</Button>
-                  </div>
-                </CardContent>
-              </Card>
+                </Tabs>
+              </div>
             </div>
           </TabsContent>
 
@@ -477,6 +513,10 @@ const Settings: React.FC = () => {
                 </Button>
               </CardFooter>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="schedule-report">
+            <ScheduleReportForm />
           </TabsContent>
         </Tabs>
 

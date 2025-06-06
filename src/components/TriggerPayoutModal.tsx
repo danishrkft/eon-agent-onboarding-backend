@@ -20,14 +20,46 @@ const TriggerPayoutModal: React.FC<TriggerPayoutModalProps> = ({ open, onOpenCha
     period: 'May 2025',
     eligibleAgents: 34,
     totalAmount: 12450.00,
-    topRecipients: [
-      { name: 'Agent Smith', amount: 1250.00 },
-      { name: 'Agent Johnson', amount: 1100.00 },
-      { name: 'Agent Wilson', amount: 950.00 },
-      { name: 'Agent Brown', amount: 850.00 },
-      { name: 'Agent Davis', amount: 800.00 }
-    ]
   };
+
+  // Sample sales orders data
+  const sampleSalesOrders = [
+    { 
+      id: 'SO00123', 
+      agent: 'Ahmad Faizal',
+      customer: 'Lee Mei Ling', 
+      vehicleModel: 'PROTON X70', 
+      amount: 1200.00
+    },
+    { 
+      id: 'SO00145', 
+      agent: 'Nur Hidayah',
+      customer: 'Ahmad Zulkifli', 
+      vehicleModel: 'PROTON X50', 
+      amount: 950.00
+    },
+    { 
+      id: 'SO00168', 
+      agent: 'Tan Wei Ming',
+      customer: 'Siti Norbaya', 
+      vehicleModel: 'PROTON SAGA', 
+      amount: 550.00
+    },
+    { 
+      id: 'SO00174', 
+      agent: 'Rajesh Kumar',
+      customer: 'Tan Wei Liang', 
+      vehicleModel: 'PROTON X90', 
+      amount: 1350.00
+    },
+    { 
+      id: 'SO00182', 
+      agent: 'Lim Chee Keong',
+      customer: 'Rajesh Kumar', 
+      vehicleModel: 'PROTON X70', 
+      amount: 1150.00
+    },
+  ];
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-MY', {
@@ -107,20 +139,26 @@ const TriggerPayoutModal: React.FC<TriggerPayoutModalProps> = ({ open, onOpenCha
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-semibold text-gray-900">Top 5 Recipients</h4>
+          <h4 className="font-semibold text-gray-900">Sales Orders</h4>
           <div className="border rounded-lg overflow-hidden">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">Order ID</th>
                   <th className="px-4 py-2 text-left font-medium text-gray-500">Agent</th>
-                  <th className="px-4 py-2 text-right font-medium text-gray-500">Amount</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">Customer</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">Vehicle Model</th>
+                  <th className="px-4 py-2 text-right font-medium text-gray-500">Commission Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {payoutData.topRecipients.map((recipient, index) => (
+                {sampleSalesOrders.map((order, index) => (
                   <tr key={index}>
-                    <td className="px-4 py-2">{recipient.name}</td>
-                    <td className="px-4 py-2 text-right font-medium">{formatCurrency(recipient.amount)}</td>
+                    <td className="px-4 py-2">{order.id}</td>
+                    <td className="px-4 py-2">{order.agent}</td>
+                    <td className="px-4 py-2">{order.customer}</td>
+                    <td className="px-4 py-2">{order.vehicleModel}</td>
+                    <td className="px-4 py-2 text-right font-medium">{formatCurrency(order.amount)}</td>
                   </tr>
                 ))}
               </tbody>

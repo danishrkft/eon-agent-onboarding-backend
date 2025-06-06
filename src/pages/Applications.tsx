@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Search, Filter, Eye, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
 import ApplicationForm from '../components/ApplicationForm';
+import ApplicationDetails from '../components/ApplicationDetails';
 
 const Applications: React.FC = () => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
 
   // Sample applications data
   const applications = [
@@ -91,90 +93,114 @@ const Applications: React.FC = () => {
     );
   };
 
+  const handleViewApplication = (application: any) => {
+    setSelectedApplication(application);
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-[#00205C] dark:text-white">Applications Management</h1>
-            <p className="text-gray-600 dark:text-gray-400">Review and manage agent applications</p>
-          </div>
-          <Button 
-            className="bg-[#00205C] hover:bg-[#001A45]"
-            onClick={() => setShowApplicationForm(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Application
-          </Button>
-        </div>
-
-        {/* Filters and Search */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Filter Applications</CardTitle>
-            <CardDescription>Search and filter applications by various criteria</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                <Input placeholder="Search by name, email, or application ID..." className="pl-9" />
+        {selectedApplication ? (
+          <ApplicationDetails 
+            application={selectedApplication} 
+            onBack={() => setSelectedApplication(null)} 
+          />
+        ) : (
+          <>
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-[#00205C] dark:text-white">Applications Management</h1>
+                <p className="text-gray-600 dark:text-gray-400">Review and manage agent applications</p>
               </div>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filter by Status
+              <Button 
+                className="bg-[#00205C] hover:bg-[#001A45]"
+                onClick={() => setShowApplicationForm(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New Application
               </Button>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Applications Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Applications List</CardTitle>
-            <CardDescription>All agent applications and their current status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Application ID</TableHead>
-                    <TableHead>Agent Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Branch</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Submitted Date</TableHead>
-                    <TableHead>Last Updated</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {applications.map((application) => (
-                    <TableRow key={application.id}>
-                      <TableCell className="font-medium">{application.id}</TableCell>
-                      <TableCell>{application.agentName}</TableCell>
-                      <TableCell>{application.email}</TableCell>
-                      <TableCell>{application.phone}</TableCell>
-                      <TableCell>{application.branch}</TableCell>
-                      <TableCell>{application.position}</TableCell>
-                      <TableCell>{getStatusBadge(application.status)}</TableCell>
-                      <TableCell>{new Date(application.submittedDate).toLocaleDateString()}</TableCell>
-                      <TableCell>{new Date(application.lastUpdated).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Filters and Search */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Filter Applications</CardTitle>
+                <CardDescription>Search and filter applications by various criteria</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                    <Input placeholder="Search by name, email, or application ID..." className="pl-9" />
+                  </div>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filter by Status
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Applications Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Applications List</CardTitle>
+                <CardDescription>All agent applications and their current status</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Application ID</TableHead>
+                        <TableHead>Agent Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Branch</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Submitted Date</TableHead>
+                        <TableHead>Last Updated</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {applications.map((application) => (
+                        <TableRow key={application.id}>
+                          <TableCell className="font-medium">
+                            <button 
+                              className="text-blue-600 hover:underline"
+                              onClick={() => handleViewApplication(application)}
+                            >
+                              {application.id}
+                            </button>
+                          </TableCell>
+                          <TableCell>{application.agentName}</TableCell>
+                          <TableCell>{application.email}</TableCell>
+                          <TableCell>{application.phone}</TableCell>
+                          <TableCell>{application.branch}</TableCell>
+                          <TableCell>{application.position}</TableCell>
+                          <TableCell>{getStatusBadge(application.status)}</TableCell>
+                          <TableCell>{new Date(application.submittedDate).toLocaleDateString()}</TableCell>
+                          <TableCell>{new Date(application.lastUpdated).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleViewApplication(application)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
         <ApplicationForm 
           isOpen={showApplicationForm}

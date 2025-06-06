@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Agent } from '../utils/mockData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Download } from 'lucide-react';
 import StatusBreadcrumbs from './StatusBreadcrumbs';
+import SalesOrderTable from './SalesOrderTable';
 
 interface AgentDetailsProps {
   agent: Agent;
@@ -66,6 +68,55 @@ const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
     { date: '2025-06-08', time: '13:10', action: 'Training completed', details: 'Passed with 95% score' }
   ];
 
+  // Sample sales orders
+  const sampleSalesOrders = [
+    { 
+      id: 'SO00123', 
+      customer: 'Lee Mei Ling', 
+      vehicleModel: 'PROTON X70', 
+      amount: 108900, 
+      commission: 1200, 
+      date: '2025-05-15', 
+      status: 'Completed' 
+    },
+    { 
+      id: 'SO00145', 
+      customer: 'Ahmad Zulkifli', 
+      vehicleModel: 'PROTON X50', 
+      amount: 85700, 
+      commission: 950, 
+      date: '2025-05-10', 
+      status: 'Completed' 
+    },
+    { 
+      id: 'SO00168', 
+      customer: 'Siti Norbaya', 
+      vehicleModel: 'PROTON SAGA', 
+      amount: 42800, 
+      commission: 550, 
+      date: '2025-05-03', 
+      status: 'Completed' 
+    },
+    { 
+      id: 'SO00174', 
+      customer: 'Tan Wei Liang', 
+      vehicleModel: 'PROTON X90', 
+      amount: 123000, 
+      commission: 1350, 
+      date: '2025-04-28', 
+      status: 'Processing' 
+    },
+    { 
+      id: 'SO00182', 
+      customer: 'Rajesh Kumar', 
+      vehicleModel: 'PROTON X70', 
+      amount: 105500, 
+      commission: 1150, 
+      date: '2025-04-25', 
+      status: 'On Hold' 
+    },
+  ];
+
   const handleDownloadDocument = (documentKey: string) => {
     const link = documentLinks[documentKey as keyof typeof documentLinks];
     if (link) {
@@ -88,6 +139,7 @@ const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
               <TabsTrigger value="profile" className="flex-1 h-12 rounded-none border-b-2 border-transparent data-[state=active]:border-[#00205C] data-[state=active]:bg-transparent">Profile</TabsTrigger>
               <TabsTrigger value="documents" className="flex-1 h-12 rounded-none border-b-2 border-transparent data-[state=active]:border-[#00205C] data-[state=active]:bg-transparent">Documents</TabsTrigger>
               <TabsTrigger value="activity" className="flex-1 h-12 rounded-none border-b-2 border-transparent data-[state=active]:border-[#00205C] data-[state=active]:bg-transparent">Activity</TabsTrigger>
+              <TabsTrigger value="sales-order" className="flex-1 h-12 rounded-none border-b-2 border-transparent data-[state=active]:border-[#00205C] data-[state=active]:bg-transparent">Sales Order</TabsTrigger>
               <TabsTrigger value="commissions" className="flex-1 h-12 rounded-none border-b-2 border-transparent data-[state=active]:border-[#00205C] data-[state=active]:bg-transparent">Commissions</TabsTrigger>
             </TabsList>
           </div>
@@ -201,6 +253,20 @@ const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
                     </div>
                   ))}
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="sales-order" className="mt-0">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-lg font-bold">Sales Order History</h2>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Sales Data
+                  </Button>
+                </div>
+                
+                <SalesOrderTable salesOrders={sampleSalesOrders} />
               </div>
             </TabsContent>
             

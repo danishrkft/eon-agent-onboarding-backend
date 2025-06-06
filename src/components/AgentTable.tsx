@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Eye, Trash2, MoreHorizontal, Check } from 'lucide-react';
+import { Search, Filter, Eye, Trash2, MoreHorizontal, Check } from 'lucide-react';
 import { Agent } from '../utils/mockData';
-import AddAgentModal from './AddAgentModal';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
@@ -28,7 +27,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
-  const [addAgentModalOpen, setAddAgentModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [genderFilter, setGenderFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
@@ -116,12 +114,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
     }
   };
 
-  const handleAddAgent = (data: any) => {
-    console.log('New agent data:', data);
-    // This would typically make an API call to add the agent
-    // For now, we just log the data
-  };
-
   // Get unique regions for filter dropdown
   const regions = ['all', ...new Set(agents.map(agent => agent.region?.split(',')[1]?.trim()).filter(Boolean))];
   
@@ -146,11 +138,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
               <option value="rejected">Rejected</option>
             </select>
           </div>
-
-          <button onClick={() => setAddAgentModalOpen(true)} className="flex items-center gap-2 px-4 py-2 text-white rounded-md text-sm bg-blue-600 hover:bg-blue-500">
-            <Plus className="h-4 w-4" />
-            <span>Add Agent</span>
-          </button>
         </div>
 
         {showFilters && <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -311,8 +298,6 @@ const AgentTable: React.FC<AgentTableProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <AddAgentModal isOpen={addAgentModalOpen} onClose={() => setAddAgentModalOpen(false)} onSubmit={handleAddAgent} />
     </div>;
 };
 export default AgentTable;

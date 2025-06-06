@@ -1,610 +1,327 @@
+
 import React, { useState } from 'react';
-import { Calendar, Download, Filter, Search, ChevronDown } from 'lucide-react';
 import Layout from '../components/Layout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ResponsiveContainer } from 'recharts';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import FilterDropdowns, { DateRange } from '../components/FilterDropdowns';
+import { Input } from '@/components/ui/input';
+import { Download, Search, Filter, Calendar, ChevronRight, ChevronLeft } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 
-// Sample report data
-const reportData = [{
-  id: 1,
-  name: 'Monthly Sales Overview',
-  category: 'Sales',
-  date: '2025-04-01',
-  downloads: 124,
-  status: 'Available'
-}, {
-  id: 2,
-  name: 'Agent Performance Analysis',
-  category: 'Performance',
-  date: '2025-04-02',
-  downloads: 86,
-  status: 'Available'
-}, {
-  id: 3,
-  name: 'Commission Breakdown',
-  category: 'Finance',
-  date: '2025-04-03',
-  downloads: 215,
-  status: 'Available'
-}, {
-  id: 4,
-  name: 'Quarterly Financial Report',
-  category: 'Finance',
-  date: '2025-04-05',
-  downloads: 76,
-  status: 'Available'
-}, {
-  id: 5,
-  name: 'Regional Market Analysis',
-  category: 'Market',
-  date: '2025-04-07',
-  downloads: 54,
-  status: 'Processing'
-}, {
-  id: 6,
-  name: 'Agent Onboarding Status',
-  category: 'Onboarding',
-  date: '2025-04-08',
-  downloads: 112,
-  status: 'Available'
-}, {
-  id: 7,
-  name: 'Product Performance',
-  category: 'Products',
-  date: '2025-04-10',
-  downloads: 92,
-  status: 'Available'
-}, {
-  id: 8,
-  name: 'Customer Satisfaction Survey',
-  category: 'Customer',
-  date: '2025-04-11',
-  downloads: 64,
-  status: 'Available'
-}, {
-  id: 9,
-  name: 'Market Trends Q1 2025',
-  category: 'Market',
-  date: '2025-04-12',
-  downloads: 187,
-  status: 'Processing'
-}, {
-  id: 10,
-  name: 'Agent Recruitment Pipeline',
-  category: 'Recruitment',
-  date: '2025-04-14',
-  downloads: 43,
-  status: 'Available'
-}, {
-  id: 11,
-  name: 'Annual Revenue Forecast',
-  category: 'Finance',
-  date: '2025-04-16',
-  downloads: 156,
-  status: 'Available'
-}, {
-  id: 12,
-  name: 'Customer Acquisition Cost',
-  category: 'Finance',
-  date: '2025-04-17',
-  downloads: 78,
-  status: 'Available'
-}];
+interface Report {
+  id: string;
+  name: string;
+  category: string;
+  date: string;
+  downloads: number;
+  status: 'Available' | 'Processing' | 'Failed' | 'Scheduled';
+}
 
-// Sample chart data
-const yearlyRevenueData = {
-  2023: [{
-    month: 'Jan',
-    revenue: 45000,
-    target: 42000
-  }, {
-    month: 'Feb',
-    revenue: 52000,
-    target: 45000
-  }, {
-    month: 'Mar',
-    revenue: 48000,
-    target: 47000
-  }, {
-    month: 'Apr',
-    revenue: 61000,
-    target: 50000
-  }, {
-    month: 'May',
-    revenue: 55000,
-    target: 53000
-  }, {
-    month: 'Jun',
-    revenue: 67000,
-    target: 55000
-  }, {
-    month: 'Jul',
-    revenue: 72000,
-    target: 58000
-  }, {
-    month: 'Aug',
-    revenue: 69000,
-    target: 60000
-  }, {
-    month: 'Sep',
-    revenue: 74000,
-    target: 63000
-  }, {
-    month: 'Oct',
-    revenue: 78000,
-    target: 65000
-  }, {
-    month: 'Nov',
-    revenue: 84000,
-    target: 68000
-  }, {
-    month: 'Dec',
-    revenue: 92000,
-    target: 70000
-  }],
-  2024: [{
-    month: 'Jan',
-    revenue: 75000,
-    target: 72000
-  }, {
-    month: 'Feb',
-    revenue: 82000,
-    target: 75000
-  }, {
-    month: 'Mar',
-    revenue: 78000,
-    target: 77000
-  }, {
-    month: 'Apr',
-    revenue: 91000,
-    target: 80000
-  }, {
-    month: 'May',
-    revenue: 85000,
-    target: 83000
-  }, {
-    month: 'Jun',
-    revenue: 97000,
-    target: 85000
-  }, {
-    month: 'Jul',
-    revenue: 102000,
-    target: 88000
-  }, {
-    month: 'Aug',
-    revenue: 99000,
-    target: 90000
-  }, {
-    month: 'Sep',
-    revenue: 104000,
-    target: 93000
-  }, {
-    month: 'Oct',
-    revenue: 108000,
-    target: 95000
-  }, {
-    month: 'Nov',
-    revenue: 114000,
-    target: 98000
-  }, {
-    month: 'Dec',
-    revenue: 122000,
-    target: 100000
-  }],
-  2025: [{
-    month: 'Jan',
-    revenue: 105000,
-    target: 102000
-  }, {
-    month: 'Feb',
-    revenue: 112000,
-    target: 105000
-  }, {
-    month: 'Mar',
-    revenue: 108000,
-    target: 107000
-  }, {
-    month: 'Apr',
-    revenue: 121000,
-    target: 110000
-  }, {
-    month: 'May',
-    revenue: 0,
-    target: 113000
-  }, {
-    month: 'Jun',
-    revenue: 0,
-    target: 115000
-  }, {
-    month: 'Jul',
-    revenue: 0,
-    target: 118000
-  }, {
-    month: 'Aug',
-    revenue: 0,
-    target: 120000
-  }, {
-    month: 'Sep',
-    revenue: 0,
-    target: 123000
-  }, {
-    month: 'Oct',
-    revenue: 0,
-    target: 125000
-  }, {
-    month: 'Nov',
-    revenue: 0,
-    target: 128000
-  }, {
-    month: 'Dec',
-    revenue: 0,
-    target: 130000
-  }]
-};
-const yearlyAgentProductivityData = {
-  2023: [{
-    name: 'Q1',
-    policies: 245,
-    revenue: 367500
-  }, {
-    name: 'Q2',
-    policies: 312,
-    revenue: 468000
-  }, {
-    name: 'Q3',
-    policies: 287,
-    revenue: 430500
-  }, {
-    name: 'Q4',
-    policies: 356,
-    revenue: 534000
-  }],
-  2024: [{
-    name: 'Q1',
-    policies: 325,
-    revenue: 487500
-  }, {
-    name: 'Q2',
-    policies: 392,
-    revenue: 588000
-  }, {
-    name: 'Q3',
-    policies: 367,
-    revenue: 550500
-  }, {
-    name: 'Q4',
-    policies: 426,
-    revenue: 639000
-  }],
-  2025: [{
-    name: 'Q1',
-    policies: 405,
-    revenue: 607500
-  }, {
-    name: 'Q2',
-    policies: 0,
-    revenue: 0
-  }, {
-    name: 'Q3',
-    policies: 0,
-    revenue: 0
-  }, {
-    name: 'Q4',
-    policies: 0,
-    revenue: 0
-  }]
-};
-const Reports = () => {
+const Reports: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('All');
-  const [revenueYear, setRevenueYear] = useState<keyof typeof yearlyRevenueData>(2025);
-  const [productivityYear, setProductivityYear] = useState<keyof typeof yearlyAgentProductivityData>(2025);
   const itemsPerPage = 10;
-
-  // New state for filters
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: new Date(2025, 0, 1),
-    to: new Date(2025, 4, 31)
+  
+  // Sample reports data
+  const reportsData: Report[] = Array.from({ length: 50 }, (_, i) => {
+    const statuses: Report['status'][] = ['Available', 'Processing', 'Failed', 'Scheduled'];
+    const categories = ['Sales', 'Performance', 'Commission', 'Inventory', 'Customer'];
+    
+    return {
+      id: `RPT-${1000 + i}`,
+      name: `${categories[i % 5]} Report ${i + 1}`,
+      category: categories[i % 5],
+      date: new Date(2025, 4, Math.floor(Math.random() * 30) + 1).toISOString().split('T')[0],
+      downloads: Math.floor(Math.random() * 100),
+      status: statuses[i % 4]
+    };
   });
-  const [company, setCompany] = useState("EPD");
-  const [branch, setBranch] = useState("Edaran Otomobil Nasional Bhd (Glenmarie)");
-
-  // Filter data based on search term and category
-  const filteredData = reportData.filter(report => {
-    const matchesSearch = report.name.toLowerCase().includes(searchTerm.toLowerCase()) || report.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'All' || report.category === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  // Extract unique categories
-  const categories = ['All', ...Array.from(new Set(reportData.map(report => report.category)))];
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
+  
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentReports = reportsData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(reportsData.length / itemsPerPage);
+  
+  // Revenue data for chart
+  const revenueData = [
+    { month: 'Jan', revenue: 10500 },
+    { month: 'Feb', revenue: 13200 },
+    { month: 'Mar', revenue: 12800 },
+    { month: 'Apr', revenue: 15400 },
+    { month: 'May', revenue: 14900 },
+    { month: 'Jun', revenue: 18200 },
+  ];
+  
+  // Agent productivity data
+  const productivityData = [
+    { quarter: 'Q1', sales: 120, newCustomers: 45, retention: 80 },
+    { quarter: 'Q2', sales: 145, newCustomers: 68, retention: 85 },
+    { quarter: 'Q3', sales: 135, newCustomers: 52, retention: 75 },
+    { quarter: 'Q4', sales: 160, newCustomers: 80, retention: 90 },
+  ];
+  
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Available':
+        return <Badge className="bg-green-100 text-green-800">Available</Badge>;
+      case 'Processing':
+        return <Badge className="bg-blue-100 text-blue-800">Processing</Badge>;
+      case 'Failed':
+        return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
+      case 'Scheduled':
+        return <Badge className="bg-yellow-100 text-yellow-800">Scheduled</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+    }
   };
-  return <Layout>
-      <div className="w-full space-y-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-[#00205C]">Reports</h1>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <FilterDropdowns onDateChange={setDateRange} onCompanyChange={setCompany} onBranchChange={setBranch} />
-            <Button className="bg-blue-600 hover:bg-blue-500">
-              <Calendar className="mr-2 h-4 w-4" />
-              Schedule Report
-            </Button>
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-[#00205C]">Reports</h1>
+            <p className="text-gray-600">Access and download your reports</p>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div>
+              <Select defaultValue="all-companies">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Companies" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-companies">All Companies</SelectItem>
+                  <SelectItem value="eon-auto">EON Auto</SelectItem>
+                  <SelectItem value="eon-glenmarie">EON Glenmarie</SelectItem>
+                  <SelectItem value="eon-penang">EON Penang</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Select defaultValue="all-branches">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Branches" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-branches">All Branches</SelectItem>
+                  <SelectItem value="kuala-lumpur">Kuala Lumpur</SelectItem>
+                  <SelectItem value="glenmarie">Glenmarie</SelectItem>
+                  <SelectItem value="penang">Penang</SelectItem>
+                  <SelectItem value="johor">Johor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Button variant="outline" className="flex gap-2 items-center">
+                <Calendar className="h-4 w-4" />
+                <span>Filter by Date</span>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Analytics Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Revenue Trends Chart */}
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-[#00205C]">Revenue Trends</h2>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 border-gray-300">
-                    {revenueYear} <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-40 p-0">
-                  <div className="flex flex-col">
-                    {Object.keys(yearlyRevenueData).map(year => <Button key={year} variant="ghost" className="justify-start rounded-none h-9" onClick={() => setRevenueYear(Number(year) as 2023 | 2024 | 2025)}>
-                        {year}
-                      </Button>)}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="h-80">
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue Trends</CardTitle>
+              <CardDescription>Monthly revenue performance</CardDescription>
+            </CardHeader>
+            <CardContent className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={yearlyRevenueData[revenueYear]} margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5
-              }}>
+                <LineChart data={revenueData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis tickFormatter={value => `$${value / 1000}k`} />
-                  <Tooltip formatter={value => formatCurrency(Number(value))} />
-                  <Legend />
-                  <Line type="monotone" dataKey="revenue" stroke="#00205C" strokeWidth={2} name="Actual Revenue" />
-                  <Line type="monotone" dataKey="target" stroke="#E5241B" strokeDasharray="5 5" name="Target Revenue" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value) => [`RM ${Number(value).toLocaleString()}`, 'Revenue']} 
+                    labelStyle={{ color: '#00205C' }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#00205C" 
+                    strokeWidth={2} 
+                    activeDot={{ r: 8 }} 
+                  />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Agent Productivity Chart */}
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-[#00205C]">Quarterly Agent Productivity</h2>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 border-gray-300">
-                    {productivityYear} <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-40 p-0">
-                  <div className="flex flex-col">
-                    {Object.keys(yearlyAgentProductivityData).map(year => <Button key={year} variant="ghost" className="justify-start rounded-none h-9" onClick={() => setProductivityYear(Number(year) as 2023 | 2024 | 2025)}>
-                        {year}
-                      </Button>)}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="h-80">
+          <Card>
+            <CardHeader>
+              <CardTitle>Quarterly Agent Productivity</CardTitle>
+              <CardDescription>Key performance indicators</CardDescription>
+            </CardHeader>
+            <CardContent className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={yearlyAgentProductivityData[productivityYear]} margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5
-              }}>
+                <BarChart data={productivityData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis yAxisId="left" orientation="left" stroke="#00205C" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#E5241B" tickFormatter={value => `$${value / 1000}k`} />
-                  <Tooltip formatter={(value, name) => {
-                  if (name === "revenue") {
-                    return [formatCurrency(Number(value)), "Revenue"];
-                  }
-                  return [value, "Policies Sold"];
-                }} />
+                  <XAxis dataKey="quarter" />
+                  <YAxis />
+                  <Tooltip />
                   <Legend />
-                  <Bar yAxisId="left" dataKey="policies" fill="#00205C" name="Policies Sold" />
-                  <Bar yAxisId="right" dataKey="revenue" fill="#E5241B" name="Revenue" />
+                  <Bar dataKey="sales" name="Sales" fill="#00205C" />
+                  <Bar dataKey="newCustomers" name="New Customers" fill="#4B5563" />
+                  <Bar dataKey="retention" name="Retention %" fill="#E5241B" />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Total Reports</span>
-                <span className="text-2xl font-bold">{reportData.length}</span>
-              </div>
-              <div className="bg-blue-50 p-3 rounded-full">
-                <svg className="w-6 h-6 text-[#00205C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-[#00205C] h-2 rounded-full" style={{
-                width: '100%'
-              }}></div>
-              </div>
-            </div>
-          </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">128</div>
+              <p className="text-xs text-muted-foreground">+8% from last month</p>
+            </CardContent>
+          </Card>
           
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Downloads This Month</span>
-                <span className="text-2xl font-bold">1,287</span>
-              </div>
-              <div className="bg-red-50 p-3 rounded-full">
-                <svg className="w-6 h-6 text-[#E5241B]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-[#E5241B] h-2 rounded-full" style={{
-                width: '75%'
-              }}></div>
-              </div>
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Downloads This Month</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">342</div>
+              <p className="text-xs text-muted-foreground">+15% from last month</p>
+            </CardContent>
+          </Card>
           
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Processing Reports</span>
-                <span className="text-2xl font-bold">2</span>
-              </div>
-              <div className="bg-yellow-50 p-3 rounded-full">
-                <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-yellow-500 h-2 rounded-full" style={{
-                width: '20%'
-              }}></div>
-              </div>
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Processing Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">5</div>
+              <p className="text-xs text-muted-foreground">Reports currently being processed</p>
+            </CardContent>
+          </Card>
         </div>
-        
-        <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
-          <div className="p-4 border-b flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-            <h2 className="text-lg font-semibold">Available Reports</h2>
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input placeholder="Search reports..." className="pl-9" value={searchTerm} onChange={e => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }} />
+
+        {/* Reports List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Available Reports</CardTitle>
+            <CardDescription>Download or schedule your reports</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between mb-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                <Input placeholder="Search reports..." className="pl-9" />
               </div>
-              <div className="flex items-center space-x-2">
-                <Filter className="text-gray-400 h-4 w-4" />
-                <select className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00205C]" value={filterCategory} onChange={e => {
-                setFilterCategory(e.target.value);
-                setCurrentPage(1); // Reset to first page on filter change
-              }}>
-                  {categories.map(category => <option key={category} value={category}>{category}</option>)}
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Report Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Downloads</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedData.length > 0 ? paginatedData.map(report => <TableRow key={report.id}>
-                    <TableCell className="font-medium">{report.name}</TableCell>
-                    <TableCell>{report.category}</TableCell>
-                    <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
-                    <TableCell>{report.downloads}</TableCell>
-                    <TableCell>
-                      <Badge className={report.status === 'Available' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'}>
-                        {report.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button size="sm" variant={report.status === 'Available' ? 'outline' : 'secondary'} className={report.status === 'Available' ? 'border-[#00205C] text-[#00205C] hover:bg-[#00205C] hover:text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'} disabled={report.status !== 'Available'}>
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    </TableCell>
-                  </TableRow>) : <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                    No reports found matching your criteria
-                  </TableCell>
-                </TableRow>}
-            </TableBody>
-          </Table>
-          
-          {/* Pagination */}
-          {totalPages > 1 && <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3">
-              <div className="flex flex-1 justify-between sm:hidden">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                  Previous
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                  Next
+              
+              <div className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  <span>Filter</span>
                 </Button>
               </div>
-              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
-                    <span className="font-medium">
-                      {Math.min(currentPage * itemsPerPage, filteredData.length)}
-                    </span> of{' '}
-                    <span className="font-medium">{filteredData.length}</span> reports
-                  </p>
-                </div>
-                <div>
-                  <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                    <Button variant="outline" size="icon" className="rounded-l-md" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                      <span className="sr-only">Previous</span>
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                      </svg>
-                    </Button>
-                    {Array.from({
-                  length: totalPages
-                }, (_, i) => i + 1).map(page => <Button key={page} variant={currentPage === page ? "default" : "outline"} size="icon" className={currentPage === page ? "bg-[#00205C]" : ""} onClick={() => setCurrentPage(page)}>
-                        {page}
-                      </Button>)}
-                    <Button variant="outline" size="icon" className="rounded-r-md" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                      <span className="sr-only">Next</span>
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                      </svg>
-                    </Button>
-                  </nav>
-                </div>
+            </div>
+
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Report ID</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Downloads</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentReports.map((report) => (
+                    <TableRow key={report.id}>
+                      <TableCell className="font-medium">{report.id}</TableCell>
+                      <TableCell>{report.name}</TableCell>
+                      <TableCell>{report.category}</TableCell>
+                      <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
+                      <TableCell>{report.downloads}</TableCell>
+                      <TableCell>{getStatusBadge(report.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          disabled={report.status !== 'Available'}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-gray-500">
+                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, reportsData.length)} of {reportsData.length} reports
               </div>
-            </div>}
-        </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button 
+                      key={i} 
+                      variant={currentPage === pageNumber ? 'default' : 'outline'}
+                      size="icon"
+                      onClick={() => setCurrentPage(pageNumber)}
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                })}
+                
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default Reports;
