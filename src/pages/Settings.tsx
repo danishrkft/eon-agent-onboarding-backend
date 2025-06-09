@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,7 +18,7 @@ import ScheduleReportForm from '../components/ScheduleReportForm';
 const Settings: React.FC = () => {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showEditPermissionsModal, setShowEditPermissionsModal] = useState(false);
-  const [activeApiTab, setActiveApiTab] = useState('keys');
+  const [activeLogsTab, setActiveLogsTab] = useState('api-keys');
 
   // Sample user data for User Access tab
   const users = [{
@@ -66,45 +65,158 @@ const Settings: React.FC = () => {
     "Viewer": ["View Reports"]
   };
 
-  // Sample API logs with pagination data
-  const apiLogs = Array.from({ length: 36 }, (_, index) => {
-    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
-    const endpoints = [
-      '/api/agents', 
-      '/api/commission/payout', 
-      '/api/applications', 
-      '/api/reports',
-      '/api/sales',
-      '/api/users'
-    ];
-    const statuses = [
-      { code: '200 OK', bg: 'bg-green-50 text-green-700 border-green-200' },
-      { code: '201 Created', bg: 'bg-green-50 text-green-700 border-green-200' },
-      { code: '400 Bad Request', bg: 'bg-red-50 text-red-700 border-red-200' },
-      { code: '404 Not Found', bg: 'bg-red-50 text-red-700 border-red-200' },
-      { code: '500 Server Error', bg: 'bg-red-50 text-red-700 border-red-200' },
-    ];
-    
-    // Generate a date in the past week
-    const date = new Date();
-    date.setDate(date.getDate() - Math.floor(Math.random() * 7));
-    
-    return {
-      id: `log-${index + 1}`,
-      endpoint: endpoints[Math.floor(Math.random() * endpoints.length)],
-      method: methods[Math.floor(Math.random() * methods.length)],
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      timestamp: date,
-    };
-  });
+  // Sample Audit Logs with mixed status
+  const auditLogs = [
+    {
+      id: 'audit-1',
+      timestamp: new Date('2025-05-30T05:01:47'),
+      user: 'John Smith',
+      email: 'john.smith@aviation.com',
+      role: 'Administrator',
+      module: 'Assets',
+      action: 'Logout',
+      details: 'Logout Asset HL-300 | Serial No. 2645 | Update...',
+      ipAddress: '15.43.157.246',
+      device: 'Firefox 97.0.1 / Ubuntu 20.04',
+      status: 'Successful'
+    },
+    {
+      id: 'audit-2',
+      timestamp: new Date('2025-05-21T10:59:47'),
+      user: 'John Smith',
+      email: 'john.smith@aviation.com',
+      role: 'Administrator',
+      module: 'Analytics',
+      action: 'Edit',
+      details: 'Edit Asset CP-Loader | Serial No. 9416 | Update...',
+      ipAddress: '193.121.5.200',
+      device: 'Edge 99.0.1150 / Windows 11',
+      status: 'Successful'
+    },
+    {
+      id: 'audit-3',
+      timestamp: new Date('2025-05-21T21:41:47'),
+      user: 'Sarah Johnson',
+      email: 'sarah.j@aviation.com',
+      role: 'Supervisor',
+      module: 'Location',
+      action: 'Access Control Change',
+      details: 'Access Control Change Asset WB500 | Serial ...',
+      ipAddress: '196.196.91.32',
+      device: 'Chrome 98.0.4758 / Windows 10',
+      status: 'Successful'
+    },
+    {
+      id: 'audit-4',
+      timestamp: new Date('2025-05-15T13:56:47'),
+      user: 'Sarah Johnson',
+      email: 'sarah.j@aviation.com',
+      role: 'Supervisor',
+      module: 'Telematics',
+      action: 'View',
+      details: 'View Asset HL250 | Serial No. 1445 | Update...',
+      ipAddress: '96.48.26.123',
+      device: 'Safari Mobile 15.4 / iOS 15.4',
+      status: 'Failed'
+    },
+    {
+      id: 'audit-5',
+      timestamp: new Date('2025-05-14T08:30:15'),
+      user: 'Mike Chen',
+      email: 'mike.chen@aviation.com',
+      role: 'Operator',
+      module: 'Maintenance',
+      action: 'Create',
+      details: 'Create Maintenance Record | Asset ID: 7823 | ...',
+      ipAddress: '172.16.45.98',
+      device: 'Chrome 98.0.4758 / macOS 12.3',
+      status: 'Failed'
+    },
+    {
+      id: 'audit-6',
+      timestamp: new Date('2025-05-13T16:22:33'),
+      user: 'Lisa Wong',
+      email: 'lisa.wong@aviation.com',
+      role: 'Manager',
+      module: 'Reports',
+      action: 'Export',
+      details: 'Export Monthly Asset Report | Format: PDF | ...',
+      ipAddress: '10.0.0.45',
+      device: 'Firefox 96.0 / Windows 10',
+      status: 'Successful'
+    },
+    {
+      id: 'audit-7',
+      timestamp: new Date('2025-05-12T11:15:22'),
+      user: 'David Kim',
+      email: 'david.kim@aviation.com',
+      role: 'Technician',
+      module: 'Inventory',
+      action: 'Update',
+      details: 'Update Inventory Count | Item: Engine Parts | ...',
+      ipAddress: '192.168.1.100',
+      device: 'Chrome 97.0.4692 / Android 12',
+      status: 'Successful'
+    },
+    {
+      id: 'audit-8',
+      timestamp: new Date('2025-05-11T14:45:10'),
+      user: 'Emma Rodriguez',
+      email: 'emma.rodriguez@aviation.com',
+      role: 'Administrator',
+      module: 'User Management',
+      action: 'Delete',
+      details: 'Delete User Account | User ID: 456 | Name: ...',
+      ipAddress: '203.0.113.25',
+      device: 'Safari 15.4 / macOS 12.3',
+      status: 'Failed'
+    },
+    {
+      id: 'audit-9',
+      timestamp: new Date('2025-05-10T09:33:44'),
+      user: 'Tom Anderson',
+      email: 'tom.anderson@aviation.com',
+      role: 'Operator',
+      module: 'Fleet',
+      action: 'Assign',
+      details: 'Assign Aircraft to Route | Flight: AA1234 | ...',
+      ipAddress: '198.51.100.42',
+      device: 'Edge 98.0.1108 / Windows 11',
+      status: 'Successful'
+    },
+    {
+      id: 'audit-10',
+      timestamp: new Date('2025-05-09T17:28:55'),
+      user: 'Rachel Green',
+      email: 'rachel.green@aviation.com',
+      role: 'Manager',
+      module: 'Compliance',
+      action: 'Review',
+      details: 'Review Compliance Report | Document ID: CR-789 | ...',
+      ipAddress: '172.31.255.1',
+      device: 'Chrome 98.0.4758 / Ubuntu 20.04',
+      status: 'Successful'
+    }
+  ];
   
-  const [currentApiPage, setCurrentApiPage] = useState(1);
-  const logsPerPage = 12;
+  const [currentAuditPage, setCurrentAuditPage] = useState(1);
+  const logsPerPage = 10;
   
-  const indexOfLastLog = currentApiPage * logsPerPage;
-  const indexOfFirstLog = indexOfLastLog - logsPerPage;
-  const currentLogs = apiLogs.slice(indexOfFirstLog, indexOfLastLog);
-  const totalApiPages = Math.ceil(apiLogs.length / logsPerPage);
+  const indexOfLastAuditLog = currentAuditPage * logsPerPage;
+  const indexOfFirstAuditLog = indexOfLastAuditLog - logsPerPage;
+  const currentAuditLogs = auditLogs.slice(indexOfFirstAuditLog, indexOfLastAuditLog);
+  const totalAuditPages = Math.ceil(auditLogs.length / logsPerPage);
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Successful':
+        return <Badge className="bg-green-100 text-green-800 border border-green-200">Successful</Badge>;
+      case 'Failed':
+        return <Badge className="bg-red-100 text-red-800 border border-red-200">Failed</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800 border border-gray-200">{status}</Badge>;
+    }
+  };
 
   return (
     <Layout>
@@ -117,7 +229,7 @@ const Settings: React.FC = () => {
         <Tabs defaultValue="notifications" className="w-full">
           <TabsList className="grid grid-cols-5 gap-4 mb-8">
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="api">API</TabsTrigger>
+            <TabsTrigger value="logs">Logs</TabsTrigger>
             <TabsTrigger value="branding">Branding</TabsTrigger>
             <TabsTrigger value="user-access">User Access</TabsTrigger>
             <TabsTrigger value="schedule-report">Schedule Report</TabsTrigger>
@@ -184,17 +296,17 @@ const Settings: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="api">
+          <TabsContent value="logs">
             <div className="space-y-6">
               <div>
-                <Tabs defaultValue="keys" onValueChange={setActiveApiTab}>
+                <Tabs defaultValue="api-keys" onValueChange={setActiveLogsTab}>
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="keys">API Keys</TabsTrigger>
-                    <TabsTrigger value="logs">API Logs</TabsTrigger>
+                    <TabsTrigger value="api-keys">API Keys</TabsTrigger>
+                    <TabsTrigger value="audit-logs">Audit Logs</TabsTrigger>
                   </TabsList>
                   
                   <div className="mt-6">
-                    {activeApiTab === 'keys' ? (
+                    {activeLogsTab === 'api-keys' ? (
                       <Card>
                         <CardHeader>
                           <CardTitle>API Keys</CardTitle>
@@ -241,8 +353,8 @@ const Settings: React.FC = () => {
                     ) : (
                       <Card>
                         <CardHeader>
-                          <CardTitle>API Logs</CardTitle>
-                          <CardDescription>View recent API activity.</CardDescription>
+                          <CardTitle>Audit Logs</CardTitle>
+                          <CardDescription>View system audit logs and user activities.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="flex flex-col md:flex-row gap-3">
@@ -252,16 +364,16 @@ const Settings: React.FC = () => {
                             </div>
                             
                             <div className="flex gap-2">
-                              <Select defaultValue="all-methods">
+                              <Select defaultValue="all-actions">
                                 <SelectTrigger className="w-[150px]">
-                                  <SelectValue placeholder="All Methods" />
+                                  <SelectValue placeholder="All Actions" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="all-methods">All Methods</SelectItem>
-                                  <SelectItem value="get">GET</SelectItem>
-                                  <SelectItem value="post">POST</SelectItem>
-                                  <SelectItem value="put">PUT</SelectItem>
-                                  <SelectItem value="delete">DELETE</SelectItem>
+                                  <SelectItem value="all-actions">All Actions</SelectItem>
+                                  <SelectItem value="login">Login</SelectItem>
+                                  <SelectItem value="logout">Logout</SelectItem>
+                                  <SelectItem value="edit">Edit</SelectItem>
+                                  <SelectItem value="delete">Delete</SelectItem>
                                 </SelectContent>
                               </Select>
                               
@@ -271,8 +383,8 @@ const Settings: React.FC = () => {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="all-status">All Status</SelectItem>
-                                  <SelectItem value="success">Success (2xx)</SelectItem>
-                                  <SelectItem value="error">Error (4xx/5xx)</SelectItem>
+                                  <SelectItem value="successful">Successful</SelectItem>
+                                  <SelectItem value="failed">Failed</SelectItem>
                                 </SelectContent>
                               </Select>
                               
@@ -282,26 +394,46 @@ const Settings: React.FC = () => {
                             </div>
                           </div>
                           
-                          <div className="rounded-md border">
+                          <div className="rounded-md border overflow-auto">
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead>Endpoint</TableHead>
-                                  <TableHead>Method</TableHead>
-                                  <TableHead>Status</TableHead>
-                                  <TableHead>Timestamp</TableHead>
+                                  <TableHead className="w-[140px]">Timestamp</TableHead>
+                                  <TableHead className="w-[200px]">User</TableHead>
+                                  <TableHead className="w-[100px]">Role</TableHead>
+                                  <TableHead className="w-[100px]">Module</TableHead>
+                                  <TableHead className="w-[120px]">Action</TableHead>
+                                  <TableHead className="w-[300px]">Details</TableHead>
+                                  <TableHead className="w-[130px]">IP Address</TableHead>
+                                  <TableHead className="w-[150px]">Device</TableHead>
+                                  <TableHead className="w-[100px]">Status</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {currentLogs.map(log => (
+                                {currentAuditLogs.map(log => (
                                   <TableRow key={log.id}>
-                                    <TableCell className="font-mono text-sm">{log.endpoint}</TableCell>
-                                    <TableCell>{log.method}</TableCell>
-                                    <TableCell>
-                                      <Badge variant="outline" className={log.status.bg}>{log.status.code}</Badge>
+                                    <TableCell className="text-sm">
+                                      {log.timestamp.toLocaleDateString()}<br />
+                                      <span className="text-gray-500">{log.timestamp.toLocaleTimeString()}</span>
                                     </TableCell>
-                                    <TableCell className="text-gray-500 text-sm">
-                                      {log.timestamp.toLocaleDateString()}, {log.timestamp.toLocaleTimeString()}
+                                    <TableCell>
+                                      <div>
+                                        <div className="font-medium">{log.user}</div>
+                                        <div className="text-sm text-gray-500">{log.email}</div>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="text-sm">{log.role}</TableCell>
+                                    <TableCell className="text-sm">{log.module}</TableCell>
+                                    <TableCell className="text-sm">{log.action}</TableCell>
+                                    <TableCell className="text-sm text-gray-600 max-w-[300px] truncate" title={log.details}>
+                                      {log.details}
+                                    </TableCell>
+                                    <TableCell className="text-sm font-mono">{log.ipAddress}</TableCell>
+                                    <TableCell className="text-sm text-gray-500">
+                                      {log.device}
+                                    </TableCell>
+                                    <TableCell>
+                                      {getStatusBadge(log.status)}
                                     </TableCell>
                                   </TableRow>
                                 ))}
@@ -313,18 +445,19 @@ const Settings: React.FC = () => {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => setCurrentApiPage(prev => Math.max(1, prev - 1))}
-                              disabled={currentApiPage === 1}
+                              onClick={() => setCurrentAuditPage(prev => Math.max(1, prev - 1))}
+                              disabled={currentAuditPage === 1}
                             >
                               Previous
                             </Button>
                             
-                            {Array.from({ length: totalApiPages }, (_, i) => (
+                            {Array.from({ length: totalAuditPages }, (_, i) => (
                               <Button 
                                 key={i} 
-                                variant={currentApiPage === i + 1 ? 'default' : 'outline'} 
+                                variant={currentAuditPage === i + 1 ? 'default' : 'outline'} 
                                 size="sm"
-                                onClick={() => setCurrentApiPage(i + 1)}
+                                onClick={() => setCurrentAuditPage(i + 1)}
+                                className={currentAuditPage === i + 1 ? 'bg-[#00205C]' : ''}
                               >
                                 {i + 1}
                               </Button>
@@ -333,8 +466,8 @@ const Settings: React.FC = () => {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => setCurrentApiPage(prev => Math.min(totalApiPages, prev + 1))}
-                              disabled={currentApiPage === totalApiPages}
+                              onClick={() => setCurrentAuditPage(prev => Math.min(totalAuditPages, prev + 1))}
+                              disabled={currentAuditPage === totalAuditPages}
                             >
                               Next
                             </Button>

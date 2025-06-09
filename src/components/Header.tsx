@@ -22,6 +22,31 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
 
+  // Sample notifications data
+  const notifications = [
+    {
+      id: '1',
+      title: 'New Agent Application',
+      content: 'Ahmad Faizal has submitted a new agent application',
+      time: '2 minutes ago',
+      read: false
+    },
+    {
+      id: '2',
+      title: 'Commission Payout Complete',
+      content: 'Monthly commission payout has been processed',
+      time: '1 hour ago',
+      read: true
+    },
+    {
+      id: '3',
+      title: 'Report Generated',
+      content: 'Sales report for April 2025 is ready for download',
+      time: '3 hours ago',
+      read: false
+    }
+  ];
+
   return (
     <header className="bg-white border-b border-gray-200 flex items-center justify-between px-4 h-16 sticky top-0 z-10">
       <div className="flex items-center">
@@ -81,6 +106,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
       <NotificationModal 
         isOpen={notificationModalOpen}
         onClose={() => setNotificationModalOpen(false)}
+        notifications={notifications}
       />
 
       {showEditProfileModal && (
